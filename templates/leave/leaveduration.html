@@ -1,0 +1,65 @@
+
+{% extends "layouts/base.html" %}
+{% block title %} Dashboard {% endblock %} 
+{% load static %}       
+{% block content %}
+<br><br><br><br>
+<style>
+   input{
+		width: 100%;
+		padding: 12px 20px;
+		margin: 8px 0;
+		box-sizing: border-box;
+		border: 2px solid lightskyblue;
+		border-radius: 10px;
+	} 
+
+    select{
+		width: 100%;
+		padding: 12px 20px;
+		margin: 8px 0;
+		box-sizing: border-box;
+		border: 2px solid lightskyblue;
+		border-radius: 10px;
+	} 
+	label{
+		float: left;
+	}
+</style>
+
+<center>
+<div class="col-lg-6">
+  <div class="card">
+      <div class="card-body">
+            <center> <h3> Leave Type Form</h3></center>
+               <form method="POST" action="">{% csrf_token %}
+                <div class="form-group">
+					<b><label>Salary Scale</label></b>
+					{{form.salary_scale}}
+				</div>
+                <div class="form-group">
+					<b><label>Rank</label></b>
+					{{form.grade}}
+				</div>
+                <div class="form-group">
+					<b><label>Duration</label></b>
+					{{form.duration}}
+				</div>
+                <div class="form-group">
+					<b><label>Create By</label></b>
+					{{form.created_by}}
+				</div>
+                <button type="submit" name="register" class="btn btn-primary btn-block mb-4">Submit</button>
+               </form> 
+      </div>
+  </div>
+</div>
+</center>
+{% endblock %}
+
+{% block javascripts %}
+
+	<script src="/static/assets/js/waves.min.js"></script>
+
+{% endblock javascripts %} 
+

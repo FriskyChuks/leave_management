@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="canonical" href="https://appseed.us/admin-dashboards/django-dashboard-gradientable">
-    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta name="description" content="" />
     <meta name="keywords" content="">
     <meta name="author" content="Codedthemes" />
@@ -43,7 +43,21 @@
     {% include 'includes/sidebar.html' %}
     
     {% include 'includes/navigation.html' %}
-
+    <div style="margin-left: 230px;">
+        <div class="container">
+            {% if messages %}
+            <br><br><br>
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %} alert-dismissible fade show" role="alert">
+                        <ul class="messages">
+                            <li><center>{{ message }}</center></li>
+                        </ul>
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
     {% block content %}{% endblock content %}
 
     {% include 'includes/scripts.html' %}

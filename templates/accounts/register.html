@@ -1,103 +1,167 @@
-{% extends "layouts/base-fullscreen.html" %}
+{% extends "layouts/base.html" %}
 
-{% block title %} Register {% endblock %}
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %} 
 
-	<!-- [ auth-signup ] start -->
-	<div class="auth-wrapper">
-		<div class="auth-content">
-			<div class="card">
-				<div class="row align-items-center text-center">
-					<div class="col-md-12">
-						<div class="card-body">
-							<img src="/static/assets/images/logo-dark.png" alt="" class="img-fluid mb-4">
-							<h4 class="mb-3 f-w-400">
-								<h4 class="mb-3 f-w-400">
-									Sign UP
-								</h4>
-							</h4>
-							<span class="mb-0 text-muted">
-								{% if msg %}
-									{{ msg | safe }}
-								{% else %}
-									Add your credentials
-								{% endif %} 
-							</span>
-							<!-- dummy spacer -->
-							<p> <br /> </p>		
-							
-							<!-- Hide the form on success -->
-							{% if not success %}
-								<form role="form" method="post" action="">
+    <!-- [ Main Content ] start -->
+<section class="pcoded-main-container">
+<div class="pcoded-content">
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+        <div class="page-block">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <div class="page-header-title">
+                        <center>  <h5 class="m-b-10">Saff Bio Data Summary</h5></center>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+    <!-- [ Main Content ] start -->
+<div class="row">
+    <!-- [ form-element ] start -->
+    <div class="col-sm-12">
+        <div class="card">
+            
+<div class="card-body">
+   
+    <center> <h5 class="mt-5">Staff Registration</h5></center>
+    <hr>
+    <!-- <form class="needs-validation" novalidate method="POST" enctype="multipart/form-data">
+        {% csrf_token %} -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+        <div class="form-row">
+            <div class="col-md-4 mb-3">
+                <label for="validationTooltip01">First name</label>
+                <input id="first_name" class="form-control"  name="first_name"  placeholder="First name" required>
+               
+            </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationTooltip02">Last name</label>
+        <input id="last_name" class="form-control" name="last_name" id="validationTooltip02" placeholder="Last name" value="" required>
+        
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationTooltip02">Other name</label>
+        <input name="other_name" class="form-control" id="other_name2" placeholder="Other name" value="" required>
+       
+    </div>
+        
+    </div>
+    <div class="form-row">
+        <div class="col-md-4 mb-3">
+            <label for="validationTooltip01">Gender</label>
+            <select class="form-control" name="gender">
+                {% for i in gend %}
+                <option value="{{i.id}}">{{i.title}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="validationTooltip02">Date Of Birth</label>
+            <input type="date" class="form-control" name="date_of_birth" id="validationTooltip02" placeholder="Date of birth" required>
+           
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="validationTooltip02">File No</label>
+            <input type="number" class="form-control" name="file_number" id="validationTooltip02" placeholder="File no" value="" required>
+            <div class="valid-tooltip">
+                Looks good!
+            </div>
+        </div>
+        </div>
+        
+    <div class="form-row">
+        
+            <div class="col-md-4 mb-3">
+                <label for="validationTooltip02">Department</label>
+                <select class="form-control" name="department">
+                    {% for i in dept %}
+                    <option value="{{i.id}}">{{i.title}}</option>
+                    {% endfor %}
+                </select>
+                </div> 
+            <div class="col-md-4 mb-6">
+                <label for="validationTooltip02">Unit</label>
+                <select class="form-control" name="unit">
+                    {% for i in unit %}
+                    <option value="{{i.id}}">{{i.title}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="validationTooltip02">Directorate</label>
+                <select class="form-control" name="directorate">
+                    {% for i in direct %}
+                    <option value="{{i.id}}">{{i.title}}</option>
+                    {% endfor %}
+                </select>
+                </div> 
+                <div class="col-md-4 mb-3">
+                    <label for="validationTooltip01">Username</label>
+                    <input id="username" class="form-control" name="username" id="validationTooltip01" placeholder="Username" value="" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationTooltip02">Password</label>
+                    <input type="password" class="form-control" id="password1"   name="password1" id="validationTooltip02" placeholder="Password" value="" required>
+                    </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationTooltip02">Confirm Password</label>
+                    <input type="password" class="form-control" id="password2"  name="password2" id="validationTooltip02" placeholder="Confirm Password" value="" required>
+                    </div>   
+                <div class="col-md-4 mb-3">
+                    <label for="validationTooltip02">Profile Image</label>
+                    <input type="file" class="form-control" id="passport2"  name="passport" id="validationTooltip02" value="">
+                </div>
+        </div>
+        <button style="margin-left: 700px; width: 200px; font-size: 20px; " class="btn  btn-primary" type="submit">Next</button>
+    </form>
+                            
+            
+        </div>
+    </div>
+    
+</div>
+<!-- [ form-element ] end -->
+</div>
+<!-- [ Main Content ] end -->
 
-									{% csrf_token %}  
-															
-									<div class="input-group mb-3">
-										<div class="input-group-prepend">
-											<span class="input-group-text"><i class="feather icon-user"></i></span>
-										</div>
-										{{ form.username }}
-									</div>
-									<span class="text-error">{{ form.username.errors }}</span>
-
-									<div class="input-group mb-3">
-										<div class="input-group-prepend">
-											<span class="input-group-text"><i class="feather icon-mail"></i></span>
-										</div>
-										{{ form.email }}
-									</div>
-									<span class="text-error">{{ form.email.errors }}</span>
-
-									<div class="input-group mb-4">
-										<div class="input-group-prepend">
-											<span class="input-group-text"><i class="feather icon-lock"></i></span>
-										</div>
-										{{ form.password1 }}
-									</div>
-									<span class="text-error">{{ form.password1.errors }}</span>
-
-									<div class="input-group mb-4">
-										<div class="input-group-prepend">
-											<span class="input-group-text"><i class="feather icon-lock"></i></span>
-										</div>
-										{{ form.password2 }}
-									</div>
-									<span class="text-error">{{ form.password2.errors }}</span>
-									
-									<div class="form-group text-left mt-2">
-										<div class="checkbox checkbox-primary d-inline">
-											<input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2" checked="">
-											<label for="checkbox-fill-2" class="cr">I agree with <a href="#">terms</a>.</label>
-										</div>
-									</div>
-									<button type="submit" name="register" class="btn btn-primary btn-block mb-4">Sign up</button>
-								
-								</form>
-
-								<p class="mb-0 text-muted">Have an account? <a href="{% url 'login' %}" class="f-w-400">Login</a></p>
-							{% endif %}
-
-							<p class="mb-2 text-muted">
-								<br />
-								&copy; <a target="_blank" rel="noopener" href="https://bit.ly/37fF9RT" class="f-w-400">CodedThemes</a>
-								- <a target="_blank" rel="noopener" 
-								     href="https://appseed.us/admin-dashboards/django-gradient-able" class="f-w-400">Django Gradient</a>
-							</p>
-
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- [ auth-signup ] end -->
+</div>
+</section>
+<script>
+                                // Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+    'use strict';
+       window.addEventListener('load', function() {
+                                        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                                        var forms = document.getElementsByClassName('needs-validation');
+                                        // Loop over them and prevent submission
+                                        var validation = Array.prototype.filter.call(forms, function(form) {
+                                            form.addEventListener('submit', function(event) {
+                                                if (form.checkValidity() === false) {
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+                                                }
+                                                form.classList.add('was-validated');
+                                            }, false);
+                                        });
+                                    }, false);
+                                })();
+    </script>
+    <!-- [ Main Content ] end -->
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}
+{% block javascripts %}{% endblock javascripts %}
 
-	<script src="/static/assets/js/waves.min.js"></script>
 
-{% endblock javascripts %} 
+

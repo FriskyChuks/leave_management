@@ -1,0 +1,179 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900&display=swap" rel="stylesheet">
+<!-- Bootstrap CSS -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+<!-- Font Awesome CSS -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css'>
+<style>
+ .student-profile .card {
+      border-radius: 10px;
+}
+.student-profile .card .card-header .profile_img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin: 10px auto;
+    border: 10px solid #ccc;
+    border-radius: 50%;
+}
+.student-profile .card h3 {
+    font-size: 20px;
+    font-weight: 700;
+}
+.student-profile .card p {
+    font-size: 16px;
+    color: #000;
+}
+.student-profile .table th,
+.student-profile .table td {
+    font-size: 14px;
+    padding: 5px 10px;
+    color: #000;
+}
+</style>
+</head>
+    <!-- [ Main Content ] start -->
+<section class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">STAFF LEAVE DETAILS</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
+                            {% if request.user.id == user.id %}
+                              <li class="breadcrumb-item"><a href="{% url 'leave_history' %}">My Leave History</a></li>
+                              <li></li>
+                            {% else %}
+                              <li class="breadcrumb-item"><a href="{% url 'Leave_list_by_departments' %}">Leave List</a></li>
+                              <li></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+<div class="student-profile py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-transparent text-center">
+            <img class="profile_img" src="{{ user.passport.url }}" alt="student dp">
+            <h3>{{ user.first_name}} {{ user.last_name}} {{ user.other_name}}</h3>
+          </div>
+          <div class="card-body">
+            <p class="mb-0"><strong class="pr-1">username:</strong>{{ user.username }}</p>
+            <p class="mb-0"><strong class="pr-1">Gender:</strong>{{ user.gender }}</p>
+            <p class="mb-0"><strong class="pr-1">Date of Birth:</strong>{{ user.date_of_birth}}</p>
+            <p class="mb-0"><strong class="pr-1">File No:</strong>{{ user.file_number}}</p>
+            <p class="mb-0"><strong class="pr-1">IPPIS No:</strong>{{ emply.ippis_no }}</p>
+            <p class="mb-0"><strong class="pr-1">Phone No:</strong>{{ cont.phone_no }}</p>
+            <p class="mb-0"><strong class="pr-1">Address:</strong>{{ address.state_of_residence }}</p>
+            <p class="mb-0"><strong class="pr-1">Next of Kin Phone Number:</strong>{{ cont.next_of_kin_phone_no}}</p>
+          </div>
+        </div>
+<br>
+
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-transparent border-0">
+            <h3 class="mb-0"><i class="far fa-clone pr-1"></i>General Information</h3>
+          </div>
+          <div class="card-body pt-0">
+            <table class="table table-bordered">
+              <tr>
+                <th width="30%">Department</th>
+                <td width="2%">:</td>
+                <td>{{ user.department }}</td>
+              </tr>
+              <tr>
+                <th width="30%">Unit </th>
+                <td width="2%">:</td>
+                <td>{{ user.unit}}</td>
+              </tr>
+              <tr>
+                <th width="30%">Directorate</th>
+                <td width="2%">:</td>
+                <td>{{user.directorate}}</td>
+              </tr>
+              <tr>
+                <th width="30%">
+                  Designation</th>
+                <td width="2%">:</td>
+                <td>{{  emply.designation }}</td>
+              </tr>
+              <tr>
+                <th width="30%"> Salary Scale</th>
+                <td width="2%">:</td>
+                <td>{{ emply.salary_scale }}</td>
+              </tr>
+              <tr>
+                <th width="30%"> Staff Category</th>
+                <td width="2%">:</td>
+                <td>{{ emply.staff_category }}</td>
+              </tr>
+              <tr>
+                <th width="30%">
+                  Grade</th>
+                <td width="2%">:</td>
+                <td>{{ emply.grade }}</td>
+              </tr>
+              <tr>
+                <th width="30%">
+                  Step</th>
+                <td width="2%">:</td>
+                <td>{{ emply.step }}</td>
+              </tr>
+              <tr>
+                <th width="30%">Leave Type</th>
+                <td width="2%">:</td>
+                <td>{{ detail.leave_type }}</td>
+              </tr>
+              <tr>
+                <th width="30%">Leave Duration</th>
+                <td width="2%">:</td>
+                <td>{{ detail.leave_duration }}</td>
+              </tr>
+              <tr>
+                <th width="30%">Date From</th>
+                <td width="2%">:</td>
+                <td>{{ detail.date_from }}</td>
+              </tr>
+              <tr>
+                <th width="30%">Date To</th>
+                <td width="2%">:</td>
+                <td>{{ detail.date_to }}</td>
+              </tr>
+              
+              
+            </table>
+          </div>
+        </div>
+          
+      </div>
+    </div>
+  </div>
+</div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

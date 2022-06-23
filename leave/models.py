@@ -1,79 +1,92 @@
 from django.db import models
 from django.contrib.auth.models import User
-from profiles.models import SalaryScale, Signatory
+from registry.models import *
+from accounts.models import *
+from contact.models import State
 
 # Create your models here.
 
 class LeaveType(models.Model):
     title = models.CharField(max_length=50)
-    # duration = models.IntegerField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add =True)
     
     def __str__(self):
         return self.title
 
+class Approval(models.Model):
+    approval = models.CharField(max_length=50, unique=True)
+    date_created = models.DateTimeField(auto_now_add =True)
+    
+    def __str__(self):
+        return self.approval
 
 class LeaveDuration(models.Model):
-    salary_scale = models.ForeignKey(SalaryScale, on_delete=models.CASCADE)
-    cadre = models.IntegerField()
+    leave_type = models.ForeignKey(LeaveType, on_delete=models.CASCADE)
+    staff_category = models.ForeignKey(StaffCategory, on_delete=models.CASCADE)
     duration = models.IntegerField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add =True)
 
     def __str__(self):
-        return self.created_by
+        return f"{self.leave_type} leave | {self.duration} days"
 
-class LeaveProcess(models.Model):
-    leave_type = models.ForeignKey(LeaveType, on_delete=models.CASCADE)
-    leave_duration = models.ForeignKey(LeaveDuration, on_delete=models.CASCADE)
-    requested_duration = models.IntegerField()
-    date_from = models.DateField
-    date_to = models.DateField
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.created_by
 
 class LeaveApplicationStatus(models.Model):
     status = models.CharField(max_length=20)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add =True)
 
     def __str__(self):
-        return self.created_by
+        return str(self.status)
+
+class LeaveApplication(models.Model):
+    leave_type = models.ForeignKey(LeaveType, on_delete=models.DO_NOTHING)
+    leave_duration = models.ForeignKey(LeaveDuration, on_delete=models.DO_NOTHING)
+    requested_duration = models.IntegerField()
+    destination = models.ForeignKey(State, on_delete=models.DO_NOTHING)
+    date_from = models.DateField( null=True ,auto_now_add = False, auto_now=False)
+    date_to = models.DateField( null=True, auto_now_add = False, auto_now=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.ForeignKey(LeaveApplicationStatus, on_delete=models.DO_NOTHING)
+    approval_status = models.ForeignKey(Approval, on_delete=models.DO_NOTHING)
+    date_created = models.DateTimeField(auto_now_add =True)
+
+
+
+    def __str__(self):
+        return str(self.leave_type)
+
 
 class LeaveRecommendation(models.Model):
-    recommendation_status = models.ForeignKey(Signatory, on_delete=models.CASCADE)
-    comment = models.TextField()
     leave_application = models.ForeignKey('LeaveApplication', on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add =True)
 
     def __str__(self):
-        return self.created_by
+        # return str(f"{self.created_by.first_name} {self.created_by.last_name}")
+        return str(self.leave_application.id)
+
+class DeclineLeaveApplication(models.Model):
+    leave_application = models.ForeignKey('LeaveApplication', on_delete=models.CASCADE)
+    comment = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add =True)
+
+    def __str__(self):
+        return str(self.leave_application)        
 
 class LeaveResumption(models.Model):
     leave_application = models.ForeignKey('LeaveApplication', on_delete=models.CASCADE)
-    status = models.ForeignKey(Signatory, on_delete=models.CASCADE)
+    status = models.ForeignKey(Approval, on_delete=models.CASCADE)
     confirmed_by = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
-    date_created = models.DateTimeField(auto_now_add = True, auto_now=False)
-    last_updated = models.DateTimeField(auto_now_add = True, auto_now=False)
+    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    last_updated = models.DateTimeField( auto_now_add=False, auto_now=True)
+    
 
     def __str__(self):
-        return self.confirmed_by
-
-
-
-class LeaveApplication(models.Model):
-    leave_type = models.ForeignKey(LeaveType, on_delete=models.CASCADE)
-    duration = models.IntegerField()
-    requested_duration = models.IntegerField()
-    date_from = models.DateField
-    date_to = models.DateField
-    date_created = models.DateTimeField(auto_now_add = True, auto_now=False)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    status = models.ForeignKey(LeaveApplicationStatus, on_delete=models.CASCADE, blank=True)
-
-    def __str__(self):
-        return self.user
+        return str(self.confirmed_by)
 
 
 

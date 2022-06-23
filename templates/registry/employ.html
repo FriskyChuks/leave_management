@@ -1,0 +1,147 @@
+
+    {% extends "layouts/base.html" %}
+    {% load static %}
+    {% block title %} Form Elements {% endblock %} 
+    
+    <!-- Specific CSS goes HERE -->
+    {% block stylesheets %}{% endblock stylesheets %}
+    
+    {% block content %}	
+        <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">    
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#!">Form Components</a></li>
+                                <li class="breadcrumb-item"><a href="#!">Form Elements</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- [ breadcrumb ] end -->
+                <!-- [ Main Content ] start -->
+    <div class="row">
+    <!-- [ form-element ] start -->
+    <div class="col-sm-12">
+        <div class="card">
+        <div class="card-header">
+        <h3>Employment Form</h3>
+        <span class="mb-0 text-muted">
+            {% for message in messages %}
+            <p ><h2 style="background-color:rgb(8, 151, 46); color: white; width: 100%; text-align: center;">
+            {{message}}</h2></p>
+            {% endfor %} 
+            </span>
+            <hr>
+    </div>
+    <div class="card-body">                      
+        
+      <h4 style="color:green;"> {{user.first_name}}  |   {{user.last_name}}  |   {{user.file_number}}</h4>
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+<div class="form-row">
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom01">Ministry</label>
+        <input id="ministry" name="ministry" class="form-control" id="validationCustom01" placeholder="Ministry"  required>
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Designation</label>
+        <input id="designation" name="designation" class="form-control" id="validationCustom02" placeholder="Designation"  required>
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Salary Scale</label>
+         <select class="form-control" name="salary_scale">
+            {% for i in salary %}
+            <option value="{{i.id}}">{{i.title}}</option>
+            {% endfor %}
+            </select>
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom03">Step</label>
+        <input id="step"  name="step" class="form-control" id="validationCustom03" placeholder="Step" required>
+        <div class="invalid-feedback">
+           
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom04">Grade</label>
+        <input id="grade" name="grade" class="form-control" id="validationCustom04" placeholder="Grade" required>
+        <div class="invalid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom05">IPPIS Number</label>
+        <input type="number" name="ippis_no" class="form-control" id="validationCustom05" placeholder="IPPIS Number" required>
+        <div class="invalid-feedback">
+           
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+        <label class="form-check-label" for="invalidCheck">Agree to terms and conditions</label>
+        <div class="invalid-feedback">
+            You must agree before submitting.
+        </div>
+    </div>
+</div>
+<button class="btn  btn-primary" type="submit">Submit form</button>
+</form>
+
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+       </div>
+      
+         </div>
+        
+           </div>                           
+            </div>
+            </div>
+            </div>
+            </div>
+        </section>
+        <!-- [ Main Content ] end -->
+    
+    {% endblock content %}
+    
+    <!-- Specific Page JS goes HERE  -->
+    {% block javascripts %}{% endblock javascripts %}
+    
+    

@@ -1,0 +1,135 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %} 
+
+    <!-- [ Main Content ] start -->
+<section class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">{{leave_type.title}} Leave Application</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'leave_types_list' %}">Other Leave types</a></li>
+                            <li class="breadcrumb-item"><a href="#!">Pending Leave Application</a></li>
+                            <!-- <li class="breadcrumb-item"><a href="#!">Leave Application History</a></li> -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <!-- [ Main Content ] start -->
+<div class="row">
+<!-- [ form-element ] start -->
+<div class="col-sm-12">
+<div class="card">
+<!-- <div class="card-header">
+<h5>Other leave types? &nbsp; <a href="{% url 'leave_types_list' %}"><button class="btn btn-primary">click here</button></a></h5>
+</div> -->
+<div class="card-body">
+<h6>
+    <strong>
+        <span style="color: green;" class="left">Days entitled: {{duration.duration}}</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
+        <span style="color:red;" class="center">Days used: {{total_days_used}}</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        <span style="color: green;" class="right">Days remaining: {{days_remaining}}</span>
+    </strong>  
+</h6>
+<hr>
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST" class="needs-validation" novalidate>{% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-6 mb-3">
+                    <label for="validationTooltip01">Leave Duraion</label>
+                    <input type="text" class="form-control" id="validationTooltip01" name="requested_duration" required>
+                    <div class="valid-tooltip">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="validationTooltip02">Leave Destination</label>
+                    <!-- <input type="text" class="form-control" id="validationTooltip02" placeholder="Last name" value="Otto" required> -->
+                    <select class="form-control" id="validationCustom04" name="destination" required>
+                        <option selected disabled value="">Choose...</option>
+                        {% for state in states %}
+                        <option value="{{state.id}}">{{state.title}}</option>
+                        {% endfor %}
+                      </select>
+                    <div class="valid-tooltip">
+                        Looks good!
+                    </div>
+                </div>   
+            </div>
+            <div class="form-row">
+                <div class="col-md-6 mb-3">
+                    <label for="validationTooltip03">Date from</label>
+                    <input type="date" class="form-control" id="validationTooltip03" name="date_from" required>
+                    <div class="invalid-tooltip">
+                        Please provide a valid date.
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="validationTooltip04">Date to</label>
+                    <input type="date" class="form-control" id="validationTooltip04" name="date_to" required>
+                    <div class="invalid-tooltip">
+                        Please provide a valid date.
+                    </div>
+                </div>
+            </div>
+            <button class="btn  btn-primary" type="submit">Apply Now</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        
+    </div>
+</div>
+                            
+                            <!-- Script                            -->
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+                           
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- [ form-element ] end -->
+            </div>
+            <!-- [ Main Content ] end -->
+
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

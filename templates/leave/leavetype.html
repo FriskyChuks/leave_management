@@ -1,0 +1,60 @@
+
+{% extends "layouts/base.html" %}
+{% block title %} Dashboard {% endblock %} 
+{% load static %}       
+{% block content %}
+<br><br><br><br>
+<head>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+   input{
+		width: 100%;
+		padding: 10px 20px;
+		margin: 6px 0;
+		box-sizing: border-box;
+		border: 2px solid lightskyblue;
+		border-radius: 10px;
+	} 
+
+    select{
+		width: 100%;
+		padding: 12px 20px;
+		margin: 8px 0;
+		box-sizing: border-box;
+		border: 2px solid lightskyblue;
+		border-radius: 10px;
+	} 
+	label{
+		float: left;
+	}
+</style>
+</head>
+<center>
+<div class="col-lg-6">
+  <div class="card">
+      <div class="card-body">
+       <h3> Leave Type Form</h3>
+    <form method="POST" action="">
+				   {% csrf_token %}
+         <div class="form-group">
+						<b><label>Title</label></b>
+						{{form.title}}
+				</div>
+         <div class="form-group">
+					<b><label>Create By</label></b>
+					{{form.created_by}}
+				</div>
+      <button type="submit" name="register" class="btn btn-primary btn-block mb-4">Submit</button>
+   </form> 
+      </div>
+  </div>
+</div>
+</center>
+{% endblock %}
+
+{% block javascripts %}
+
+	<script src="/static/assets/js/waves.min.js"></script>
+
+{% endblock javascripts %} 
+

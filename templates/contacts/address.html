@@ -1,0 +1,214 @@
+
+    {% extends "layouts/base.html" %}
+    {% load static %}
+    {% block title %} Form Elements {% endblock %} 
+    
+    <!-- Specific CSS goes HERE -->
+    {% block stylesheets %}{% endblock stylesheets %}
+    
+    {% block content %}	
+    <style>
+    input{
+        width: 90%;
+         padding: 5px 10px;
+         box-sizing: border-box;
+       /*  border: 2px solid lightskyblue;
+         border-radius: 10px;*/
+     } 
+     select{
+         width: 90%;
+         padding: 5px 10px;
+         box-sizing: border-box;
+        /* border: 2px solid lightskyblue;
+         border-radius: 10px;*/
+     } 
+     hr{
+        background-color: lightskyblue;
+     }
+</style>
+        <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+    <div class="row">
+    <!-- [ form-element ] start -->
+    <div class="col-sm-12">
+        <div class="card">
+      <!--   <div class="card-header">
+        <h3>Employment Form</h3>
+        <span class="mb-0 text-muted">
+            {% for message in messages %}
+            <p ><h2 style="background-color:rgb(8, 151, 46); color: white; width: 100%; text-align: center;">
+            {{message}}</h2></p>
+            {% endfor %} 
+            </span>
+            <hr>
+    </div> -->
+    <div class="card-body">                      
+        
+      <h4 style="color:green;"> {{user.first_name}} {{user.last_name}}  |   {{user.file_number}}</h4>
+      <hr>
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+<div class="form-row">
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom01">Email Address</label><br>
+        {{form.email}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Mobile No</label><br>
+         {{form.mobile_no}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Phone No</label><br>
+         {{form.phone_no}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom01">Nationality</label><br>
+        {{form.nationality}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">State Of Origin</label><br>
+        {{form.state_of_origin}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Local Government</label><br>
+          {{form.local_government_area}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-md-4 mb-6">
+        <label for="validationCustom01">Next Of Kin Full Name</label><br>
+         {{form.next_of_kin}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Next Of Kin Phone No</label><br>
+         {{form.next_of_kin_phone_no}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Address Of Next Of Kin</label><br>
+        {{form.address_of_next_of_kin}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+</div>
+<hr>
+
+<h5>Residential Address</h5>
+<div class="form-row">
+    <div class="col-md-4 mb-6">
+        <label for="validationCustom03">State Of Residence</label><br>
+       {{address_form.state_of_residence}}
+       
+    </div>
+    <div class="col-md-4 mb-6">
+        <label for="validationCustom04">Local Goverment Area</label><br>
+       {{address_form.local_government_area_of_residence}}
+       
+    </div>
+</div> 
+
+<div class="form-row">
+    
+    <div class="col-md-12 mb-1">
+        <label for="validationCustom02"> Residential Address</label><br>
+        {{address_form.residential_address}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+</div>
+<hr>
+<h5>Permanent Home Address</h5>
+<div class="form-row">
+    <div class="col-md-4 mb-6">
+        <label for="validationCustom03">State Of Permanent Address</label><br>
+       {{address_form.state_of_permanent}}
+       
+    </div>
+    <div class="col-md-4 mb-6">
+        <label for="validationCustom04">Local Goverment Area</label><br>
+       {{address_form.local_government_area_of_permanent}}
+       
+    </div>
+</div> 
+
+<div class="form-row">
+    
+    <div class="col-md-12 mb-3">
+        <label for="validationCustom02"> Permanent Home Address</label><br>
+        {{address_form.permanent_home_address}}
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+</div>
+<br>
+
+<button class="btn  btn-primary" type="submit">Submit form</button>
+</form>
+
+    <!-- <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script> -->
+       </div>
+      
+         </div>
+        
+           </div>                           
+            </div>
+            </div>
+            </div>
+            </div>
+        </section>
+        <!-- [ Main Content ] end -->
+    
+    {% endblock content %}
+    
+    <!-- Specific Page JS goes HERE  -->
+    {% block javascripts %}{% endblock javascripts %}
+    
+    
