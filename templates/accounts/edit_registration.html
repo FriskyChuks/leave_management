@@ -1,0 +1,85 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %} 
+
+    <!-- [ Main Content ] start -->
+<section class="pcoded-main-container">
+   <div class="pcoded-content">
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 style="color:green;"> {{user.first_name}} {{user.last_name}} | ({{user.file_number}})</h4>
+                    <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}     
+                        <div class="form-row">
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip01">First name</label>
+                                {{form.first_name}}  
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip02">Last name</label>
+                                 {{form.last_name}}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip02">Other name</label>
+                                 {{form.other_name}}   
+                            </div>
+                        </div>
+                         <div class="form-row">
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip01">Gender</label>
+                                {{form.gender}}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip02">Date Of Birth</label>
+                                 {{form.date_of_birth}}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip02">File No</label>
+                                  {{form.file_number}}
+                            </div>
+                        </div>
+                         <div class="form-row">
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip02">Department</label>
+                               {{form.department}}
+                                </div> 
+                            <div class="col-md-4 mb-6">
+                                <label for="validationTooltip02">Unit</label>
+                               {{form.unit}}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip02">Directorate</label>
+                                {{form.directorate}}
+                            </div> 
+                            <div class="col-md-4 mb-3">
+                                <label for="validationTooltip01">Username</label>
+                                 {{form.username}}
+                            </div>    
+                            <div class="col-md-4 mb-3">
+                                {{form.passport}}
+                            </div>
+                        </div>
+                        <button class="btn  btn-primary" type="submit">Edit Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
+
+
+

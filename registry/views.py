@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect
+
 from accounts.models import *
-from.models import *
-# Create your views here.
+
+from .models import *
+from .forms import *
 
 
 def employment_detail_view(request,id):
@@ -28,7 +30,23 @@ def employment_detail_view(request,id):
 
         return redirect('contact_address',id=id) 
     context = { 'user':user, 'salary':salary }
-    return render(request, 'registry/employ.html',context)  
+    return render(request, 'registry/employ.html',context) 
+
+
+def edit_employment_detail_view(request,id):
+    employmentdetail = EmploymentDetails.objects.get(id=id)
+    user = employmentdetail.user
+    form = edit_Employment_DetailsForm(instance=employmentdetail)
+
+    if request.method == 'POST':
+        form = edit_Employment_DetailsForm(request.POST,request.FILES, instance=employmentdetail)
+        if form.is_valid():
+            form.save(commit=False)
+            form.user_id = id
+            form.save()
+            return redirect('edit_contact_address',id=user.id)
+    context =  {'form': form, 'user':user}
+    return render(request, 'registry/edit_employment_detail.html',context)  
 
 
     

@@ -1,0 +1,162 @@
+
+{% extends "layouts/base.html" %}
+{% load static %}
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+
+<section class="pcoded-main-container">
+      <div class="pcoded-content">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                         <div class="card-body">
+                         <h4 style="color:green;"> {{user.first_name}} {{user.last_name}}  |   {{user.file_number}}</h4>
+      
+                        <form method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom01">Email Address</label><br>
+                    {{form.email}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom02">Mobile No</label><br>
+                     {{form.mobile_no}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom02">Phone No</label><br>
+                     {{form.phone_no}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom01">Nationality</label><br>
+                    {{form.nationality}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom02">State Of Origin</label><br>
+                    {{form.state_of_origin}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom02">Local Government</label><br>
+                      {{form.local_government_area}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-4 mb-6">
+                    <label for="validationCustom01">Next Of Kin Full Name</label><br>
+                     {{form.next_of_kin}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom02">Next Of Kin Phone No</label><br>
+                     {{form.next_of_kin_phone_no}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="validationCustom02">Address Of Next Of Kin</label><br>
+                    {{form.address_of_next_of_kin}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            <h5>Residential Address</h5>
+            <div class="form-row">
+                <div class="col-md-4 mb-6">
+                    <label for="validationCustom03">State Of Residence</label><br>
+                   {{update_address.state_of_residence}}
+                   
+                </div>
+                <div class="col-md-4 mb-6">
+                    <label for="validationCustom04">Local Goverment Area</label><br>
+                   {{update_address.local_government_area_of_residence}}
+                   
+                </div>
+            </div> 
+
+            <div class="form-row">
+                
+                <div class="col-md-12 mb-1">
+                    <label for="validationCustom02"> Residential Address</label><br>
+                    {{update_address.residential_address}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <h5>Permanent Home Address</h5>
+            <div class="form-row">
+                <div class="col-md-4 mb-6">
+                    <label for="validationCustom03">State Of Permanent Address</label><br>
+                   {{update_address.state_of_permanent}}
+                   
+                </div>
+                <div class="col-md-4 mb-6">
+                    <label for="validationCustom04">Local Goverment Area</label><br>
+                   {{update_address.local_government_area_of_permanent}}
+                   
+                </div>
+            </div> 
+
+            <div class="form-row">
+                
+                <div class="col-md-12 mb-3">
+                    <label for="validationCustom02"> Permanent Home Address</label><br>
+                    {{update_address.permanent_home_address}}
+                    <div class="valid-feedback">
+                        
+                    </div>
+                </div>
+                <button class="btn  btn-primary" type="submit">Submit form</button>
+                </form>
+            </div>   
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+        
+    
+    
+{% endblock content %}
+    
+    <!-- Specific Page JS goes HERE  -->
+    {% block javascripts %}{% endblock javascripts %}
+    
+    
+
+
+
+      

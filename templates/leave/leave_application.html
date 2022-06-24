@@ -5,7 +5,18 @@
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 
-{% block content %} 
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $( "#date_from" ).change(function() {
+        var start = new Date();
+        var finish = new Date();
+        var numberOfDays = document.getElementById('duration').value;
+        start = new Date(document.getElementById('id_start').value);
+        finish.setdate(start.getDate()+document.getElementById('duration'))
+        $('#date_to').val(finish);
+    });
+</script> 
 
     <!-- [ Main Content ] start -->
 <section class="pcoded-main-container">
@@ -52,7 +63,7 @@
             <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip01">Leave Duraion</label>
-                    <input type="text" class="form-control" id="validationTooltip01" name="requested_duration" required>
+                    <input type="text" class="form-control" id="duration" name="requested_duration" required>
                     <div class="valid-tooltip">
                         Looks good!
                     </div>
@@ -74,14 +85,14 @@
             <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip03">Date from</label>
-                    <input type="date" class="form-control" id="validationTooltip03" name="date_from" required>
+                    <input type="date" class="form-control" id="date_from" name="date_from" required>
                     <div class="invalid-tooltip">
                         Please provide a valid date.
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip04">Date to</label>
-                    <input type="date" class="form-control" id="validationTooltip04" name="date_to" required>
+                    <input type="date" class="form-control" id="date_to" name="date_to" required>
                     <div class="invalid-tooltip">
                         Please provide a valid date.
                     </div>

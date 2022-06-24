@@ -24,7 +24,7 @@ class LocalGovernmentArea(models.Model):
 
 
 class Contact(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField(max_length=50)
     mobile_no = models.CharField(max_length=15)
     phone_no = models.CharField(max_length=15)
@@ -40,7 +40,7 @@ class Contact(models.Model):
         return str(self.user)
 
 class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     residential_address = models.CharField(max_length=100)
     state_of_residence = models.ForeignKey(State, on_delete=models.CASCADE)
     local_government_area_of_residence = models.ForeignKey(LocalGovernmentArea, on_delete=models.CASCADE, null=True,blank=True)

@@ -24,7 +24,7 @@ class GradeLevel(models.Model):
 
 
 class EmploymentDetails(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     ministry = models.CharField(max_length=100)
     designation = models.CharField(max_length=50)
     salary_scale = models.ForeignKey(SalaryScale, on_delete=models.CASCADE)
@@ -34,6 +34,7 @@ class EmploymentDetails(models.Model):
     ippis_no = models.IntegerField(unique=True)
     def __str__(self):
         return str(self.user)
+
 
 class Head(models.Model):
     user                 = models.ForeignKey(User, on_delete=models.CASCADE)

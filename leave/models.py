@@ -52,8 +52,6 @@ class LeaveApplication(models.Model):
     approval_status = models.ForeignKey(Approval, on_delete=models.DO_NOTHING)
     date_created = models.DateTimeField(auto_now_add =True)
 
-
-
     def __str__(self):
         return str(self.leave_type)
 
@@ -64,8 +62,7 @@ class LeaveRecommendation(models.Model):
     date_created = models.DateTimeField(auto_now_add =True)
 
     def __str__(self):
-        # return str(f"{self.created_by.first_name} {self.created_by.last_name}")
-        return str(self.leave_application.id)
+        return str(f"{self.created_by.first_name} {self.created_by.last_name}")
 
 class DeclineLeaveApplication(models.Model):
     leave_application = models.ForeignKey('LeaveApplication', on_delete=models.CASCADE)
@@ -82,8 +79,7 @@ class LeaveResumption(models.Model):
     confirmed_by = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    last_updated = models.DateTimeField( auto_now_add=False, auto_now=True)
-    
+    last_updated = models.DateTimeField( auto_now_add=False, auto_now=True)    
 
     def __str__(self):
         return str(self.confirmed_by)

@@ -233,8 +233,12 @@
       </div>
       <br><br>
       {% if not request.user.id == user.id %}
-        <button class="btn btn-primary" style="background-color: green; color:white"><a style="color: white; text-decoration: none;" href="{% url 'index' %}">Comfirm Registration</a></button>
-        <button class="btn btn-success" style="background-color: red; color:white"><a style="color: white; text-decoration: none;" href="">Edit  Registration</a></button>
+        <button onclick="confirmRegistration()" class="btn btn-primary" style="background-color: green; color:white">
+          <a style="color: white; text-decoration: none;" href="{% url 'index' %}">Comfirm Registration</a>
+        </button>
+        <button class="btn btn-success" style="background-color: blue; color:white">
+          <a style="color: white; text-decoration: none;" href="{% url 'update' user.id %}">Edit  Registration</a>
+        </button>
       {% endif %}
       </div>
   </div>
@@ -242,6 +246,13 @@
 </div>
 </div>
 </section>
+<script>
+  function confirmRegistration(){
+    if(window.confirm("Registration saved successfully!")){
+      window.location.href="{% url 'register' %}"
+    }
+  }
+</script>
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->

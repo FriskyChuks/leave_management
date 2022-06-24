@@ -1,0 +1,75 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% block title %} Form Elements {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+<section class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 style="margin-left: 300px ;">Edit Employment  Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4 style="color:green;"> {{user.first_name}} | {{user.last_name}} | {{user.file_number}}</h4>
+                        <form method="POST" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationCustom01">Ministry</label>
+                                    {{form.ministry}}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationCustom02">Designation</label>
+                                    {{form.designation}}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationCustom02">Salary Scale</label>
+                                    {{form.salary_scale}}
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationCustom04">Grade</label>
+                                    {{form.grade}}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationCustom03">Step</label>
+                                    {{form.step}}
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="validationCustom05">IPPIS Number</label>
+                                    {{form.ippis_no}}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="validationCustom05">Staff Category</label>
+                                    {{form.staff_category}}
+                                </div>
+                            </div>
+                            <button class="btn  btn-primary" type="submit">Edit Save</button>
+                        </form>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</section>
+<!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
