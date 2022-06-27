@@ -1,0 +1,87 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Tables {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h4 class="m-b-10">
+                                    {{request.user.first_name}}
+                                    {{request.user.last_name}}
+                                </h4>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
+                                <!-- <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
+                                <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if recommendations %}
+                <div class="row">
+                    <!-- [ dark-table ] end -->
+                    <!-- [ stiped-table ] start -->
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header">
+                                
+                                {% for recommendation in recommendations|slice:"0:1" %}
+                                    <h5>{{recommendation.leave_application}} Leave</h5><br> 
+                                    {{recommendation.leave_application.date_created}}
+                                {% endfor %}
+                                
+                                <!-- <span class="d-block m-t-5">use class <code>table-striped</code> inside table element</span> -->
+                    </div>
+                <div class="card-body table-border-style">
+                    <h6>Leave Recommendation Process</h6>
+                    <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <!-- <th>#</th> -->
+                            <th>DATES</th>
+                            <th>RECOMMENDED/APPROVED BY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recommendation in recommendations %}
+                        <tr>
+                            <td>{{recommendation.date_created}}</td>
+                            <td>
+                                {{recommendation.created_by.first_name}}
+                                {{recommendation.created_by.last_name}}
+                            </td>    
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+
+        <!-- [ Background-Utilities ] end -->
+    </div>
+    <!-- [ Main Content ] end -->
+</div>
+</section>
+<!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

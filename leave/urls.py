@@ -13,5 +13,6 @@ urlpatterns = [
     path('decline_leave_application/<id>/',views.decline_leave_application,name='decline_leave_application'),
     path('leave_details/<id>/',views.leave_details_view,name='leave_details'),
     path('leave_history/',views.leave_history_view, name='leave_history'),
+    path('leave_status_detail/',views.leave_status_detail, name='leave_status_detail'),
 
 ]    

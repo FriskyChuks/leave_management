@@ -215,4 +215,13 @@ def leave_details_view(request,id):
 	address = Address.objects.get(user=user)    
 	context= {'user':user, 'emply':emply, 'cont':cont, 'address':address, 'detail':detail}
 	return render(request, 'leave/leave_details.html', context)
+
+
+def leave_status_detail(request):
+	user=request.user.id
+	recommendations = LeaveRecommendation.objects.filter(
+						leave_application__created_by__id=user)
+	print(recommendations)
+	context={"recommendations":recommendations}
+	return render(request,'leave/leave_status_detail.html',context)
 	
