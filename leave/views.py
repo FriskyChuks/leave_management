@@ -34,7 +34,7 @@ def LeaveDurationView(request):
 def check_annual_leave_eligibility(request,leave_type_id):
 	month_difference=12
 	previous_leaves=LeaveApplication.objects.filter(
-		created_by_id=request.user.id,leave_type_id=leave_type_id,status_id=6)
+		created_by_id=request.user.id,leave_type_id=leave_type_id,status_id=6)#id of 6=done for 
 	if previous_leaves:
 		last_leave_date=previous_leaves.last().date_to
 		delta = relativedelta(datetime.today(), last_leave_date)
@@ -52,7 +52,6 @@ def check_current_year(leave_type_id):
 		  
 
 def check_for_active_leave(request):
-	# CHECK FOR ACTIVE LEAVE
 	excluded = ['Done','Declined','Partly done']
 	active_leave = LeaveApplication.objects.filter(created_by=request.user.id).exclude(
 					status__status__in=excluded)
@@ -82,8 +81,7 @@ def LeaveApplicationview(request, id):
 	user = request.user
 	this_year = datetime.now()
 	no_of_days_used = LeaveApplication.objects.filter(
-		created_by_id=user,leave_type_id=id,date_from__year=this_year.year)#.exclude(status__status__in=excluded)   
-	# GET TOTAL DAYS USED SO FAR
+		created_by_id=user,leave_type_id=id,date_from__year=this_year.year)
 	duration,total_days_used,days_remaining = 0,0,0
 	for days in no_of_days_used:
 		total_days_used += days.requested_duration
@@ -166,7 +164,7 @@ def Leave_list_by_departments(request):
 			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,created_by__department__id=request.user.department.id)
 		elif head.is_head_of_directorate:    
 			 leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,created_by__directorate__id=request.user.directorate.id)
-
+	
 	context = {'leave_apps': leave_apps}
 	return render(request, 'leave/Leave_list_by_departments.html', context)    
  
