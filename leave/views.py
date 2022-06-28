@@ -3,6 +3,9 @@ from django.contrib import messages
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+
+import leave
 
 from .models import *
 from .forms import *
@@ -34,7 +37,7 @@ def LeaveDurationView(request):
 def check_annual_leave_eligibility(request,leave_type_id):
 	month_difference=12
 	previous_leaves=LeaveApplication.objects.filter(
-		created_by_id=request.user.id,leave_type_id=leave_type_id,status_id=6)#id of 6=done for 
+		created_by_id=request.user.id,leave_type_id=leave_type_id,status__status='done')
 	if previous_leaves:
 		last_leave_date=previous_leaves.last().date_to
 		delta = relativedelta(datetime.today(), last_leave_date)
@@ -43,7 +46,7 @@ def check_annual_leave_eligibility(request,leave_type_id):
 
 def check_current_year(leave_type_id):
 	same_year=False
-	last_leave=LeaveApplication.objects.filter(leave_type_id=leave_type_id,status_id=6).last()#id of 6=done for 
+	last_leave=LeaveApplication.objects.filter(leave_type_id=leave_type_id,status__status='done').last()
 	if last_leave:
 		if last_leave.date_from.year==datetime.now().date().year:
 			same_year=True
@@ -52,7 +55,7 @@ def check_current_year(leave_type_id):
 		  
 
 def check_for_active_leave(request):
-	excluded = ['Done','Declined','Partly done']
+	excluded = ['done','declined','partly done']
 	active_leave = LeaveApplication.objects.filter(created_by=request.user.id).exclude(
 					status__status__in=excluded)
 	return active_leave
@@ -157,13 +160,17 @@ def Leave_list_by_departments(request):
 		sub_unit_approval_status = Approval.objects.get(id=6)
 		id=sub_unit_approval_status.id
 		if head.is_head_of_sub_unit:
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id,created_by__sub_unit__id=request.user.sub_unit.id)
+			leave_apps = LeaveApplication.objects.filter(approval_status_id=id,
+						created_by__sub_unit__id=request.user.sub_unit.id).exclude(status_id=8)
 		elif head.is_head_of_unit: 
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,created_by__unit__id=request.user.unit.id)  
+			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
+								created_by__unit__id=request.user.unit.id).exclude(status_id=8) 
 		elif head.is_head_of_dept:
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,created_by__department__id=request.user.department.id)
+			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
+					created_by__department__id=request.user.department.id).exclude(status_id=8)
 		elif head.is_head_of_directorate:    
-			 leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,created_by__directorate__id=request.user.directorate.id)
+			 leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
+			 		created_by__directorate__id=request.user.directorate.id).exclude(status_id=8)
 	
 	context = {'leave_apps': leave_apps}
 	return render(request, 'leave/Leave_list_by_departments.html', context)    
@@ -191,13 +198,47 @@ def decline_leave_application(request,id):
 	return render(request, 'leave/decline.html', context)
 
    
-def resume_leave_view(request):
-	context = {}
-	return render(request, 'leave/leaveresume.html', context)  
+def resume_leave_view(request,id):
+	LeaveApplication.objects.filter(id=id).update(resumption_approval_id=4,status_id=6)# status='Resuming'
+	return redirect('leave_history')
+		 
+
+def list_resumption_view(request):
+	leave_apps=None
+	user = User.objects.get(id=request.user.id)
+	dept_resumption_approval_id = ResumptionApproval.objects.get(approval='default').id
+	for head in user.head_set.all():
+		if head.is_head_of_dept:
+			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
+						status__status='resuming',created_by__department__id=request.user.department.id)
+		elif head.is_head_of_directorate:
+			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id-1,
+						status__status='resuming',created_by__directorate__id=request.user.directorate.id)
+			
+	context = {"leave_apps":leave_apps}
+	return render(request, 'leave/list_pending_resumption.html', context)
+
+def recommend_resumption_view(request,id):
+	leave_application = LeaveApplication.objects.get(status__status='resuming')
+	current_resumption_approval = leave_application.resumption_approval.id
+	obj=LeaveResumption.objects.create(leave_application_id=id,recommended_by_id=request.user.id)
+	obj.save()
+	user = User.objects.get(id=request.user.id)
+	for head in user.head_set.all():
+		if head.is_head_of_directorate:
+			LeaveApplication.objects.filter(id=id).update(
+				resumption_approval_id=current_resumption_approval-1,status_id=7)
+		else:
+			LeaveApplication.objects.filter(id=id).update(
+				resumption_approval_id=current_resumption_approval-1)
+	
+	return redirect('list_resumption')
 
 
 def leave_history_view(request):
-	leave_applications = LeaveApplication.objects.filter(created_by__id=request.user.id).order_by('-id')
+	included=['active','partly active','done']
+	leave_applications = LeaveApplication.objects.filter(created_by__id=request.user.id,
+							status__status__in=included).order_by('-id')
 	if request.method == 'POST':
 		return redirect('index')
 	context = {"leave_applications":leave_applications}
@@ -222,4 +263,5 @@ def leave_status_detail(request):
 	print(recommendations)
 	context={"recommendations":recommendations}
 	return render(request,'leave/leave_status_detail.html',context)
+
 	

@@ -21,6 +21,13 @@ class Approval(models.Model):
     def __str__(self):
         return self.approval
 
+class ResumptionApproval(models.Model):
+    approval = models.CharField(max_length=50, unique=True)
+    date_created = models.DateTimeField(auto_now_add =True)
+    
+    def __str__(self):
+        return self.approval
+
 class LeaveDuration(models.Model):
     leave_type = models.ForeignKey(LeaveType, on_delete=models.CASCADE)
     staff_category = models.ForeignKey(StaffCategory, on_delete=models.CASCADE)
@@ -50,6 +57,7 @@ class LeaveApplication(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.ForeignKey(LeaveApplicationStatus, on_delete=models.DO_NOTHING)
     approval_status = models.ForeignKey(Approval, on_delete=models.DO_NOTHING)
+    resumption_approval=models.ForeignKey(ResumptionApproval,null=True,blank=True,on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add =True)
 
     def __str__(self):
@@ -75,14 +83,11 @@ class DeclineLeaveApplication(models.Model):
 
 class LeaveResumption(models.Model):
     leave_application = models.ForeignKey('LeaveApplication', on_delete=models.CASCADE)
-    status = models.ForeignKey(Approval, on_delete=models.CASCADE)
-    confirmed_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.TextField()
-    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
-    last_updated = models.DateTimeField( auto_now_add=False, auto_now=True)    
+    recommended_by=models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)   
 
     def __str__(self):
-        return str(self.confirmed_by)
+        return str(self.leave_application)
 
 
 

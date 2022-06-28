@@ -8,14 +8,15 @@
 {% block content %}
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
-    $( "#date_from" ).change(function() {
-        var start = new Date();
-        var finish = new Date();
-        var numberOfDays = document.getElementById('duration').value;
-        start = new Date(document.getElementById('id_start').value);
-        finish.setdate(start.getDate()+document.getElementById('duration'))
-        $('#date_to').val(finish);
-    });
+    const updateDateTo = () => {
+        let startElement = document.querySelector("#date_from")
+        let dateFrom = new Date(startElement.value)
+        var numberOfDays = document.querySelector('#duration').value;
+        dateFrom.setDate(dateFrom.getDate() + parseInt(numberOfDays ? numberOfDays : Number("{{duration.duration}}")))
+        let endElement = document.querySelector("#date_to")
+        endElement.valueAsDate = dateFrom
+
+    }
 </script> 
 
     <!-- [ Main Content ] start -->
@@ -85,14 +86,14 @@
             <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip03">Date from</label>
-                    <input type="date" class="form-control" id="date_from" name="date_from" required>
+                    <input type="date" class="form-control" id="date_from" name="date_from" required onchange="updateDateTo()">
                     <div class="invalid-tooltip">
                         Please provide a valid date.
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip04">Date to</label>
-                    <input type="date" class="form-control" id="date_to" name="date_to" required>
+                    <input type="date" class="form-control" id="date_to" name="date_to" required disabled>
                     <div class="invalid-tooltip">
                         Please provide a valid date.
                     </div>

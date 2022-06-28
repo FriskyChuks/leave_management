@@ -67,11 +67,15 @@
 			</td>
 			<td>{{leave_app.destination}}</td>
             <td>
-				{% if leave_app.status.status == 'Done' %}
-					Compl eted
+				{% if leave_app.status.status == 'done' or leave_app.status.status == 'partly done' %}
+					Completed
+                {% elif leave_app.status.status == 'resuming' %}
+                    <b><i style="color: blue;">Resumption in process</i></b> 
 				{% else %}
 					<!-- <button class="btn btn-success" style="background-color: blue; color:white"><a style="color: white;" href="{% url 'leave_details' leave_app.id %}">View Details</a></button> -->
-					<button class="btn btn-success" style="background-color: green; color:white"><a style="color: white;" href="">Resume</a></button>
+					<button class="btn btn-success" style="background-color: green; color:white">
+                        <a style="color: white;" href="{% url 'resume_leave' leave_app.id %}">Resume</a>
+                    </button>
 				{% endif %}
 				
 			</td>
