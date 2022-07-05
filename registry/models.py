@@ -34,14 +34,4 @@ class EmploymentDetails(models.Model):
     ippis_no = models.IntegerField(unique=True)
     def __str__(self):
         return str(self.user)
-
-
-class Head(models.Model):
-    user                 = models.ForeignKey(User, on_delete=models.CASCADE)
-    is_head_of_sub_unit  = models.BooleanField(default=False)
-    is_head_of_unit      = models.BooleanField(default=False)
-    is_head_of_dept      = models.BooleanField(default=False)
-    is_head_of_directorate = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"       
+      

@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 from contact.models import *
@@ -13,6 +12,7 @@ from leave.models import *
 
 from .models import User,Gender
 from .forms import *
+from .decorators import allowed_users
 
 
 # Create your views here.
@@ -77,24 +77,31 @@ def logoutUser(request):
 
 #registerUser views
 @login_required(login_url='login')
+@allowed_users(alllowed_roles=['registry'])
 def registerUser(request):
 	gend = Gender.objects.all()
 	unit = Unit.objects.all()
 	dept = Department.objects.all()
 	direct = Directorate.objects.all()
 	if request.method == 'POST':
-		first_name = request.POST['first_name'],last_name = request.POST['last_name']
-		other_name = request.POST['other_name'],file_number = request.POST['file_number']
-		username = request.POST['username'],date_of_birth = request.POST['date_of_birth']
-		gender = request.POST['gender'],directorate = request.POST['directorate']
-		department = request.POST['department'],unit=request.POST['unit']
-		passport = request.FILES['passport'],password1 = request.POST['password1']
+		first_name = request.POST['first_name']
+		last_name = request.POST['last_name']
+		other_name = request.POST['other_name']
+		file_number = request.POST['file_number']
+		username = request.POST['username']
+		date_of_birth = request.POST['date_of_birth']
+		gender = request.POST['gender']
+		directorate = request.POST['directorate']
+		department = request.POST['department']
+		unit=request.POST['unit']
+		passport = request.FILES['passport']
+		password1 = request.POST['password1']
 		password2 = request.POST['password2']
 	
 		if password1 == password2:
 			if User.objects.filter(username=username).exists():
 				messages.info(request, 'Username Already Exists')
-				return redirect('register')
+				return HttpResponseRedirect('register')
 
 			elif User.objects.filter(file_number=file_number).exists():
 				messages.info(request, 'File Number Already Exists  ') 

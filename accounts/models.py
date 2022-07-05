@@ -1,7 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser,Group
+
 from registry.models import *
-# Create your models here.
+
+class UserGroup(models.Model):
+    group = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.group
 
 class Gender(models.Model):
     title = models.CharField(blank=True,null=True,max_length=10)
@@ -47,14 +53,12 @@ class User(AbstractUser):
     file_number = models.IntegerField(default=0, unique=True, )
     username = models.CharField(unique=True, max_length=30)
     date_of_birth = models.DateField()
-    # phone_number_one = models.CharField(max_length=15)
-    # phone_number_two = models.CharField(max_length=15)
-    # email = models.EmailField(max_length=50)
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE,null=True,blank=True)
     # nationality =models.ForeignKey(Country, on_delete=models.CASCADE,null=True,blank=True)
     directorate = models.ForeignKey(Directorate, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True,blank=True)
+    user_group = models.ForeignKey(UserGroup, on_delete=models.CASCADE, blank=True, null=True)
     passport = models.ImageField(upload_to='passport', null=True, blank=True, default="default.jpg")
     
 
@@ -63,3 +67,13 @@ class User(AbstractUser):
 
     def __str__(self):
         return str(self.username)
+
+class Head(models.Model):
+    user                 = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_head_of_sub_unit  = models.BooleanField(default=False)
+    is_head_of_unit      = models.BooleanField(default=False)
+    is_head_of_dept      = models.BooleanField(default=False)
+    is_head_of_directorate = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}" 

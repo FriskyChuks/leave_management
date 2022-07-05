@@ -50,6 +50,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'alms.urls'
 
+# opional, as this will log you out when browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 900                   # 0r 5 * 60, same thing
+# Will prrevent from logging you out after 300 seconds
+SESSION_SAVE_EVERY_REQUEST = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

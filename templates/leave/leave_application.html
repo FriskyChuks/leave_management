@@ -64,7 +64,7 @@
             <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip01">Leave Duraion</label>
-                    <input type="text" class="form-control" id="duration" name="requested_duration" required>
+                    <input type="number" min="0" max="{{duration.duration}}" class="form-control" id="duration" name="requested_duration" required>
                     <div class="valid-tooltip">
                         Looks good!
                     </div>
@@ -93,7 +93,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip04">Date to</label>
-                    <input type="date" class="form-control" id="date_to" name="date_to" required disabled>
+                    <input type="date" class="form-control" id="date_to" name="date_to" required>
                     <div class="invalid-tooltip">
                         Please provide a valid date.
                     </div>

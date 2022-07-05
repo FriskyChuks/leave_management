@@ -16,12 +16,18 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">USER DEPARTMENT HERE</h5>
+                                {% if rquest.user.unit %}
+                                    <h5 class="m-b-10">{{ request.user.unit}} Unit</h5>
+                                {% elif request.user.department %}
+                                    <h5 class="m-b-10">{{ request.user.department}} Department</h5>
+                                {% else %}
+                                    <h5 class="m-b-10">{{ request.user.directorate}}</h5>
+                                {% endif %}
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
-                                <!-- <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
-                                <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li> -->
+                                <li class="breadcrumb-item"><a href="{% url 'Leave_list_by_departments' %}">Pending Applications</a></li>
+                                <li></li>
                             </ul>
                         </div>
                     </div>
@@ -38,6 +44,9 @@
                             <h4 style="color: blue;">Leave Resumption List</h4>
                             <!-- <span class="d-block m-t-5">use class <code>table-striped</code> inside table element</span> -->
                         </div>
+                        {% if not leave_apps %}
+                            {% include 'leave/snippets/take_some_rest.html' %}   
+                        {% else %}
                         <div class="card-body table-border-style">
                             <div class="table-responsive">
                                 <form action="" method="POST">{% csrf_token %}
@@ -67,7 +76,11 @@
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-success" style="background-color: green; color:white">
-                                                        <a style="color: white;" href="{% url 'recommend_resumption' leave_app.id %}">Approve Resumption</a>
+                                                        {% if request.user.user_group.group == 'leave_and_passage' %}
+                                                            <a style="color: white;" href="{% url 'acknowledge_leave_resumption' leave_app.id %}">Acknowledge Resumption</a>
+                                                        {% else %}
+                                                            <a style="color: white;" href="{% url 'recommend_resumption' leave_app.id %}">Approve Resumption</a>
+                                                        {% endif %}
                                                     </button>
                                                 </td>
                                             </tr>
@@ -77,6 +90,7 @@
                                 </form>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

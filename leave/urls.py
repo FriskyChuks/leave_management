@@ -16,6 +16,8 @@ urlpatterns = [
     path('leave_status_detail/',views.leave_status_detail, name='leave_status_detail'),
     path('resume_leave/<id>/', views.resume_leave_view, name='resume_leave'),
     path('list_resumption/',views.list_resumption_view,name='list_resumption'),
-    path('recommend_resumption_view/<id>/',views.recommend_resumption_view,name='recommend_resumption')
-
+    path('recommend_resumption_view/<id>/',views.recommend_resumption_view,name='recommend_resumption'),
+    path('process_leave_pass/<id>/',views.process_leave_pass_view,name='process_leave_pass'),
+    path('acknowledge_leave_resumption/<id>/',views.acknowledge_leave_resumption_view,name='acknowledge_leave_resumption')
+    
 ]    

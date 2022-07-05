@@ -30,7 +30,9 @@
                     </div>
                 </div>
             </div>
-            {% if recommendations %}
+            {% if not recommendations %}
+                <center><h3>Your leave application has not been recommended for approval</h3></center>
+            {% else %}
                 <div class="row">
                     <!-- [ dark-table ] end -->
                     <!-- [ stiped-table ] start -->
@@ -40,7 +42,7 @@
                                 
                                 {% for recommendation in recommendations|slice:"0:1" %}
                                     <h5>{{recommendation.leave_application}} Leave</h5><br> 
-                                    {{recommendation.leave_application.date_created}}
+                                    Applied on: {{recommendation.leave_application.date_created}}
                                 {% endfor %}
                                 
                                 <!-- <span class="d-block m-t-5">use class <code>table-striped</code> inside table element</span> -->

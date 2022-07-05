@@ -49,6 +49,9 @@
 									<label for="checkbox-fill-a1" class="cr"> Save credentials</label>
 								</div>
 							</div>
+							{% if request.GET.next %}
+								<input type="hidden" name="next"  value="{{ request.GET.next }}">
+							{% endif %}
 							<button type="submit" name="login" class="btn btn-block btn-primary mb-4">Signin</button>
 						
 						</form>
