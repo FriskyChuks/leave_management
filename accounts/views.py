@@ -20,8 +20,8 @@ from .decorators import allowed_users
 def index(request):
 	approval_desk,approval_desk_id=None,None
 	excluded = [1]
-	leave_app = LeaveApplication.objects.filter(created_by__id=request.user.id, status__id=1) |\
-			LeaveApplication.objects.filter(created_by__id=request.user.id, status__id=4)
+	status=['in process','partly in process']
+	leave_app = LeaveApplication.objects.filter(created_by__id=request.user.id, status__status__in=status)
 	for app in leave_app:
 		approval_desk = app.approval_status
 		approval_desk_id = app.approval_status.id
@@ -77,7 +77,7 @@ def logoutUser(request):
 
 #registerUser views
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['registry'])
+@allowed_users(alllowed_roles=['registry','developer'])
 def registerUser(request):
 	gend = Gender.objects.all()
 	unit = Unit.objects.all()
@@ -112,7 +112,6 @@ def registerUser(request):
 					username=username,date_of_birth=date_of_birth,passport=passport,password=password1,
 					gender_id=gender,directorate_id=directorate,department_id=department,unit_id=unit)
 				user.save();
-				messages.info(request, "Register successful")
 				return redirect('employment_detail',id=user.id)
 		else:
 			messages.info(request, "Password Not Matching")

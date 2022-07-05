@@ -132,7 +132,7 @@ def LeaveApplicationview(request, id):
 			date_from=date_from, date_to=date_to)    
 		else:
 			LeaveApplication.objects.create(leave_duration_id=duration.id,created_by_id=user.id,
-			leave_type_id = leave_type.id,status_id=4,approval_status_id=approval_status,
+			leave_type_id = leave_type.id,status_id=5,approval_status_id=approval_status,
 			requested_duration=requesting_duration,destination_id=request.POST.get('destination'),
 			date_from=date_from, date_to=date_to)
 		return redirect('index')
@@ -232,7 +232,11 @@ def process_leave_pass_view(request,id):
 
 @login_required(login_url='login')  
 def resume_leave_view(request,id):
-	LeaveApplication.objects.filter(id=id).update(resumption_approval_id=1,status_id=6)# status='Resuming'
+	current_status=LeaveApplication.objects.get(id=id).status
+	status_id=3
+	if current_status=='partly active':
+		status_id=7
+	LeaveApplication.objects.filter(id=id).update(resumption_approval_id=1,status_id=status_id)# status='Resuming'
 	return redirect('leave_history')
 
 
@@ -240,18 +244,18 @@ def resume_leave_view(request,id):
 @allowed_users(alllowed_roles=['leave_and_passage','head','support','developer'])
 def list_resumption_view(request):
 	leave_apps=None
+	conditions=['resuming','partly resuming']
 	user = User.objects.get(id=request.user.id)
 	dept_resumption_approval_id = ResumptionApproval.objects.get(approval='head of department').id
-	print(dept_resumption_approval_id)
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+2)
 	for head in user.head_set.all():
 		if head.is_head_of_dept:
 			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
-						status__status='resuming',created_by__department__id=request.user.department.id)
+						status__status__in=conditions,created_by__department__id=request.user.department.id)
 		elif head.is_head_of_directorate:
 			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+1,
-						status__status='resuming',created_by__directorate__id=request.user.directorate.id)
+						status__status__in=conditions,created_by__directorate__id=request.user.directorate.id)
 				
 	context = {"leave_apps":leave_apps}
 	return render(request, 'leave/list_pending_resumption.html', context)
@@ -260,16 +264,21 @@ def list_resumption_view(request):
 @login_required(login_url='login')
 def recommend_resumption_view(request,id):
 	current_resumption_approval=None
-	leave_application = LeaveApplication.objects.filter(status__status='resuming')
-	for app in leave_application:
-		current_resumption_approval = app.resumption_approval.id
+	# conditions=['resuming','partly resuming']
+	leave_application = LeaveApplication.objects.get(id=id)
+	current_status=leave_application.status
+	status_id=4
+	if current_status=='resuming':
+		status_id=8
+	# for app in leave_application:
+	current_resumption_approval = leave_application.resumption_approval.id
 	obj=LeaveResumption.objects.create(leave_application_id=id,recommended_by_id=request.user.id)
 	obj.save()
 	user = User.objects.get(id=request.user.id)
 	for head in user.head_set.all():
 		if head.is_head_of_directorate:
 			LeaveApplication.objects.filter(id=id).update(
-				resumption_approval_id=current_resumption_approval+1,status_id=7)
+				resumption_approval_id=current_resumption_approval+1,status_id=status_id)
 		else:
 			LeaveApplication.objects.filter(id=id).update(
 				resumption_approval_id=current_resumption_approval+1)
@@ -279,7 +288,7 @@ def recommend_resumption_view(request,id):
 
 @login_required(login_url='login')
 def leave_history_view(request):
-	included=['active','partly active','done']
+	included=['active','partly active','done','partly done']
 	leave_applications = LeaveApplication.objects.filter(created_by__id=request.user.id,
 							status__status__in=included).order_by('-id')
 	if request.method == 'POST':
