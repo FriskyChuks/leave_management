@@ -221,7 +221,7 @@ def decline_leave_application(request,id):
 def process_leave_pass_view(request,id):
 	# Update status=active or partly_active, approval=none and resumption_approval=default
 	instance = LeaveApplication.objects.get(id=id)
-	var_status=5 # status=active
+	var_status=6 # status=active
 	if instance.status.status=='partly in process':
 		var_status=2 # status=partly active
 	LeaveApplication.objects.filter(id=id).update(
@@ -264,13 +264,8 @@ def list_resumption_view(request):
 @login_required(login_url='login')
 def recommend_resumption_view(request,id):
 	current_resumption_approval=None
-	# conditions=['resuming','partly resuming']
-	leave_application = LeaveApplication.objects.get(id=id)
-	current_status=leave_application.status
-	status_id=4
-	if current_status=='resuming':
-		status_id=8
 	# for app in leave_application:
+	leave_application = LeaveApplication.objects.get(id=id)
 	current_resumption_approval = leave_application.resumption_approval.id
 	obj=LeaveResumption.objects.create(leave_application_id=id,recommended_by_id=request.user.id)
 	obj.save()
@@ -278,7 +273,7 @@ def recommend_resumption_view(request,id):
 	for head in user.head_set.all():
 		if head.is_head_of_directorate:
 			LeaveApplication.objects.filter(id=id).update(
-				resumption_approval_id=current_resumption_approval+1,status_id=status_id)
+				resumption_approval_id=current_resumption_approval+1)
 		else:
 			LeaveApplication.objects.filter(id=id).update(
 				resumption_approval_id=current_resumption_approval+1)
@@ -320,7 +315,12 @@ def leave_status_detail(request):
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['leave_and_passage'])
 def acknowledge_leave_resumption_view(request,id):
-	LeaveApplication.objects.filter(id=id).update(
+	leave_application = LeaveApplication.objects.get(id=id)
+	current_status=leave_application.status
+	status_id=4
+	if current_status=='resuming':
+		status_id=8
+	LeaveApplication.objects.filter(id=id).update(status_id=status_id,
 		resumption_approval_id=4 # update to resumption_approval=resumed
 	 )
 	return redirect('list_resumption')	

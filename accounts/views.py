@@ -5,6 +5,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.db import models
+import datetime
+from django.utils import timezone
 
 from contact.models import *
 from registry.models import *
@@ -13,6 +16,59 @@ from leave.models import *
 from .models import User,Gender
 from .forms import *
 from .decorators import allowed_users
+
+def total_leave_applications():
+	now = timezone.now()
+	total_applications = LeaveApplication.objects.aggregate(
+        total=models.Count('id'),
+        today=models.Count('id', filter=models.Q(date_created__date=now.date())),
+        # yesterday=models.Count('id', filter=models.Q(date_created__date__gte=(
+		# 			now - datetime.timedelta(hours=24)).date())),
+        last_7_day=models.Count('id', filter=models.Q(date_created__date__gt=(
+					now - datetime.timedelta(days=7)).date())),
+    )
+	return total_applications
+
+def pending_applications():
+	now = timezone.now()
+	_status=['in process', 'partly in process']
+	pending_applications = LeaveApplication.objects.aggregate(
+        total=models.Count('id'),
+        today=models.Count('id', filter=models.Q(status__status__in=_status,
+										date_created__date=now.date())),
+        # yesterday=models.Count('id', filter=models.Q(status__status__in=_status,
+		# 			date_created__date__gte=(now - datetime.timedelta(hours=24)).date())),
+        last_7_day=models.Count('id', filter=models.Q(status__status__in=_status,
+						date_created__date__gt=(now - datetime.timedelta(days=7)).date())),
+    )
+	return pending_applications
+
+def pending_resumptions():
+	now = timezone.now()
+	_status=['in process', 'partly in process']
+	pending_resumptions = LeaveApplication.objects.aggregate(
+        total=models.Count('id'),
+        today=models.Count('id', filter=models.Q(resumption_approval__approval='none',
+										last_updated__date=now.date())),
+        # yesterday=models.Count('id', filter=models.Q(resumption_approval__approval='none',
+		# 			last_updated__date__gte=(now - datetime.timedelta(hours=24)).date())),
+        last_7_day=models.Count('id', filter=models.Q(resumption_approval__approval='none',
+						last_updated__date__gt=(now - datetime.timedelta(days=7)).date())),
+    )
+	return pending_resumptions
+
+
+def due_resumptions():
+	week_ago = datetime.date.today() - datetime.timedelta(days=1)
+	now = timezone.now()
+	due_resumptions = LeaveApplication.objects.aggregate(
+        total=models.Count('id'),
+        today=models.Count('id', filter=models.Q(date_to=now.date())),
+        # yesterday=models.Count('id', filter=models.Q(date_to__lte=(
+		# 								now - datetime.timedelta(hours=24)).date())),
+        last_7_day=models.Count('id', filter=models.Q(date_to__lt=week_ago)),
+    )
+	return due_resumptions
 
 
 # Create your views here.
@@ -29,8 +85,12 @@ def index(request):
 	progress_bar_width=100/int(len(approval_status))
 	
 	context={"approval_desk":approval_desk, "approval_desk_id":approval_desk_id,
-			"approval_status":approval_status,
-			"progress_bar_width":progress_bar_width
+			"approval_status":approval_status,"progress_bar_width":progress_bar_width,
+			# calling quick statistics functions
+			"total_leave_applications":total_leave_applications,
+			"pending_resumptions":pending_resumptions,
+			"due_resumptions":due_resumptions,
+			'pending_applications':pending_applications,
 		}
 	return render(request, 'home/index.html',context)
 

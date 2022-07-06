@@ -58,7 +58,8 @@ class LeaveApplication(models.Model):
     status = models.ForeignKey(LeaveApplicationStatus, on_delete=models.DO_NOTHING)
     approval_status = models.ForeignKey(Approval, on_delete=models.DO_NOTHING)
     resumption_approval=models.ForeignKey(ResumptionApproval,null=True,blank=True,on_delete=models.CASCADE)
-    date_created = models.DateTimeField(auto_now_add =True)
+    date_created = models.DateTimeField(auto_now_add =True,auto_now=False)
+    last_updated = models.DateTimeField(auto_now_add=False,auto_now=True)
 
     def __str__(self):
         return str(self.leave_type)
