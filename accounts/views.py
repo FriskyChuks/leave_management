@@ -59,14 +59,11 @@ def pending_resumptions():
 
 
 def due_resumptions():
-	week_ago = datetime.date.today() - datetime.timedelta(days=1)
 	now = timezone.now()
 	due_resumptions = LeaveApplication.objects.aggregate(
-        total=models.Count('id'),
+        # total=models.Count('id'),
         today=models.Count('id', filter=models.Q(date_to=now.date())),
-        # yesterday=models.Count('id', filter=models.Q(date_to__lte=(
-		# 								now - datetime.timedelta(hours=24)).date())),
-        last_7_day=models.Count('id', filter=models.Q(date_to__lt=week_ago)),
+        overdue=models.Count('id', filter=models.Q(date_to__lt=now.date()))
     )
 	return due_resumptions
 

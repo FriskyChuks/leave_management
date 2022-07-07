@@ -89,8 +89,8 @@
                                 <span style="float: right;">{{due_resumptions.today}}</span>
                             </h6>
                             <h6 class="text-white">
-                                <span>Last 7days: </span>
-                                <span style="float: right;">{{due_resumptions.last_7_day}}</span>
+                                <span>Overdue: </span>
+                                <span style="float: right;">{{due_resumptions.overdue}}</span>
                             </h6>
                         </div>
                     </div>
@@ -116,7 +116,9 @@
                         <div class="card-body text-center">
                             <i class="fa fa-history text-c-blue d-block f-40" aria-hidden="true"></i>
                             <h4 class="m-t-20"><span class="text-c-blue">Your Leave History</span> </h4>
-                            <button class="btn btn-primary btn-sm btn-round">Manage List</button>
+                            <a href="{% url 'leave_history' %}">
+                                <button class="btn btn-primary btn-sm btn-round">Manage List</button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -125,7 +127,9 @@
                         <div class="card-body text-center">
                             <i class="fa fa-envelope text-c-green d-block f-40" aria-hidden="true"></i>
                             <h4 class="m-t-20"><span class="text-c-blgreenue"></span> Apply for leave</h4>
-                            <button class="btn btn-success btn-sm btn-round">Click Here</button>
+                            <a href="{% url 'leave_application' 1 %}">
+                                <button class="btn btn-success btn-sm btn-round">Click Here</button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -134,7 +138,9 @@
                         <div class="card-body text-center">
                             <i class="fa fa-bars text-c-blue d-block f-40" aria-hidden="true"></i>
                             <h4 class="m-t-20"><span class="text-c-blue">Leave Types</span> </h4>
-                            <button class="btn btn-primary btn-sm btn-round">Click Here</button>
+                            <a href="{% url 'leave_types_list' %}">
+                                <button class="btn btn-primary btn-sm btn-round">Click Here</button>
+                            </a>
                         </div>
                     </div>
                 </div>
