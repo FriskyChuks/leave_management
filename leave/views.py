@@ -149,7 +149,7 @@ def leave_types_list(request):
 
 
 @login_required(login_url='login')
-def LeaveApplicationStatus(request):
+def leave_application_status(request):
 	form = LeaveApplicationStatusForm()
 	if request.method == 'POST':
 		form =LeaveApplicationStatusForm(request.POST)
@@ -162,30 +162,31 @@ def LeaveApplicationStatus(request):
 
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['leave_and_passage','head','developer'])	
-def Leave_list_by_departments(request):
+def list_pending_leave_applications(request):
 	leave_apps=None
 	user = User.objects.get(id=request.user.id) 
 	sub_unit_approval_status = Approval.objects.get(id=6)
 	id=sub_unit_approval_status.id
+	excluded_status=['done','partly done']
 	# for leave & passage staff
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-4).exclude(status_id=8)
 	for head in user.head_set.all():
-		if head.is_head_of_sub_unit:
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id,
-						created_by__sub_unit__id=request.user.sub_unit.id).exclude(status_id=8)
-		elif head.is_head_of_unit: 
+		# if head.is_head_of_sub_unit:
+		# 	leave_apps = LeaveApplication.objects.filter(approval_status_id=id,
+		# 				created_by__sub_unit__id=request.user.sub_unit.id).exclude(status_id=8)
+		if head.is_head_of_unit: 
 			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
-								created_by__unit__id=request.user.unit.id).exclude(status_id=8) 
+								created_by__unit__id=request.user.unit.id).exclude(status__status=excluded_status) 
 		elif head.is_head_of_dept:
 			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
-					created_by__department__id=request.user.department.id).exclude(status_id=8)
+					created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
 		elif head.is_head_of_directorate:    
 			 leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
-			 		created_by__directorate__id=request.user.directorate.id).exclude(status_id=8)
+			 		created_by__directorate__id=request.user.directorate.id).exclude(status__status=excluded_status)
 	
 	context = {'leave_apps': leave_apps}
-	return render(request, 'leave/Leave_list_by_departments.html', context)    
+	return render(request, 'leave/list_pending_leave_applications.html', context)    
 
 
 @login_required(login_url='login')
@@ -199,19 +200,23 @@ def recommend_leave_application(request, id):
 	obj = LeaveRecommendation.objects.create(leave_application_id=leave_application.id,
 											created_by_id=request.user.id)
 	obj.save()
-	return redirect('Leave_list_by_departments')
+	return redirect('list_pending_leave_applications')
 
 
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['head','support','developer'])
 def decline_leave_application(request,id):
 	leave_application = LeaveApplication.objects.get(id=id)
+	_status = LeaveApplicationStatus.objects.get(status='declined')
+	approval_status=Approval.objects.get(approval='none')
 	if request.method=='POST':
-		obj=LeaveApplication.objects.filter(id=id).update(approval_status_id=1,status_id=7)
+		comment=request.POST.get('comment')
+		obj=LeaveApplication.objects.filter(id=id).update(
+								approval_status_id=approval_status,status_id=_status)
 		obj= DeclineLeaveApplication.objects.create(leave_application_id=leave_application.id,
-													created_by_id=request.user.id)
+					comment=comment,created_by_id=request.user.id)
 		obj.save()
-		return redirect('Leave_list_by_departments')
+		return redirect('list_pending_leave_applications')
 	context= {'leave_application':leave_application}
 	return render(request, 'leave/decline.html', context)
 
@@ -227,7 +232,7 @@ def process_leave_pass_view(request,id):
 	LeaveApplication.objects.filter(id=id).update(
 		status_id=var_status,approval_status_id=1,resumption_approval=4 
 	 )
-	return redirect('Leave_list_by_departments')
+	return redirect('list_pending_leave_applications')
 
 
 @login_required(login_url='login')  
@@ -283,7 +288,7 @@ def recommend_resumption_view(request,id):
 
 @login_required(login_url='login')
 def leave_history_view(request):
-	included=['active','partly active','done','partly done']
+	included=['active','partly active','done','partly done','declined','resuming','partly resuming']
 	leave_applications = LeaveApplication.objects.filter(created_by__id=request.user.id,
 							status__status__in=included).order_by('-id')
 	if request.method == 'POST':
@@ -306,8 +311,11 @@ def leave_details_view(request,id):
 @login_required(login_url='login')
 def leave_status_detail(request):
 	user=request.user.id
+	_status=['in process','partly in process']
 	recommendations = LeaveRecommendation.objects.filter(
-						leave_application__created_by__id=user)
+									leave_application__status__status__in=_status,
+									leave_application__created_by__id=user)
+	
 	context={"recommendations":recommendations}
 	return render(request,'leave/leave_status_detail.html',context)
 
@@ -324,3 +332,10 @@ def acknowledge_leave_resumption_view(request,id):
 		resumption_approval_id=4 # update to resumption_approval=resumed
 	 )
 	return redirect('list_resumption')	
+
+
+def list_declined_applications_view(request):
+	declined_apps = DeclineLeaveApplication.objects.filter(
+		leave_application__created_by__id=request.user.id,
+		leave_application__status__status='declined').order_by('-id')
+	return render(request,'leave/declined_apps.html',{"declined_apps":declined_apps})

@@ -6,8 +6,22 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %} 
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-    <!-- [ Main Content ] start -->
+<script>
+    $(document).ready(function(){
+        var directorate = $("#directorate");
+        var department = $("#department");
+        var $options = department.find('option');
+        directorate.on('change',function(){
+        department.html($options.filter('[value="'+ this.value  +'"]'));
+        }).trigger('change'); 
+    }); 
+</script> -->
+    
+<!-- [ Main Content ] start -->
 <section class="pcoded-main-container">
 <div class="pcoded-content">
 <div class="row">
@@ -68,24 +82,26 @@
         
             <div class="col-md-4 mb-3">
                 <label for="validationTooltip02">Department</label>
-                <select class="form-control" name="department">
-                    {% for i in dept %}
-                    <option value="{{i.id}}">{{i.title}}</option>
+                <select id="department" class="form-control" name="department">
+                    <option selected disabled="true" value="">Select Department---</option>
+                    {% for dept in depts %}
+                    <option value="{{dept.id}}">{{dept.title}}</option>
                     {% endfor %}
                 </select>
                 </div> 
             <div class="col-md-4 mb-6">
                 <label for="validationTooltip02">Unit</label>
-                <select class="form-control" name="unit">
-                    {% for i in unit %}
-                    <option value="{{i.id}}">{{i.title}}</option>
+                <select id="unit" class="form-control" name="unit">
+                    <option selected disabled="true" value="">Select Unit---</option>
+                    {% for unit in units %}
+                    <option value="{{unit.id}}">{{unit.title}}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="validationTooltip02">Directorate</label>
-                <select class="form-control" name="directorate">
-                    {% for i in direct %}
+                <select id="directorate" class="form-control" name="directorate">
+                    {% for i in directorates %}
                     <option value="{{i.id}}">{{i.title}}</option>
                     {% endfor %}
                 </select>

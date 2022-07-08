@@ -22,9 +22,10 @@
 								</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
-                                <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
+                                <li></li>
+                                <!-- <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
+                                <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -68,9 +69,11 @@
 			<td>{{leave_app.destination}}</td>
             <td>
 				{% if leave_app.status.status == 'done' or leave_app.status.status == 'partly done' %}
-					Completed
+                <h6 style="color: skyblue;">Completed</h6>
                 {% elif leave_app.status.status == 'resuming' or leave_app.status.status == 'partly resuming' %}
                     <b><i style="color: blue;">Resumption in process</i></b> 
+                {% elif leave_app.status.status == 'declined' %}
+                    <h6 style="color: red;">Declined</h6>
 				{% else %}
 					<!-- <button class="btn btn-success" style="background-color: blue; color:white"><a style="color: white;" href="{% url 'leave_details' leave_app.id %}">View Details</a></button> -->
 					<button class="btn btn-success" style="background-color: green; color:white">

@@ -29,19 +29,18 @@ def total_leave_applications():
     )
 	return total_applications
 
-def pending_applications():
+def pending_leave_pass():
 	now = timezone.now()
-	_status=['in process', 'partly in process']
-	pending_applications = LeaveApplication.objects.aggregate(
+	pending_leave_pass = LeaveApplication.objects.aggregate(
         total=models.Count('id'),
-        today=models.Count('id', filter=models.Q(status__status__in=_status,
-										date_created__date=now.date())),
+        today=models.Count('id', filter=models.Q(approval_status__approval='cmd',
+										last_updated__date__gte=now.date())),
         # yesterday=models.Count('id', filter=models.Q(status__status__in=_status,
 		# 			date_created__date__gte=(now - datetime.timedelta(hours=24)).date())),
-        last_7_day=models.Count('id', filter=models.Q(status__status__in=_status,
-						date_created__date__gt=(now - datetime.timedelta(days=7)).date())),
+        last_7_day=models.Count('id', filter=models.Q(approval_status__approval='cmd',
+						last_updated__date__gt=(now - datetime.timedelta(days=7)).date())),
     )
-	return pending_applications
+	return pending_leave_pass
 
 def pending_resumptions():
 	now = timezone.now()
@@ -67,12 +66,13 @@ def due_resumptions():
     )
 	return due_resumptions
 
-
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
+	app = LeaveApplication.objects.get(id=76)
+	print(app.last_updated.date())
 	approval_desk,approval_desk_id=None,None
-	excluded = [1]
+	excluded = [1,6]
 	status=['in process','partly in process']
 	leave_app = LeaveApplication.objects.filter(created_by__id=request.user.id, status__status__in=status)
 	for app in leave_app:
@@ -80,14 +80,16 @@ def index(request):
 		approval_desk_id = app.approval_status.id
 	approval_status = Approval.objects.all().exclude(id__in=excluded).order_by('-id')
 	progress_bar_width=100/int(len(approval_status))
+	declined_app = LeaveApplication.objects.filter(created_by_id=request.user.id).last()
 	
 	context={"approval_desk":approval_desk, "approval_desk_id":approval_desk_id,
 			"approval_status":approval_status,"progress_bar_width":progress_bar_width,
+			"declined_app":declined_app,
 			# calling quick statistics functions
 			"total_leave_applications":total_leave_applications,
 			"pending_resumptions":pending_resumptions,
 			"due_resumptions":due_resumptions,
-			'pending_applications':pending_applications,
+			'pending_leave_pass':pending_leave_pass,
 		}
 	return render(request, 'home/index.html',context)
 
@@ -120,7 +122,7 @@ def loginPage(request):
 				return redirect(request.POST.get('next'))
 			else:
 				if Head.objects.filter(user_id=request.user.id).exists():
-					return HttpResponseRedirect("Leave_list_by_departments")
+					return HttpResponseRedirect("list_pending_leave_applications")
 				else:
 					return redirect("index")
 
@@ -173,7 +175,7 @@ def registerUser(request):
 		else:
 			messages.info(request, "Password Not Matching")
 			return redirect('register')
-	context = {'gend':gend,'unit':unit,'dept':dept,'direct':direct}                 
+	context = {'gender':gend,'units':unit,'depts':dept,'directorates':direct}                 
 	return render(request, 'accounts/register.html', context)
 
 

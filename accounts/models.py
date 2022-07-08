@@ -70,7 +70,7 @@ class User(AbstractUser):
 
 class Head(models.Model):
     user                 = models.ForeignKey(User, on_delete=models.CASCADE)
-    is_head_of_sub_unit  = models.BooleanField(default=False)
+    # is_head_of_sub_unit  = models.BooleanField(default=False)
     is_head_of_unit      = models.BooleanField(default=False)
     is_head_of_dept      = models.BooleanField(default=False)
     is_head_of_directorate = models.BooleanField(default=False)
