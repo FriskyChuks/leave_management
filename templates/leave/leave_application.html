@@ -31,9 +31,9 @@
                             <h5 class="m-b-10">{{leave_type.title}} Leave Application</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
                             <li class="breadcrumb-item"><a href="{% url 'leave_types_list' %}">Other Leave types</a></li>
-                            <li class="breadcrumb-item"><a href="#!">Pending Leave Application</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'leave_history' %}">Leave Records</a></li><li></li>
                             <!-- <li class="breadcrumb-item"><a href="#!">Leave Application History</a></li> -->
                         </ul>
                     </div>
@@ -63,7 +63,7 @@
         <form method="POST" class="needs-validation" novalidate>{% csrf_token %}
             <div class="form-row">
                 <div class="col-md-6 mb-3">
-                    <label for="validationTooltip01">Leave Duraion</label>
+                    <label for="validationTooltip01">Leave Duraion (<i>in days</i>)</label>
                     <input type="number" min="0" max="{{days_remaining}}" class="form-control" id="duration" name="requested_duration" required>
                     <div class="valid-tooltip">
                         Looks good!

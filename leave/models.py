@@ -62,7 +62,7 @@ class LeaveApplication(models.Model):
     last_updated = models.DateTimeField(auto_now_add=False,auto_now=True)
 
     def __str__(self):
-        return str(self.leave_type)
+        return f"{self.leave_type} || {self.created_by.first_name} {self.created_by.last_name}"
 
 
 class LeaveRecommendation(models.Model):

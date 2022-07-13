@@ -8,7 +8,7 @@ from .forms import *
 
 def employment_detail_view(request,id):
     user = User.objects.get(id=id)
-    # user = User.objects.all()
+    grades = GradeLevel.objects.all()
     salary = SalaryScale.objects.all()
     if request.method == 'POST':
         ministry = request.POST['ministry']
@@ -29,7 +29,7 @@ def employment_detail_view(request,id):
         details.save();
 
         return redirect('contact_address',id=id) 
-    context = { 'user':user, 'salary':salary }
+    context = { 'user':user, 'salary':salary,"grades":grades}
     return render(request, 'registry/employ.html',context) 
 
 

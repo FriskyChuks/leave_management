@@ -13,6 +13,14 @@ from .forms import *
 from registry.models import *
 from contact.models import *
 
+
+def get_heads_of_locations(request):
+	user = User.objects.get(id=request.user.id)
+	head=None
+	for head in user.head_set.all():
+		head=head
+	return head
+
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['support'])
 def leave_type(request):
@@ -37,7 +45,7 @@ def LeaveDurationView(request):
 	context = {'form':form } 
 	return render(request, 'leave/leaveduration.html', context)
 
-def check_annual_leave_eligibility(request,leave_type_id):
+def check_leave_eligibility(request,leave_type_id):
 	month_difference=12
 	previous_leaves=LeaveApplication.objects.filter(
 		created_by_id=request.user.id,leave_type_id=leave_type_id,status__status='done')
@@ -47,13 +55,13 @@ def check_annual_leave_eligibility(request,leave_type_id):
 		month_difference =  delta.months + (delta.years * 12)
 	return month_difference
 
-def check_current_year(leave_type_id):
+def check_current_year(request,leave_type_id):
 	same_year=False
-	last_leave=LeaveApplication.objects.filter(leave_type_id=leave_type_id,status__status='done').last()
+	last_leave=LeaveApplication.objects.filter(created_by_id=request.user.id,
+		leave_type_id=leave_type_id,status__status='done').last()
 	if last_leave:
 		if last_leave.date_from.year==datetime.now().date().year:
-			same_year=True
-	
+			same_year=True	
 	return same_year
 		  
 
@@ -103,12 +111,12 @@ def LeaveApplicationview(request, id):
 	approval_status=check_if_user_is_head(request)
 	# Get form values
 	if request.method =='POST': 
-		if check_current_year(leave_type.id):
+		if check_current_year(request,leave_type.id):
 			messages.error(request,f"You cannot take {leave_type.title} leave twice\
 								 in same year; You may re-apply next year, thanks")
 			return redirect('index')
 		# Check if last leave is atleast 6 months ago
-		last_leave = check_annual_leave_eligibility(request,leave_type.id)
+		last_leave = check_leave_eligibility(request,leave_type.id)
 		if last_leave < 6:
 			messages.error(request,f"Your last Annual leave is only {last_leave} months ago;\
 						You may re-apply in {6-last_leave} months, thanks")
@@ -238,10 +246,17 @@ def process_leave_pass_view(request,id):
 @login_required(login_url='login')  
 def resume_leave_view(request,id):
 	current_status=LeaveApplication.objects.get(id=id).status
+	head=get_heads_of_locations(request)
+	resumption_approval_id=1
+	if head.is_head_of_dept:
+		resumption_approval_id=2
+	elif head.is_head_of_directorate:
+		resumption_approval_id=3
 	status_id=3
 	if current_status=='partly active':
 		status_id=7
-	LeaveApplication.objects.filter(id=id).update(resumption_approval_id=1,status_id=status_id)# status='Resuming'
+	LeaveApplication.objects.filter(id=id).update(resumption_approval_id=resumption_approval_id,
+									status_id=status_id)# status='Resuming'
 	return redirect('leave_history')
 
 
@@ -291,9 +306,16 @@ def leave_history_view(request):
 	included=['active','partly active','done','partly done','declined','resuming','partly resuming']
 	leave_applications = LeaveApplication.objects.filter(created_by__id=request.user.id,
 							status__status__in=included).order_by('-id')
+	last_app = leave_applications.last()
+	current_desk='Leave & Passage'
+	if last_app.resumption_approval:
+		if last_app.resumption_approval.approval=='head of department':
+			current_desk='Head of Dept'
+		elif last_app.resumption_approval.approval=='head of department':
+			current_desk='Directorate'
 	if request.method == 'POST':
 		return redirect('index')
-	context = {"leave_applications":leave_applications}
+	context = {"leave_applications":leave_applications,"current_desk":current_desk}
 	return render(request, 'leave/leave_history.html', context) 
 	
 

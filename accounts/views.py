@@ -138,10 +138,10 @@ def logoutUser(request):
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['registry','developer'])
 def registerUser(request):
-	gend = Gender.objects.all()
-	unit = Unit.objects.all()
-	dept = Department.objects.all()
-	direct = Directorate.objects.all()
+	gender = Gender.objects.all()
+	units = Unit.objects.all()
+	depts = Department.objects.all()
+	directorates = Directorate.objects.all()
 	if request.method == 'POST':
 		first_name = request.POST['first_name']
 		last_name = request.POST['last_name']
@@ -152,7 +152,7 @@ def registerUser(request):
 		gender = request.POST['gender']
 		directorate = request.POST['directorate']
 		department = request.POST['department']
-		unit=request.POST['unit']
+		# unit=request.POST['unit']
 		passport = request.FILES['passport']
 		password1 = request.POST['password1']
 		password2 = request.POST['password2']
@@ -169,13 +169,13 @@ def registerUser(request):
 				user = User.objects.create_user(
 					first_name=first_name,last_name=last_name,other_name=other_name,file_number=file_number,
 					username=username,date_of_birth=date_of_birth,passport=passport,password=password1,
-					gender_id=gender,directorate_id=directorate,department_id=department,unit_id=unit)
+					gender_id=gender,directorate_id=directorate,department_id=department)
 				user.save();
 				return redirect('employment_detail',id=user.id)
 		else:
 			messages.info(request, "Password Not Matching")
 			return redirect('register')
-	context = {'gender':gend,'units':unit,'depts':dept,'directorates':direct}                 
+	context = {'gender':gender,'units':units,'depts':depts,'directorates':directorates}                 
 	return render(request, 'accounts/register.html', context)
 
 

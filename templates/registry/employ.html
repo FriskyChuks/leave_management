@@ -35,7 +35,7 @@
     </div>
     <div class="card-body">                      
         
-      <h4 style="color:green;"> {{user.first_name}}  |   {{user.last_name}}  |   {{user.file_number}}</h4>
+      <h4 style="color:green;"> {{user.first_name}}  {{user.last_name}}  ||   {{user.file_number}}</h4>
     <form method="POST" class="needs-validation" novalidate>
         {% csrf_token %}
 <div class="form-row">
@@ -60,12 +60,22 @@
             <option value="{{i.id}}">{{i.title}}</option>
             {% endfor %}
             </select>
-        <div class="valid-feedback">
-            
+        <div class="valid-feedback">    
         </div>
     </div>
 </div>
 <div class="form-row">
+    <div class="col-md-4 mb-3">
+        <label for="validationCustom02">Salary Scale</label>
+         <select class="form-control" name="grade">
+            <option selected disabled="true" value="">Select grade level---</option>
+            {% for grade in grades %}
+            <option value="{{grade.id}}">{{grade.level}}</option>
+            {% endfor %}
+            </select>
+        <div class="valid-feedback">    
+        </div>
+    </div>
     <div class="col-md-4 mb-3">
         <label for="validationCustom03">Step</label>
         <input id="step"  name="step" class="form-control" id="validationCustom03" placeholder="Step" required>
@@ -74,17 +84,9 @@
         </div>
     </div>
     <div class="col-md-4 mb-3">
-        <label for="validationCustom04">Grade</label>
-        <input id="grade" name="grade" class="form-control" id="validationCustom04" placeholder="Grade" required>
-        <div class="invalid-feedback">
-            
-        </div>
-    </div>
-    <div class="col-md-4 mb-3">
         <label for="validationCustom05">IPPIS Number</label>
         <input type="number" name="ippis_no" class="form-control" id="validationCustom05" placeholder="IPPIS Number" required>
-        <div class="invalid-feedback">
-           
+        <div class="invalid-feedback"> 
         </div>
     </div>
 </div>

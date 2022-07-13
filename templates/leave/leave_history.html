@@ -51,6 +51,7 @@
             <th>ID</th>
             <th>LEAVE TYPE</th>
             <th>DATES</th>
+            <th>DURATION</th>
 			<th>DESTINATION</th>
 			<th>ACTIONS</th>
         </tr>
@@ -66,12 +67,13 @@
 				Start date: <b>{{leave_app.date_from}}</b><br>
 				End date: <b>{{leave_app.date_to}}</b>
 			</td>
+            <td>{{leave_app.requested_duration}} days</td>
 			<td>{{leave_app.destination}}</td>
             <td>
 				{% if leave_app.status.status == 'done' or leave_app.status.status == 'partly done' %}
                 <h6 style="color: skyblue;">Completed</h6>
                 {% elif leave_app.status.status == 'resuming' or leave_app.status.status == 'partly resuming' %}
-                    <b><i style="color: blue;">Resumption in process</i></b> 
+                    <b><i style="color: blue;">Resumption in process</i></b> | ({{current_desk}})
                 {% elif leave_app.status.status == 'declined' %}
                     <h6 style="color: red;">Declined</h6>
 				{% else %}
