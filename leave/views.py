@@ -248,10 +248,11 @@ def resume_leave_view(request,id):
 	current_status=LeaveApplication.objects.get(id=id).status
 	head=get_heads_of_locations(request)
 	resumption_approval_id=1
-	if head.is_head_of_dept:
-		resumption_approval_id=2
-	elif head.is_head_of_directorate:
-		resumption_approval_id=3
+	if head:
+		if head.is_head_of_dept:
+			resumption_approval_id=2
+		elif head.is_head_of_directorate:
+			resumption_approval_id=3
 	status_id=3
 	if current_status=='partly active':
 		status_id=7
@@ -308,11 +309,12 @@ def leave_history_view(request):
 							status__status__in=included).order_by('-id')
 	last_app = leave_applications.last()
 	current_desk='Leave & Passage'
-	if last_app.resumption_approval:
-		if last_app.resumption_approval.approval=='head of department':
-			current_desk='Head of Dept'
-		elif last_app.resumption_approval.approval=='head of department':
-			current_desk='Directorate'
+	if last_app:
+		if last_app.resumption_approval:
+			if last_app.resumption_approval.approval=='head of department':
+				current_desk='Head of Dept'
+			elif last_app.resumption_approval.approval=='directorate':
+				current_desk='Head of Admin'
 	if request.method == 'POST':
 		return redirect('index')
 	context = {"leave_applications":leave_applications,"current_desk":current_desk}

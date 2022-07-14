@@ -72,13 +72,13 @@ class UpdateUserForm(ModelForm):
             'class':"form-control", 
     }) 
 
-        self.fields['unit'].widget.attrs.update({
-            ' required':'',
-            'name':'unit',
-            'id':'usernameValidate',
-            'type':'text',
-            'class':"form-control", 
-    }) 
+    #     self.fields['unit'].widget.attrs.update({
+    #         ' required':'',
+    #         'name':'unit',
+    #         'id':'usernameValidate',
+    #         'type':'text',
+    #         'class':"form-control", 
+    # }) 
    
         self.fields['department'].widget.attrs.update({
             ' required':'',
@@ -105,7 +105,8 @@ class UpdateUserForm(ModelForm):
     class Meta:
         model = User
 
-        fields = ['first_name','last_name','other_name','username','file_number','date_of_birth','gender','unit','department','directorate','passport'] 
+        fields = ['first_name','last_name','other_name','username','file_number',
+                    'date_of_birth','gender','department','directorate','passport'] 
     
     
    

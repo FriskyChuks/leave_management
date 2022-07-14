@@ -53,7 +53,11 @@
                             <!-- END OF PROGRESS BAR -->
                             <br>
                             <button class="btn btn-primary btn-sm btn-round">
-                                Currently on the desk of your {{approval_desk|title}}
+                                {% if approval_desk.approval == 'cmd' %} 
+                                    Currently at Leave & Passage 
+                                {% else %} 
+                                    Currently on the desk of your  
+                                {% endif %}
                             </button>
                         </div>
                     </div>

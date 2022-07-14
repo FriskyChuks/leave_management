@@ -22,8 +22,6 @@ def total_leave_applications():
 	total_applications = LeaveApplication.objects.aggregate(
         total=models.Count('id'),
         today=models.Count('id', filter=models.Q(date_created__date=now.date())),
-        # yesterday=models.Count('id', filter=models.Q(date_created__date__gte=(
-		# 			now - datetime.timedelta(hours=24)).date())),
         last_7_day=models.Count('id', filter=models.Q(date_created__date__gt=(
 					now - datetime.timedelta(days=7)).date())),
     )
@@ -69,10 +67,8 @@ def due_resumptions():
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
-	app = LeaveApplication.objects.get(id=76)
-	print(app.last_updated.date())
 	approval_desk,approval_desk_id=None,None
-	excluded = [1,6]
+	excluded = [1,2,6]
 	status=['in process','partly in process']
 	leave_app = LeaveApplication.objects.filter(created_by__id=request.user.id, status__status__in=status)
 	for app in leave_app:

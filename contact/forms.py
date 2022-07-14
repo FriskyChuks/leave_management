@@ -27,16 +27,16 @@ class UpdateContactForm(ModelForm):
             'type':'email',
             'class':"form-control", 
     })
-        self.fields['phone_no'].widget.attrs.update({
+        self.fields['phone2'].widget.attrs.update({
             ' required':'',
-            'name':'phone_no',
+            'name':'phone2',
             'id':'usernameValidate',
             'type':'number',
             'class':"form-control", 
     })
-        self.fields['mobile_no'].widget.attrs.update({
+        self.fields['phone1'].widget.attrs.update({
             ' required':'',
-            'name':'mobile_no',
+            'name':'phone1',
             'id':'usernameValidate',
             'type':'number',
             'class':"form-control", 

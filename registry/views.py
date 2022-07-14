@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.contrib import messages
 
 from accounts.models import *
 
@@ -17,6 +18,9 @@ def employment_detail_view(request,id):
         grade = request.POST['grade']
         step = request.POST['step']
         ippis_no = request.POST['ippis_no']
+        if len(ippis_no) < 6 or len(ippis_no) > 6:
+            messages.error(request, 'IPPIS-NO must be 6-digits!')
+            return redirect('employment_detail',id=id)
         if int(grade) < 6:
             staff_category_id = 1
         else:

@@ -26,8 +26,8 @@ class LocalGovernmentArea(models.Model):
 class Contact(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField(max_length=50)
-    mobile_no = models.CharField(max_length=15)
-    phone_no = models.CharField(max_length=15)
+    phone1 = models.CharField(max_length=15)
+    phone2 = models.CharField(max_length=15, null=True, blank=True)
     nationality =models.ForeignKey(Country, on_delete=models.CASCADE,null=True,blank=True)
     state_of_origin = models.ForeignKey(State, on_delete=models.CASCADE, null=True,blank=True)
     local_government_area = models.ForeignKey(LocalGovernmentArea, on_delete=models.CASCADE, null=True,blank=True)

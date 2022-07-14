@@ -20,23 +20,12 @@ class edit_Employment_DetailsForm(ModelForm):
             'id':'usernameValidate',
             'type':'text',
             'class':"form-control", 
-    })
-
-    
-       
+    })  
         self.fields['salary_scale'].widget.attrs.update({
             ' required':'',
             'name':'salary_scale',
             'id':'usernameValidate',
             'type':'text',
-            'class':"form-control", 
-    })
-    
-        self.fields['staff_category'].widget.attrs.update({
-            ' required':'',
-            'name':'staff_category',
-            'id':'usernameValidate',
-            'type':'',
             'class':"form-control", 
     })
     
@@ -69,4 +58,4 @@ class edit_Employment_DetailsForm(ModelForm):
     class Meta:
         model = EmploymentDetails
 
-        exclude = ['user'] 
+        exclude = ['user','staff_category'] 

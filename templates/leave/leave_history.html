@@ -40,7 +40,9 @@
                     <div class="card">
                         <div class="card-header">
                             <h4>Leave History</h4>
-                            <!-- <span class="d-block m-t-5">use class <code>table-striped</code> inside table element</span> -->
+                            {% if not leave_applications %}
+                                <span style="text-align: center; color:rgb(8, 125, 164)" class="d-block m-t-5">You have no Leave Records, Thanks! </span>
+                            {% endif %}
                 </div>
 <div class="card-body table-border-style">
     <div class="table-responsive">

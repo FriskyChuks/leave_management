@@ -47,14 +47,13 @@ class SubUnit(models.Model):
         return self.title
 
 class User(AbstractUser):
-    first_name = models.CharField(blank=True, max_length=30)
-    last_name = models.CharField(blank=True, max_length=30)
-    other_name = models.CharField(max_length=50)
-    file_number = models.IntegerField(default=0, unique=True, )
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    other_name = models.CharField(blank=True, max_length=50)
+    file_number = models.IntegerField(unique=True)
     username = models.CharField(unique=True, max_length=30)
     date_of_birth = models.DateField()
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE,null=True,blank=True)
-    # nationality =models.ForeignKey(Country, on_delete=models.CASCADE,null=True,blank=True)
     directorate = models.ForeignKey(Directorate, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True,blank=True)
@@ -74,6 +73,7 @@ class Head(models.Model):
     is_head_of_unit      = models.BooleanField(default=False)
     is_head_of_dept      = models.BooleanField(default=False)
     is_head_of_directorate = models.BooleanField(default=False)
+    is_cmd = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}" 
