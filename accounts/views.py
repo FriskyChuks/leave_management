@@ -208,5 +208,49 @@ def update_view(request ,id):
 
 def error_handling_view(request):
 	return render(request, 'home/page-404.html',{})
+
+
+@login_required(login_url='login')
+def reset_password(request,id):
+	context = {}		
+	if request.method == "POST":
+		user = User.objects.get(id=id)
+		user.set_password("password")
+		user.save()
+		context["msg"] = "Password Reset Successfully"
+		context["col"] = "alert-success "
+		all_users = User.objects.all()
+		context = {"user":all_users}
+		return render(request, 'accounts/user_list.html', context)	
+	else:
+	   	return redirect(user_list)	
+	
+@login_required(login_url='login')
+def user_list(request):
+	user = User.objects.all()
+	return render(request, 'accounts/user_list.html',{'user':user})	
 	
 
+@login_required(login_url='login')
+def change_password(request):
+	context = {}	
+	if request.method == "POST":
+		new_password = request.POST["new_password"]
+		current_password = request.POST["current_password"]
+		confirm_password = request.POST["confirm_password"]
+			
+		user = User.objects.get(id=request.user.id)
+		check = user.check_password(current_password)
+		if check == True:
+			if new_password != confirm_password:
+				context["msg"] = "Password Not Matching "
+				context["col"] = "alert-danger"
+			else:	
+				user.set_password(new_password)
+				user.save()
+				context["msg"] = "Password Change Successfully"
+				context["col"] = "alert-success "	
+		else:
+			context["msg"] = " Current Password is Incorrect "
+			context["col"] = "alert-danger"	
+	return render(request, 'accounts/change_password.html',context)

@@ -1,0 +1,65 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Tables {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        
+                        <div class="card-body table-border-style">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    {% if msg %}
+                                    <div class="alert {{col}}"><h4 style="text-align: center;">{{msg}}</h4></div>
+                                    {% endif %}
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Username</th>
+                                            <th>File_number</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for users in user %}
+                                        <tr>
+                                            <td>{{users.id}}</td>
+                                            <td>{{users.first_name}}</td>
+                                            <td>{{users.last_name}}</td>
+                                            <td>{{users.username}}</td>
+                                            <td>{{users.file_number}}</td>
+                                            <form action="{% url 'reset_password' id=users.id %}" method="POST">
+                                                {% csrf_token %}
+                                            <td><button type="submit" class="btn btn-info">Reset Password</button>
+                                            </form>
+                                            <a href="{% url 'staff_biodata' id=users.id %}" class="btn btn-primary">View Details</a></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+                
+            </div>
+            <!-- [ Main Content ] end -->
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

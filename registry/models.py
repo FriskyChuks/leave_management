@@ -32,6 +32,7 @@ class EmploymentDetails(models.Model):
     grade = models.ForeignKey(GradeLevel, on_delete=models.CASCADE)
     step = models.IntegerField()
     ippis_no = models.IntegerField(unique=True)
+    
     def __str__(self):
         return str(self.user)
       
