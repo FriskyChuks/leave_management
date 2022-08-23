@@ -20,5 +20,7 @@ urlpatterns = [
     path('recommend_resumption_view/<id>/',views.recommend_resumption_view,name='recommend_resumption'),
     path('process_leave_pass/<id>/',views.process_leave_pass_view,name='process_leave_pass'),
     path('acknowledge_leave_resumption/<id>/',views.acknowledge_leave_resumption_view,name='acknowledge_leave_resumption'),
-    path('list_declined_applications/',views.list_declined_applications_view,name='list_declined_applications')
+    path('list_declined_applications/',views.list_declined_applications_view,name='list_declined_applications'),
+    path('pdf_view/<id>/',views.render_pdf_view,name='pdf_view'),
+    path('approved_leave/',views.approved_leave_appcation_list,name='approved_leave')
 ]    

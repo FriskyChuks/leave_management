@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leave Pass</title>
+<style>
+@page {
+    size: a4 portrait;
+    @frame header_frame {           /* Static Frame */
+        -pdf-frame-content: header_content;
+        left: 150pt; width: 512pt; top: 50pt; height: 40pt;font-size: 70px;
+       
+}
+        @frame content_frame {          /* Content Frame */
+            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+        }
+        @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+        }
+    }
+    
+</style>
+</head>
+
+    <body>
+        <img src="" alt="images">
+        <!-- Content for Static Frame 'header_frame' -->
+        <div id="header_content">
+            <h1>FEDERAL MEDICAL CENTER, KEFFI, NASARAWA STATE</h1>
+        </div>
+         <center><h1>{{pass.leave_type}} LEAVE PASS</h1></center>
+    
+        <!-- Content for Static Frame 'footer_frame' -->
+        <div id="footer_content">(c) - page <pdf:pagenumber>
+            of <pdf:pagecount>
+        </div>
+    
+        <!-- HTML Content -->
+        <div>
+            <h1>Full Name:  {{pass.created_by.first_name}} {{pass.created_by.last_name}}</h1><hr>
+            <h1>Rank {{designation}}</h1></li><hr>
+            <h1>Leav Entitlement: {{pass.leave_duration}}</h1> <hr>
+            <h1>Commencement Date: {{pass.date_from}}</h1><hr>
+            <h1>Resumption Date: {{pass.date_to}}</h1><hr>
+        </div>
+    </body>
+    </html>

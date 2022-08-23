@@ -1,7 +1,9 @@
+from re import T
+from turtle import title
 from django.db import models
-from django.contrib.auth.models import AbstractUser,Group
+from django.contrib.auth.models import AbstractUser
 
-from registry.models import *
+# from registry.models import GradeLevel, SalaryScale
 
 class UserGroup(models.Model):
     group = models.CharField(max_length=50)
@@ -14,26 +16,35 @@ class Gender(models.Model):
 
     def __str__(self):
         return self.title
-# class Country(models.Model):
-#     title = models.CharField(blank=True,null=True,max_length=10)
 
-#     def __str__(self):
-#         return self.title
+class GradeLevel(models.Model):
+    level = models.IntegerField()
+    
+    def __str__(self):
+        return str(self.level)
+
+class SalaryScale(models.Model):
+    title = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.title
 
 class Directorate(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, unique=True)
   
     def __str__(self):
         return self.title
+
 class Department(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, unique=True)
     directorate = models.ForeignKey(Directorate, on_delete=models.CASCADE)
+    has_unit = models.BooleanField(default=True)
    
     def __str__(self):
         return self.title
 
 class Unit(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, unique=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
    
     def __str__(self):
@@ -50,10 +61,13 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     other_name = models.CharField(blank=True, max_length=50)
-    file_number = models.IntegerField(unique=True)
+    file_number = models.IntegerField(unique=True, blank=True, null=True)
     username = models.CharField(unique=True, max_length=30)
-    date_of_birth = models.DateField()
-    gender = models.ForeignKey(Gender, on_delete=models.CASCADE,null=True,blank=True)
+    # date_of_birth = models.DateField(blank=True, null=True)
+    gender = models.ForeignKey(Gender, on_delete=models.CASCADE)
+    # salary_scale = models.ForeignKey(SalaryScale, on_delete=models.CASCADE)
+    # grade_level = models.ForeignKey(GradeLevel, on_delete=models.CASCADE)
+    # ippis_no = models.CharField(max_length=30,blank=True, null=True)
     directorate = models.ForeignKey(Directorate, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True,blank=True)
@@ -62,7 +76,7 @@ class User(AbstractUser):
     
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ('first_name','last_name','other_name','file_number','date_of_birth','gender','directorate','department')
+    REQUIRED_FIELDS = ('first_name','last_name','other_name','file_number','gender','directorate','department')
 
     def __str__(self):
         return str(self.username)

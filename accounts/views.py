@@ -20,48 +20,48 @@ from .decorators import allowed_users
 def total_leave_applications():
 	now = timezone.now()
 	total_applications = LeaveApplication.objects.aggregate(
-        total=models.Count('id'),
-        today=models.Count('id', filter=models.Q(date_created__date=now.date())),
-        last_7_day=models.Count('id', filter=models.Q(date_created__date__gt=(
+		total=models.Count('id'),
+		today=models.Count('id', filter=models.Q(date_created__date=now.date())),
+		last_7_day=models.Count('id', filter=models.Q(date_created__date__gt=(
 					now - datetime.timedelta(days=7)).date())),
-    )
+	)
 	return total_applications
 
 def pending_leave_pass():
 	now = timezone.now()
 	pending_leave_pass = LeaveApplication.objects.aggregate(
-        total=models.Count('id'),
-        today=models.Count('id', filter=models.Q(approval_status__approval='cmd',
+		total=models.Count('id'),
+		today=models.Count('id', filter=models.Q(approval_status__approval='cmd',
 										last_updated__date__gte=now.date())),
-        # yesterday=models.Count('id', filter=models.Q(status__status__in=_status,
+		# yesterday=models.Count('id', filter=models.Q(status__status__in=_status,
 		# 			date_created__date__gte=(now - datetime.timedelta(hours=24)).date())),
-        last_7_day=models.Count('id', filter=models.Q(approval_status__approval='cmd',
+		last_7_day=models.Count('id', filter=models.Q(approval_status__approval='cmd',
 						last_updated__date__gt=(now - datetime.timedelta(days=7)).date())),
-    )
+	)
 	return pending_leave_pass
 
 def pending_resumptions():
 	now = timezone.now()
 	_status=['in process', 'partly in process']
 	pending_resumptions = LeaveApplication.objects.aggregate(
-        total=models.Count('id'),
-        today=models.Count('id', filter=models.Q(resumption_approval__approval='none',
+		total=models.Count('id'),
+		today=models.Count('id', filter=models.Q(resumption_approval__approval='none',
 										last_updated__date=now.date())),
-        # yesterday=models.Count('id', filter=models.Q(resumption_approval__approval='none',
+		# yesterday=models.Count('id', filter=models.Q(resumption_approval__approval='none',
 		# 			last_updated__date__gte=(now - datetime.timedelta(hours=24)).date())),
-        last_7_day=models.Count('id', filter=models.Q(resumption_approval__approval='none',
+		last_7_day=models.Count('id', filter=models.Q(resumption_approval__approval='none',
 						last_updated__date__gt=(now - datetime.timedelta(days=7)).date())),
-    )
+	)
 	return pending_resumptions
 
 
 def due_resumptions():
 	now = timezone.now()
 	due_resumptions = LeaveApplication.objects.aggregate(
-        # total=models.Count('id'),
-        today=models.Count('id', filter=models.Q(date_to=now.date())),
-        overdue=models.Count('id', filter=models.Q(date_to__lt=now.date()))
-    )
+		# total=models.Count('id'),
+		today=models.Count('id', filter=models.Q(date_to=now.date())),
+		overdue=models.Count('id', filter=models.Q(date_to__lt=now.date()))
+	)
 	return due_resumptions
 
 # Create your views here.
@@ -75,7 +75,9 @@ def index(request):
 		approval_desk = app.approval_status
 		approval_desk_id = app.approval_status.id
 	approval_status = Approval.objects.all().exclude(id__in=excluded).order_by('-id')
-	progress_bar_width=100/int(len(approval_status))
+	progress_bar_width=100/1
+	if int(len(approval_status)) > 0:
+		progress_bar_width=100/int(len(approval_status))
 	declined_app = LeaveApplication.objects.filter(created_by_id=request.user.id).last()
 	
 	context={"approval_desk":approval_desk, "approval_desk_id":approval_desk_id,
@@ -91,9 +93,7 @@ def index(request):
 
 
 def loginPage(request):
-	msg=None
-	userlogin = request.user
-	# print(userlogin.id)
+	msg,emp_details=None,None
 	if request.method == "POST":
 		username_var = request.POST.get('username')
 		password_var = request.POST.get('password')
@@ -102,7 +102,6 @@ def loginPage(request):
 		qs = User.objects.filter(username=username_var)
 		if len(qs) < 1:
 			msg = 'This user does not EXIST!'
-		
 		try:
 			user = User.objects.get(username=username_var)
 		except:
@@ -113,10 +112,16 @@ def loginPage(request):
 			pass
 		else:     
 			login(request, user)
-			# messages.success(request, "Welcome" + " " + str(userlogin))
 			if "next" in request.POST:
 				return redirect(request.POST.get('next'))
 			else:
+				try:
+					emp_details=EmploymentDetails.objects.get(user_id=user.id)
+					if not emp_details.grade or not emp_details.ippis_no or not emp_details.designation:
+						messages.info(request,"Please update your record before you continue")
+						return redirect('edit_employment_detail',emp_details.id)
+				except ObjectDoesNotExist:
+					return redirect('employment_detail',user.id)
 				if Head.objects.filter(user_id=request.user.id).exists():
 					return HttpResponseRedirect("list_pending_leave_applications")
 				else:
@@ -177,13 +182,23 @@ def registerUser(request):
 
 @login_required(login_url='login')
 def staff_biodata_summary(request,id):# id = id
+	contact,address,employee=None,None,None
 	try:
 		user = User.objects.get(id=id)
 	except ObjectDoesNotExist:
 		return redirect("error_handling")
-	contact = Contact.objects.get(user=user)
-	address = Address.objects.get(user=user)
-	employee = EmploymentDetails.objects.get(user=user)
+	try:
+		contact = Contact.objects.get(user=user)
+	except ObjectDoesNotExist:
+		pass
+	try:
+		address = Address.objects.get(user=user)
+	except ObjectDoesNotExist:
+		pass
+	try:
+		employee = EmploymentDetails.objects.get(user=user)
+	except ObjectDoesNotExist:
+		pass
 	context= {'user':user,"cont":contact,"address":address,"emply":employee}
 	return render(request, 'accounts/staff_biodata_summary.html', context )
 
@@ -191,23 +206,26 @@ def staff_biodata_summary(request,id):# id = id
 #updateUser views
 @login_required(login_url='login')
 def update_view(request ,id):
-    user = User.objects.get(id=id)
-    form = UpdateUserForm(instance=user)
-
-    employee_detail = EmploymentDetails.objects.get(user=user)
-
-    if request.method == 'POST':
-        form = UpdateUserForm(request.POST,request.FILES, instance=user)
-        if form.is_valid():
-            form.save(commit=False)
-            form.user_id = id
-            form.save()
-            return redirect('edit_employment_detail',id=employee_detail.id)
-    context =  {'form': form, 'user':user}
-    return render(request, 'accounts/edit_registration.html',context)
+	user = User.objects.get(id=id)
+	form = UpdateUserForm(instance=user)
+	employee_detail = EmploymentDetails.objects.get(user=user)
+	if request.method == 'POST':
+		form = UpdateUserForm(request.POST,request.FILES, instance=user)
+		if form.is_valid():
+			form.save(commit=False)
+			form.user_id = id
+			form.save()
+			return redirect('edit_employment_detail',id=employee_detail.id)
+	context =  {'form': form, 'user':user}
+	return render(request, 'accounts/edit_registration.html',context)
 
 def error_handling_view(request):
 	return render(request, 'home/page-404.html',{})
+
+def search_unit(request):
+	dept = request.GET.get('dept_id')
+	units =Unit.objects.filter(department=dept)
+	return render(request,'accounts/units.html',{"units":units})
 
 
 @login_required(login_url='login')
@@ -223,7 +241,30 @@ def reset_password(request,id):
 		context = {"user":all_users}
 		return render(request, 'accounts/user_list.html', context)	
 	else:
-	   	return redirect(user_list)	
+	   	return redirect(user_list)
+
+@login_required(login_url='login')
+def auto_run_view(request):
+	pass
+	users=User.objects.filter(password='')
+	for user in users:
+		user.set_password('pass')
+		user.save()
+
+	# users=User.objects.all()
+	# ippis_no=None
+	# for user in users:
+	# 	if user.ippis_no:
+	# 		ippis_no=user.ippis_no
+	# 	emp_detail=EmploymentDetails.objects.get_or_create(
+	# 		user_id=user.id,
+	# 		ministry='Health',
+	# 		salary_scale_id=user.salary_scale.id,
+	# 		grade_id=user.grade_level.id,
+	# 		ippis_no=ippis_no
+	# 	)
+
+	return redirect('index')	
 	
 @login_required(login_url='login')
 def user_list(request):

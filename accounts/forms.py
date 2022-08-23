@@ -6,7 +6,7 @@ class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['first_name','last_name','other_name','username','file_number',
-            'date_of_birth','gender','passport','password1','password2'] #,'nationality'
+            'gender','passport','password1','password2'] #,'nationality'
     
 
 class UpdateUserForm(ModelForm):
@@ -55,13 +55,13 @@ class UpdateUserForm(ModelForm):
     })
     
         
-        self.fields['date_of_birth'].widget.attrs.update({
-            ' required':'',
-            'name':'date_of_birth',
-            'id':'usernameValidate',
-            'type':'date',
-            'class':"form-control", 
-    })
+    #     self.fields['date_of_birth'].widget.attrs.update({
+    #         ' required':'',
+    #         'name':'date_of_birth',
+    #         'id':'usernameValidate',
+    #         'type':'date',
+    #         'class':"form-control", 
+    # })
     
         
         self.fields['gender'].widget.attrs.update({
@@ -106,7 +106,7 @@ class UpdateUserForm(ModelForm):
         model = User
 
         fields = ['first_name','last_name','other_name','username','file_number',
-                    'date_of_birth','gender','department','directorate','passport'] 
+                    'gender','department','directorate','passport'] 
     
     
    

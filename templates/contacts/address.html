@@ -10,16 +10,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
     input{
-        width: 90%;
+        /* width: 90%;
          padding: 5px 10px;
-         box-sizing: border-box;
+         box-sizing: border-box; */
        /*  border: 2px solid lightskyblue;
          border-radius: 10px;*/
      } 
      select{
-         width: 90%;
+         /* width: 90%;
          padding: 5px 10px;
-         box-sizing: border-box;
+         box-sizing: border-box; */
         /* border: 2px solid lightskyblue;
          border-radius: 10px;*/
      } 
@@ -48,12 +48,13 @@
         
       <h4 style="color:green;"> {{user.first_name}} {{user.last_name}}  |   {{user.file_number}}</h4>
       <hr>
-    <form method="POST" class="needs-validation" novalidate>
+    <form method="POST" id="contact-form" class="needs-validation" lgas-url="{% url 'load_state' %}" novalidate>
         {% csrf_token %}
-<div class="form-row">
+<div class="form-row" form-group>
     <div class="col-md-4 mb-3">
         <label for="validationCustom01">Email Address</label><br>
         {{form.email}}
+        <small class="text-danger">{{ form.errors.email|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -61,6 +62,7 @@
     <div class="col-md-4 mb-3">
         <label for="validationCustom02">Phone 1</label><br>
          {{form.phone1}}
+         <small class="text-danger">{{ form.errors.phone1|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -68,6 +70,7 @@
     <div class="col-md-4 mb-3">
         <label for="validationCustom02">Phone 2</label><br>
          {{form.phone2}}
+         <small class="text-danger">{{ form.errors.phone2|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -77,6 +80,7 @@
     <div class="col-md-4 mb-3">
         <label for="validationCustom01">Nationality</label><br>
         {{form.nationality}}
+        <small class="text-danger">{{ form.errors.nationality|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -84,6 +88,7 @@
     <div class="col-md-4 mb-3">
         <label for="validationCustom02">State Of Origin</label><br>
         {{form.state_of_origin}}
+        <small class="text-danger">{{ form.errors.state_of_origin|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -91,6 +96,7 @@
     <div class="col-md-4 mb-3">
         <label for="validationCustom02">Local Government</label><br>
           {{form.local_government_area}}
+          <small class="text-danger">{{ form.errors.local_government_area|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -100,6 +106,7 @@
     <div class="col-md-4 mb-6">
         <label for="validationCustom01">Next Of Kin Full Name</label><br>
          {{form.next_of_kin}}
+         <small class="text-danger">{{ form.errors.next_of_kin|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -107,6 +114,7 @@
     <div class="col-md-4 mb-3">
         <label for="validationCustom02">Next Of Kin Phone No</label><br>
          {{form.next_of_kin_phone_no}}
+         <small class="text-danger">{{ form.errors.next_of_kin_phone_no|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -114,6 +122,7 @@
     <div class="col-md-4 mb-3">
         <label for="validationCustom02">Address Of Next Of Kin</label><br>
         {{form.address_of_next_of_kin}}
+        <small class="text-danger">{{ form.errors.address_of_next_of_kin|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -126,11 +135,13 @@
     <div class="col-md-4 mb-6">
         <label for="validationCustom03">State Of Residence</label><br>
        {{address_form.state_of_residence}}
+       <small class="text-danger">{{ address_form.errors.state_of_residence|striptags }}</small>
        
     </div>
     <div class="col-md-4 mb-6">
         <label for="validationCustom04">Local Goverment Area</label><br>
-       {{address_form.local_government_area_of_residence}}
+        {{address_form.local_government_area_of_residence}}
+        <small class="text-danger">{{address_form.errors.local_government_area_of_residence|striptags }}</small>
        
     </div>
 </div> 
@@ -140,6 +151,7 @@
     <div class="col-md-12 mb-1">
         <label for="validationCustom02"> Residential Address</label><br>
         {{address_form.residential_address}}
+        <small class="text-danger">{{ address_form.errors.residential_address|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -151,12 +163,19 @@
     <div class="col-md-4 mb-6">
         <label for="validationCustom03">State Of Permanent Address</label><br>
        {{address_form.state_of_permanent}}
+       <small class="text-danger">{{ address_form.errors.state_of_permanent|striptags }}</small>
+       <div class="valid-feedback">
+            
+    </div>
        
     </div>
     <div class="col-md-4 mb-6">
         <label for="validationCustom04">Local Goverment Area</label><br>
        {{address_form.local_government_area_of_permanent}}
-       
+       <small class="text-danger">{{ address_form.errors.local_government_area_of_permanent|striptags }}</small>
+       <div class="valid-feedback">
+            
+    </div>
     </div>
 </div> 
 
@@ -165,6 +184,7 @@
     <div class="col-md-12 mb-3">
         <label for="validationCustom02"> Permanent Home Address</label><br>
         {{address_form.permanent_home_address}}
+        <small class="text-danger">{{ address_form.errors.permanent_home_address|striptags }}</small>
         <div class="valid-feedback">
             
         </div>
@@ -172,41 +192,58 @@
 </div>
 <br>
 
-<button class="btn  btn-primary" type="submit">Submit form</button>
+       <button class="btn  btn-primary" type="submit">Submit form</button>
 </form>
 
-    <!-- <script>
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (function() {
-            'use strict';
-            window.addEventListener('load', function() {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
-    </script> -->
-       </div>
-      
-         </div>
-        
-           </div>                           
             </div>
-            </div>
-            </div>
-            </div>
-        </section>
+        </div>                           
+    </div>
+</div>
+</div>
+</div>
+</section>
         <!-- [ Main Content ] end -->
-    
+    <script>
+        $('#id_state_of_origin').change(function(){
+            let url = $('#contact-form').attr('lgas-url');
+            let state = $(this).val()
+            $.ajax({
+                url:url,
+                data:{'state_id':state},
+                success:(data)=>{
+                    $('#id_local_government_area').html(data)
+                    console.log(data)
+                }
+
+            })
+        })
+        $('#id_state_of_residence').change(function(){
+            let url = $('#contact-form').attr('lgas-url');
+            let state = $(this).val()
+            $.ajax({
+                url:url,
+                data:{'state_id':state},
+                success:(data)=>{
+                    $('#id_local_government_area_of_residence').html(data)
+                    console.log(data)
+                }
+
+            })
+        })
+        $('#id_state_of_permanent').change(function(){
+            let url = $('#contact-form').attr('lgas-url');
+            let state = $(this).val()
+            $.ajax({
+                url:url,
+                data:{'state_id':state},
+                success:(data)=>{
+                    $('#id_local_government_area_of_permanent').html(data)
+                    console.log(data)
+                }
+
+            })
+        })
+    </script>
     {% endblock content %}
     
     <!-- Specific Page JS goes HERE  -->

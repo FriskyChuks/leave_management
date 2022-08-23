@@ -23,6 +23,10 @@ def contact_address_views(request,id):
 	context = {'form':contact_form, 'user':user,'address_form':address_form} 
 	return render(request,'contacts/address.html',context)
 
+def load_state(request):
+	state_id = request.GET.get('state_id')
+	lgas = LocalGovernmentArea.objects.filter(state=state_id)
+	return render(request,'contacts/state_list.html',{"lgas":lgas})
 
 def edit_contact_address_views(request,id):
 	user = User.objects.get(id=id)

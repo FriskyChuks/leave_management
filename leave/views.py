@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,HttpResponse
 from django.contrib import messages
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -6,20 +6,19 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
-from accounts.decorators import allowed_users
+# for pdf print
+from io import BytesIO
+from django.template.loader import get_template
+from django.views import View
+from xhtml2pdf import pisa
 
+from accounts.decorators import allowed_users
+from .logics import *
 from .models import *
 from .forms import *
 from registry.models import *
 from contact.models import *
 
-
-def get_heads_of_locations(request):
-	user = User.objects.get(id=request.user.id)
-	head=None
-	for head in user.head_set.all():
-		head=head
-	return head
 
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['support'])
@@ -45,48 +44,16 @@ def LeaveDurationView(request):
 	context = {'form':form } 
 	return render(request, 'leave/leaveduration.html', context)
 
-def check_leave_eligibility(request,leave_type_id):
-	month_difference=12
-	previous_leaves=LeaveApplication.objects.filter(
-		created_by_id=request.user.id,leave_type_id=leave_type_id,status__status='done')
-	if previous_leaves:
-		last_leave_date=previous_leaves.last().date_to
-		delta = relativedelta(datetime.today(), last_leave_date)
-		month_difference =  delta.months + (delta.years * 12)
-	return month_difference
-
-def check_current_year(request,leave_type_id):
-	same_year=False
-	last_leave=LeaveApplication.objects.filter(created_by_id=request.user.id,
-		leave_type_id=leave_type_id,status__status='done').last()
-	if last_leave:
-		if last_leave.date_from.year==datetime.now().date().year:
-			same_year=True	
-	return same_year
-		  
-
-def check_for_active_leave(request):
-	excluded = ['done','declined','partly done']
-	active_leave = LeaveApplication.objects.filter(created_by=request.user.id).exclude(
-					status__status__in=excluded)
-	return active_leave
-
-def check_if_user_is_head(request):
-	approval_status=5
-	heads = Head.objects.filter(user_id=request.user.id)
-	if heads.exists():
-		for head in heads:
-			if head.is_head_of_directorate:
-				approval_status=2
-			elif head.is_head_of_dept:
-				approval_status=3
-			elif head.is_head_of_unit:
-				approval_status=4
-	return approval_status
-
 
 @login_required(login_url='login')
-def LeaveApplicationview(request, id):    
+def LeaveApplicationview(request, id): 
+	try:
+		emp_details=EmploymentDetails.objects.get(user_id=request.user.id)
+		if not emp_details.grade or not emp_details.ippis_no or not emp_details.designation:
+			messages.info(request,"Please update your record before you continue")
+			return redirect('edit_employment_detail',emp_details.id)
+	except ObjectDoesNotExist:
+		return redirect('employment_detail',request.user.id)   
 	# check for active leave 
 	if len(check_for_active_leave(request))>=1:
 		messages.error(request, "You are not eligible for a leave now; you have an active leave")
@@ -95,8 +62,9 @@ def LeaveApplicationview(request, id):
 	leave_type = LeaveType.objects.get(id=id)
 	user = request.user
 	this_year = datetime.now()
+	approval_status=Approval.objects.get(approval='none')
 	no_of_days_used = LeaveApplication.objects.filter(
-		created_by_id=user,leave_type_id=id,date_from__year=this_year.year)
+		created_by_id=user,leave_type_id=id,date_from__year=this_year.year).exclude(approval_status=approval_status)
 	duration,total_days_used,days_remaining = 0,0,0
 	for days in no_of_days_used:
 		total_days_used += days.requested_duration
@@ -288,7 +256,8 @@ def recommend_resumption_view(request,id):
 	# for app in leave_application:
 	leave_application = LeaveApplication.objects.get(id=id)
 	current_resumption_approval = leave_application.resumption_approval.id
-	obj=LeaveResumption.objects.create(leave_application_id=id,recommended_by_id=request.user.id)
+	obj=LeaveResumption.objects.create(
+					leave_application_id=id,recommended_by_id=request.user.id)
 	obj.save()
 	user = User.objects.get(id=request.user.id)
 	for head in user.head_set.all():
@@ -363,3 +332,31 @@ def list_declined_applications_view(request):
 		leave_application__created_by__id=request.user.id,
 		leave_application__status__status='declined').order_by('-id')
 	return render(request,'leave/declined_apps.html',{"declined_apps":declined_apps})
+
+
+#======== render pdf view start ==============
+
+def approved_leave_appcation_list(request):
+	leave_status = LeaveApplicationStatus.objects.get(id=2)	
+	leave_applications = LeaveApplication.objects.filter(status =leave_status)	
+	context ={'leave_applications':leave_applications} 	
+	return render(request, 'leave/approved_leave_appcation.html',context)  
+
+def render_pdf_view(request,id):	
+    leave_pass = 	LeaveApplication.objects.get(id=id)
+    template_path = 'leave/pass.html'
+    context = {'pass': leave_pass}
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="leave.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+       html, dest=response)
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
+#========= ends here =================

@@ -17,13 +17,13 @@
                         <h3 style="margin-left: 300px ;">Edit Employment  Details</h3>
                     </div>
                     <div class="card-body">
-                        <h4 style="color:green;"> {{user.first_name}} | {{user.last_name}} | {{user.file_number}}</h4>
+                        <h4 style="color:green;"> {{user.first_name}} {{user.last_name}} | {{user.file_number}}</h4>
                         <form method="POST" class="needs-validation" novalidate>
                             {% csrf_token %}
                             <div class="form-row">
                                 <div class="col-md-4 mb-3">
                                     <label for="validationCustom01">Ministry</label>
-                                    {{form.ministry}}
+                                    <div>{{form.ministry}}</div>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="validationCustom02">Designation</label>
@@ -36,14 +36,14 @@
                             </div>
                             <div class="form-row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="validationCustom04">Grade</label>
+                                    <label for="validationCustom04">Level</label>
                                     {{form.grade}}
+                                    <!-- <input class="form-control" value="{{employmentdetail.grade}}" readonly>     -->
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="validationCustom03">Step</label>
                                     {{form.step}}
                                 </div>
-
                                 <div class="col-md-4 mb-3">
                                     <label for="validationCustom05">IPPIS Number</label>
                                     {{form.ippis_no}}

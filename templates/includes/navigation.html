@@ -95,13 +95,13 @@
                 <li>
                     <div class="dropdown drp-user">
                         <a href="#!" class="dropdown-toggle" data-toggle="dropdown">
-                            <img style="width:40px ;" src="{{request.user.passport.url}} " class="img-radius " alt="">   {{ request.user.username }}
+                            <img style="width:40px ;" src="{{request.user.passport.url}} " class="img-radius " alt="">   {{ request.user.first_name }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
                             <div class="pro-head">
                                 <img style="width:40px ;" src="{{request.user.passport.url}}" class="img-radius " alt="User-Profile-Image">
                                 <span>
-                                    {{ request.user.username }}
+                                    {{ request.user.first_name }}
                                 </span>
                                 <a href="" class="dud-logout" title="Logout">
                                     <i class="feather icon-log-out"></i>

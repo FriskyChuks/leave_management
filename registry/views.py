@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 
 from accounts.models import *
+from contact.models import Contact
 
 from .models import *
 from .forms import *
@@ -21,7 +23,7 @@ def employment_detail_view(request,id):
         if len(ippis_no) < 6 or len(ippis_no) > 6:
             messages.error(request, 'IPPIS-NO must be 6-digits!')
             return redirect('employment_detail',id=id)
-        if int(grade) < 6:
+        if int(grade) < 6 and salary_scale == 1:
             staff_category_id = 1
         else:
             staff_category_id = 2
@@ -47,9 +49,15 @@ def edit_employment_detail_view(request,id):
         if form.is_valid():
             form.save(commit=False)
             form.user_id = id
+            form.grade_id = employmentdetail.grade
             form.save()
-            return redirect('edit_contact_address',id=user.id)
-    context =  {'form': form, 'user':user}
+            try:
+                Contact.objects.get(user_id=id)
+                return redirect('edit_contact_address',id=user.id)
+            except ObjectDoesNotExist:
+                print("New Contact")
+                return redirect('contact_address',id=user.id)
+    context =  {'form': form, 'user':user,'employmentdetail':employmentdetail}
     return render(request, 'registry/edit_employment_detail.html',context)  
 
 
