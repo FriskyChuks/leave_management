@@ -46,7 +46,7 @@
                             </td>
                             <td>{{leave_app.requested_duration}} days</td>
                             <td>{{leave_app.destination}}</td>
-                           <td><button><a href="{% url 'pdf_view' leave_app.id %}">Print</a></button></td>
+                           <td><button><a href="{% url 'pdf_view' leave_app.id %}" target="_blank">Print</a></button></td>
                             
                         </tr>
                         {% endfor %}

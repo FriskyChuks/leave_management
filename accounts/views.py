@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import models
 import datetime
 from django.utils import timezone
+from django.db.models import Q
 
 from contact.models import *
 from registry.models import *
@@ -112,7 +113,10 @@ def loginPage(request):
 			pass
 		else:     
 			login(request, user)
-			if "next" in request.POST:
+			if user.department.has_unit and not user.unit:
+				messages.info(request,"You are not assigned to a Unit, please update that!")
+				return redirect('update_user_unit')
+			elif "next" in request.POST:
 				return redirect(request.POST.get('next'))
 			else:
 				try:
@@ -266,11 +270,6 @@ def auto_run_view(request):
 
 	return redirect('index')	
 	
-@login_required(login_url='login')
-def user_list(request):
-	user = User.objects.all()
-	return render(request, 'accounts/user_list.html',{'user':user})	
-	
 
 @login_required(login_url='login')
 def change_password(request):
@@ -295,3 +294,62 @@ def change_password(request):
 			context["msg"] = " Current Password is Incorrect "
 			context["col"] = "alert-danger"	
 	return render(request, 'accounts/change_password.html',context)
+
+
+def assign_heads_view(request,id):
+	groups = UserGroup.objects.all()
+	user=User.objects.get(id=id)
+	
+	sub_unit =bool(request.POST.get('sub_unit'))
+	unit = bool(request.POST.get('unit'))
+	department = bool(request.POST.get('department'))
+	directorate = bool(request.POST.get('directorate'))
+	# group=request.POST.get('group')
+	
+	group_id = UserGroup.objects.get(group='head').id
+	user_is_head = Head.objects.filter(user_id=id)
+
+	if request.method=="POST":
+		if user_is_head:
+			Head.objects.filter(user_id=id).update(user_id=id,is_head_of_unit=unit,
+			is_head_of_dept=department,is_head_of_directorate=directorate)
+		else:
+			Head.objects.create(user_id=id,is_head_of_unit=unit,
+			is_head_of_dept=department,is_head_of_directorate=directorate)
+		User.objects.filter(id=id).update(user_group_id=group_id)
+		messages.success(request,"Successfully assigned!")
+		return redirect('index')
+	context={"groups":groups,"user":user}
+	return render(request,'accounts/assign_heads.html',context)
+
+
+def search_user(request):
+	try:
+		query = request.GET.get('q')
+	except:
+		query = None
+	lookups = ( 	Q(file_number__iexact=query)|
+					Q(first_name__icontains=query)| 
+					Q(last_name__icontains=query) |
+					Q(username__iexact=query)
+				)
+	if query:
+		results = User.objects.filter(lookups).distinct()
+		context = {'query': query,"results":results}
+		template = 'accounts/search.html'
+	else:
+		a = "Please enter a search parameter!"
+		template = 'accounts/search.html'
+		context = {'query1': a}
+	return render(request, template, context)
+
+
+def update_user_unit(request):
+	user=User.objects.get(id=request.user.id)
+	units=Unit.objects.filter(department_id=user.department.id).order_by('title')
+	if request.method=='POST':
+		User.objects.filter(id=request.user.id).update(unit_id=request.POST.get('unit'))
+		messages.success(request,"Thanks for being positive today!")
+		return redirect('index')
+	context={"user":user,"units":units}
+	return render(request,'accounts/update_user_unit.html',context)

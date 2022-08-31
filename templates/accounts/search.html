@@ -1,0 +1,91 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Tables {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Search Results</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
+                                <li></li>
+                                <!-- <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
+                                <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+            <!-- [ Main Content ] start -->
+            <div class="row">
+                <!-- [ stiped-table ] start -->
+                <div class="col-xl-12">
+                    <div class="card">
+                        {% if not query %}
+                            <div class="card-header">    
+                                <h5>No Search</h5>
+                                <span class="d-block m-t-5">{{query1}}</span>
+                            </div>
+                        {% else %}
+                            <div class="card-header">
+                                <span class="d-block m-t-5">Your search for 
+                                    <code>{{query}}</code> yielded <code>{{results.count}}</code> record(s)
+                                </span>    
+                            </div>
+                            <!-- table -->
+                            <div class="card-body table-border-style">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>FILE NO</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>DEPARTMENT</th>
+                                                <th>ACTIONS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for result in results %}
+                                                <tr>
+                                                    <td><a href="{% url 'staff_biodata' result.id %}">{{ result.file_number }}</a></td>
+                                                    <td>{{ result.first_name }}</td>
+                                                    <td>{{ result.last_name }}</td>
+                                                    <td>{{ result.department.title }}</td>
+                                                    <td>
+                                                        <a href="{% url 'assign_heads' result.id %}">Assign Group/Head</a> |
+                                                        <a href="{% url 'assign_heads' result.id %}">Reset password</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- [ Background-Utilities ] end -->
+            </div>
+            <!-- [ Main Content ] end -->
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

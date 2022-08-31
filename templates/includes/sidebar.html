@@ -27,8 +27,8 @@
 			<li><a href="{% url 'leave_status_detail' %}">Current Leave status</a></li>
 			<li><a href="{% url 'leave_history' %}">Leave Records</a></li>
 			{% if request.user.user_group.group == 'head' or request.user.user_group.group == 'leave_and_passage' %}
-			<li><a href="{% url 'list_pending_leave_applications' %}">Pending Applications</a></li>
-			<li><a href="{% url 'list_resumption' %}">Pending Resumptions</a></li>
+				<li><a href="{% url 'list_pending_leave_applications' %}">Pending Applications</a></li>
+				<li><a href="{% url 'list_resumption' %}">Pending Resumptions</a></li>
 			{% endif %}
 		</ul>
 	</li>
@@ -37,7 +37,6 @@
 	    <a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-lock"></i></span><span class="pcoded-mtext"><b>Authentication</b></span></a>
 	    <ul class="pcoded-submenu">
 	        <li><a href="{% url 'register' %}">Register User</a></li>
-	        <li><a href="{% url 'user_list' %}">User List</a></li>
 	    </ul>
 	</li>
 	<li class="nav-item pcoded-menu-caption">

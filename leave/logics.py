@@ -4,10 +4,7 @@ from dateutil.relativedelta import relativedelta
 from leave.models import *
 
 def get_heads_of_locations(request):
-	user = User.objects.get(id=request.user.id)
-	head=None
-	for head in user.head_set.all():
-		head=head
+	head=Head.objects.get(user_id=request.user.id)
 	return head
 
 def check_leave_eligibility(request,leave_type_id):

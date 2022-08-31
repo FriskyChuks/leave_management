@@ -1,0 +1,75 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">{{user.first_name}} {{user.last_name}} || {{user.file_number}}</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                                <li></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+            <!-- [ Main Content ] start -->
+            <div class="row">
+                <!-- [ form-element ] start -->
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{user.department.title}}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="" method="POST" class="row g-2">{% csrf_token %}
+                                <!-- <div class="col-md-6"> -->
+                                    <div class="col-md-6">
+                                        <select name="unit" class="form-control" id="validationCustom04" required>
+                                        <option selected disabled value="">Select a unit</option>
+                                        {% for unit in units %}
+                                            <option value="{{unit.id}}">{{ unit.title }}</option>
+                                        {% endfor %}
+                                        </select>
+                                        <div class="invalid-feedback">
+                                        Please select a valid unit.
+                                        </div>
+                                    </div>
+                                <!-- </div> -->
+                                <div class="col-12">
+                                    <br>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-success" type="submit">Update Profile</button>
+                                </div>
+                            </form> 
+                        </div> 
+                    </div>
+                    <!-- Input group -->
+                </div>
+                <!-- [ form-element ] end -->
+            </div>
+            <!-- [ Main Content ] end -->
+
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

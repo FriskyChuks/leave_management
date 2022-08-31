@@ -45,16 +45,31 @@
             <!-- [ Main Content ] start -->
             <div class="container">
                 <div class="row">
-                    {% for leave in leave_types %}
-                        <div class="card" style="width: 16rem;">
-                            <!-- <img src="..." class="card-img-top" alt="..."> -->
-                            <div class="card-body">
-                            <h5 class="card-title">{{ leave.title }} Leave</h5>
-                            <p class="card-text">Today's Stats</p>
-                            <a href="{% url 'leave_application' id=leave.id %}" class="btn btn-primary">Apply</a>
-                            </div>
-                        </div>&nbsp; 
-                    {% endfor %} 
+                    {% if request.user.gender.title == 'Male' %}
+                        {% for leave in leave_types %}
+                            {% if leave.title != 'Maternity' %}
+                                <div class="card" style="width: 16rem;">
+                                    <!-- <img src="..." class="card-img-top" alt="..."> -->
+                                    <div class="card-body">
+                                    <h5 class="card-title">{{ leave.title }} Leave</h5>
+                                    <p class="card-text">Today's Stats</p>
+                                    <a href="{% url 'leave_application' id=leave.id %}" class="btn btn-primary">Apply</a>
+                                    </div>
+                                </div>&nbsp;
+                            {% endif %} 
+                        {% endfor %}
+                    {% else %} 
+                        {% for leave in leave_types %}
+                            <div class="card" style="width: 16rem;">
+                                <!-- <img src="..." class="card-img-top" alt="..."> -->
+                                <div class="card-body">
+                                <h5 class="card-title">{{ leave.title }} Leave</h5>
+                                <p class="card-text">Today's Stats</p>
+                                <a href="{% url 'leave_application' id=leave.id %}" class="btn btn-primary">Apply</a>
+                                </div>
+                            </div>&nbsp; 
+                        {% endfor %}
+                    {% endif %} 
                 </div>
             </div>
             <!-- [ Main Content ] end -->

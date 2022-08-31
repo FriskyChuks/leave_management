@@ -141,25 +141,26 @@ def leave_application_status(request):
 def list_pending_leave_applications(request):
 	leave_apps=None
 	user = User.objects.get(id=request.user.id) 
+	head=Head.objects.get(user_id=user)
 	sub_unit_approval_status = Approval.objects.get(id=6)
 	id=sub_unit_approval_status.id
 	excluded_status=['done','partly done']
 	# for leave & passage staff
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-4).exclude(status_id=8)
-	for head in user.head_set.all():
-		# if head.is_head_of_sub_unit:
-		# 	leave_apps = LeaveApplication.objects.filter(approval_status_id=id,
-		# 				created_by__sub_unit__id=request.user.sub_unit.id).exclude(status_id=8)
-		if head.is_head_of_unit: 
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
-								created_by__unit__id=request.user.unit.id).exclude(status__status=excluded_status) 
-		elif head.is_head_of_dept:
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
-					created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
-		elif head.is_head_of_directorate:    
-			 leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
-			 		created_by__directorate__id=request.user.directorate.id).exclude(status__status=excluded_status)
+	
+	# if head.is_head_of_sub_unit:
+	# 	leave_apps = LeaveApplication.objects.filter(approval_status_id=id,
+	# 				created_by__sub_unit__id=request.user.sub_unit.id).exclude(status_id=8)
+	if head.is_head_of_unit: 
+		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
+							created_by__unit__id=request.user.unit.id).exclude(status__status=excluded_status) 
+	elif head.is_head_of_dept:
+		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
+				created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
+	elif head.is_head_of_directorate:    
+			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
+				created_by__directorate__id=request.user.directorate.id).exclude(status__status=excluded_status)
 	
 	context = {'leave_apps': leave_apps}
 	return render(request, 'leave/list_pending_leave_applications.html', context)    
@@ -208,7 +209,7 @@ def process_leave_pass_view(request,id):
 	LeaveApplication.objects.filter(id=id).update(
 		status_id=var_status,approval_status_id=1,resumption_approval=4 
 	 )
-	return redirect('list_pending_leave_applications')
+	return redirect('approved_leave')
 
 
 @login_required(login_url='login')  
@@ -234,17 +235,16 @@ def resume_leave_view(request,id):
 def list_resumption_view(request):
 	leave_apps=None
 	conditions=['resuming','partly resuming']
-	user = User.objects.get(id=request.user.id)
+	head = Head.objects.get(user_id=request.user.id)
 	dept_resumption_approval_id = ResumptionApproval.objects.get(approval='head of department').id
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+2)
-	for head in user.head_set.all():
-		if head.is_head_of_dept:
-			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
-						status__status__in=conditions,created_by__department__id=request.user.department.id)
-		elif head.is_head_of_directorate:
-			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+1,
-						status__status__in=conditions,created_by__directorate__id=request.user.directorate.id)
+	if head.is_head_of_dept:
+		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
+					status__status__in=conditions,created_by__department__id=request.user.department.id)
+	elif head.is_head_of_directorate:
+		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+1,
+					status__status__in=conditions,created_by__directorate__id=request.user.directorate.id)
 				
 	context = {"leave_apps":leave_apps}
 	return render(request, 'leave/list_pending_resumption.html', context)
@@ -353,8 +353,7 @@ def render_pdf_view(request,id):
     template = get_template(template_path)
     html = template.render(context)
     # create a pdf
-    pisa_status = pisa.CreatePDF(
-       html, dest=response)
+    pisa_status = pisa.CreatePDF(html, dest=response)
     # if error then show some funy view
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
