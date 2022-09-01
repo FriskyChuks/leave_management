@@ -36,7 +36,7 @@
             </ul>
             <!-- search ends here -->
             <ul class="navbar-nav ml-auto">
-                <li>
+                <!-- <li>
                     <div class="dropdown">
                         <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="icon feather icon-bell"></i><span class="badge bg-danger"><span class="sr-only"></span></span></a>
                         <div class="dropdown-menu dropdown-menu-right notification">
@@ -96,7 +96,7 @@
                             </div>
                         </div>
                     </div>
-                </li>
+                </li> -->
                 <li>
                     <div class="dropdown drp-user">
                         <a href="#!" class="dropdown-toggle" data-toggle="dropdown">
@@ -115,6 +115,7 @@
                             <ul class="pro-body">
                                 <li><a href="{% url 'staff_biodata' id=request.user.id %}" class="dropdown-item"><i class="feather icon-user"></i>My Profile</a></li>
                                 <li><a href="{% url 'change_password' %}" class="dropdown-item"><i class="feather icon-user"></i>Change password</a></li>
+                                <li><a href="{% url 'update_user_unit' %}" class="dropdown-item"><i class="feather icon-user"></i>Change Unit</a></li>
                                 <li><a href="{% url 'logout' %}" class="dropdown-item"><i class="feather icon-user"></i> Logout </a></li>
                             </ul>
                         </div>

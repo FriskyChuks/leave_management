@@ -4,7 +4,10 @@ from dateutil.relativedelta import relativedelta
 from leave.models import *
 
 def get_heads_of_locations(request):
-	head=Head.objects.get(user_id=request.user.id)
+	head=None
+	heads=Head.objects.filter(user_id=request.user.id)
+	for i in heads:
+		head=i
 	return head
 
 def check_leave_eligibility(request,leave_type_id):
@@ -45,3 +48,16 @@ def check_if_user_is_head(request):
 			elif head.is_head_of_unit:
 				approval_status=4
 	return approval_status
+
+
+def has_annual_leave(id):
+	today = datetime.now()
+	status=['done','partly done']
+	total_duration=0
+	annual_leaves=LeaveApplication.objects.filter(date_from__year=today.year,
+							leave_type__title__icontains='annual',
+							created_by_id=id,status__status__in=status)
+	for annual_leave in annual_leaves:
+		duration=annual_leave.requested_duration
+		total_duration += duration	
+	return total_duration

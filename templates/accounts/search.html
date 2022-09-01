@@ -59,15 +59,16 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for result in results %}
+                                            {% for staff in results %}
                                                 <tr>
-                                                    <td><a href="{% url 'staff_biodata' result.id %}">{{ result.file_number }}</a></td>
-                                                    <td>{{ result.first_name }}</td>
-                                                    <td>{{ result.last_name }}</td>
-                                                    <td>{{ result.department.title }}</td>
+                                                    <td><a href="{% url 'staff_biodata' staff.id %}">{{ staff.file_number }}</a></td>
+                                                    <td>{{ staff.first_name }}</td>
+                                                    <td>{{ staff.last_name }}</td>
+                                                    <td>{{ staff.department.title }}</td>
                                                     <td>
-                                                        <a href="{% url 'assign_heads' result.id %}">Assign Group/Head</a> |
-                                                        <a href="{% url 'assign_heads' result.id %}">Reset password</a>
+                                                        <a href="{% url 'assign_heads' staff.id %}">Assign Head</a> |
+                                                        <a href="{% url 'update_user_group' staff.id %}">Assign Group</a> |
+                                                        <a href="{% url 'reset_password' staff.id %}">Reset Password</a>
                                                     </td>
                                                 </tr>
                                             {% endfor %}

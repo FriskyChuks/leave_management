@@ -39,10 +39,17 @@
         <!-- HTML Content -->
         <div>
             <h1>Full Name:  {{pass.created_by.first_name}} {{pass.created_by.last_name}}</h1><hr>
-            <h1>Rank {{designation}}</h1></li><hr>
-            <h1>Leav Entitlement: {{pass.leave_duration}}</h1> <hr>
+            <h1>Rank {{emp_detail.designation}}</h1></li><hr>
+            <h1>Leave Entitlement: {{pass.leave_duration}}</h1> <hr>
             <h1>Commencement Date: {{pass.date_from}}</h1><hr>
             <h1>Resumption Date: {{pass.date_to}}</h1><hr>
+            <br>
+            <span style="float: left;">
+                Head of Admin:{{head_of_admin}}
+            </span>
+            <span style="float: right;">
+                Head of Dept/Unit: {{head_of_dept.user.first_name}} {{head_of_dept.user.last_name}}
+            </span>
         </div>
     </body>
     </html>

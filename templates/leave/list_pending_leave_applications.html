@@ -56,7 +56,7 @@
                                 <th>FILE NO</th>
                                 <th>STAFF</th>
                                 <th>LEAVE INFORMATION</th>
-                                <th>HAS ANNUAL LEAVE</th>
+                                <!-- <th>HAS ANNUAL LEAVE</th> -->
                                 <th>ACTIONS</th>
                             </tr>
                         </thead>
@@ -74,7 +74,7 @@
                                     {{leave_app.date_from}} ->
                                     {{leave_app.date_to}}
                                 </td>
-                                <td>Yes (No of days) <br>No (exhausted)</td>
+                                <!-- <td>Yes ({{has_annual_leave_check}}) <br>No (exhausted)</td> -->
                                 <td>
                                     <button class="btn btn-success" style="background-color: green; color:white">
                                         {% if request.user.user_group.group == 'leave_and_passage' %}

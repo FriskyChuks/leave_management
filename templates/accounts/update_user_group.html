@@ -33,49 +33,28 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4>Assign Heads/User Group</h4>
+                            <h5>{{user.department.title}} || {{ user.user_group }}</h5>
                         </div>
                         <div class="card-body">
                             <form action="" method="POST" class="row g-2">{% csrf_token %}
-                                <div class="col-md-6">
-                                    <h5>Heads</h5>
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" id="customRadio1" name="sub_unit" class="custom-control-input" disabled>
-                                        <label class="custom-control-label" for="customRadio1">Sub-unit Head</label>
-                                    </div>
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" id="customRadio2" name="unit" class="custom-control-input" value="True"
-                                        {% if not user.department.has_unit %} disabled {% endif %}>
-                                        <label class="custom-control-label" for="customRadio2">Unit Head</label>
-                                    </div>
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" id="customRadio3" name="department" class="custom-control-input" value="True">
-                                        <label class="custom-control-label" for="customRadio3">Head of Department</label>
-                                    </div>
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" id="customRadio4" name="directorate" class="custom-control-input" value="True">
-                                        <label class="custom-control-label" for="customRadio4">Head of Directorate</label>
-                                    </div>
-                                </div>
-                                <!-- <div class="col-md-6">
-                                    <h5>User Group</h5>
-                                    <div class="col-md-10">
+                                <!-- <div class="col-md-6"> -->
+                                    <div class="col-md-6">
                                         <select name="group" class="form-control" id="validationCustom04" required>
-                                        <option selected disabled value="">Select a group</option>
+                                        <option selected disabled value="">Select a User Group</option>
                                         {% for group in groups %}
                                             <option value="{{group.id}}">{{ group.group }}</option>
                                         {% endfor %}
                                         </select>
                                         <div class="invalid-feedback">
-                                        Please select a valid group.
+                                        Please select a valid unit.
                                         </div>
                                     </div>
-                                </div> -->
+                                <!-- </div> -->
                                 <div class="col-12">
                                     <br>
                                 </div>
                                 <div class="col-12">
-                                    <button class="btn btn-primary" type="submit">Submit form</button>
+                                    <button class="btn btn-success" type="submit">Update Profile</button>
                                 </div>
                             </form> 
                         </div> 

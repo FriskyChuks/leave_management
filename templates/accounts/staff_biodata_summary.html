@@ -232,12 +232,15 @@
         </div>
       </div>
       <br><br>
-      {% if request.user.user_group.group == 'leave_and_passage' %}
+      {% if request.user.user_group.group == 'registry' or request.user.user_group.group == 'developer' %}
         <button onclick="confirmRegistration()" class="btn btn-primary" style="background-color: green; color:white">
           <a style="color: white; text-decoration: none;" href="{% url 'index' %}">Comfirm Registration</a>
         </button>
         <button class="btn btn-success" style="background-color: blue; color:white">
           <a style="color: white; text-decoration: none;" href="{% url 'update' user.id %}">Edit  Registration</a>
+        </button>
+        <button class="btn btn-success" style="background-color: blue; color:white">
+          <a style="color: white; text-decoration: none;" href="{% url 'update_user_group' user.id %}">Assign User Group</a>
         </button>
       {% endif %}
       </div>

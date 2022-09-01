@@ -26,6 +26,7 @@
                         <tr>
                             <!-- <th>#</th> -->
                             <th>ID</th>
+                            <th>STAFF</th>
                             <th>LEAVE TYPE</th>
                             <th>DATES</th>
                             <th>DURATION</th>
@@ -37,6 +38,10 @@
                         {% for leave_app in leave_applications %}
                         <tr>
                             <td>{{leave_app.id}}</td>
+                            <td>
+                              {{leave_app.created_by.first_name}}
+                              {{leave_app.created_by.last_name}}
+                            </td>
                             <td>
                                 {{leave_app.leave_type.title}} Leave
                             </td>

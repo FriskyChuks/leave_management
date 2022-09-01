@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from datetime import datetime, timedelta
 
 # for pdf print
 from io import BytesIO
@@ -60,6 +61,7 @@ def LeaveApplicationview(request, id):
 		return redirect('index')    
 	states = State.objects.all()
 	leave_type = LeaveType.objects.get(id=id)
+	
 	user = request.user
 	this_year = datetime.now()
 	approval_status=Approval.objects.get(approval='none')
@@ -93,6 +95,15 @@ def LeaveApplicationview(request, id):
 		date_to = request.POST.get('date_to') 
 
 		requesting_duration = request.POST.get('requested_duration')
+		# CHECK MATERNITY LEAVE FOR USED ANNUAL LEAVE
+		if leave_type.title.lower() == "maternity" and has_annual_leave(request.user.id):
+			requesting_duration=int(requesting_duration)-int(has_annual_leave(request.user.id))
+			date_to=datetime.strptime(date_to, '%Y-%m-%d')
+			date_to -= timedelta(days=int(has_annual_leave(request.user.id)))
+			date_to=date_to.date()
+			messages.info(request, f"The days used for Annual leave has been deducted upfront \
+				You now have {requesting_duration}days left for your Maternity leave; Thanks!")
+			# ENDS HERE
 		if days_remaining < int(requesting_duration):
 			messages.error(request, f"{leave_type.title} leave duration cannot exceed {duration.duration} days!")
 			return redirect('leave_application',id=leave_type.id)
@@ -141,7 +152,7 @@ def leave_application_status(request):
 def list_pending_leave_applications(request):
 	leave_apps=None
 	user = User.objects.get(id=request.user.id) 
-	head=Head.objects.get(user_id=user)
+	heads=Head.objects.filter(user_id=user)
 	sub_unit_approval_status = Approval.objects.get(id=6)
 	id=sub_unit_approval_status.id
 	excluded_status=['done','partly done']
@@ -152,16 +163,17 @@ def list_pending_leave_applications(request):
 	# if head.is_head_of_sub_unit:
 	# 	leave_apps = LeaveApplication.objects.filter(approval_status_id=id,
 	# 				created_by__sub_unit__id=request.user.sub_unit.id).exclude(status_id=8)
-	if head.is_head_of_unit: 
-		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
-							created_by__unit__id=request.user.unit.id).exclude(status__status=excluded_status) 
-	elif head.is_head_of_dept:
-		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
-				created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
-	elif head.is_head_of_directorate:    
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
-				created_by__directorate__id=request.user.directorate.id).exclude(status__status=excluded_status)
-	
+	for head in heads:
+		if head.is_head_of_unit: 
+			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
+								created_by__unit__id=request.user.unit.id).exclude(status__status=excluded_status) 
+		elif head.is_head_of_dept:
+			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
+					created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
+		elif head.is_head_of_directorate:    
+				leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
+					created_by__directorate__id=request.user.directorate.id).exclude(status__status=excluded_status)
+
 	context = {'leave_apps': leave_apps}
 	return render(request, 'leave/list_pending_leave_applications.html', context)    
 
@@ -235,16 +247,17 @@ def resume_leave_view(request,id):
 def list_resumption_view(request):
 	leave_apps=None
 	conditions=['resuming','partly resuming']
-	head = Head.objects.get(user_id=request.user.id)
+	heads = Head.objects.filter(user_id=request.user.id)
 	dept_resumption_approval_id = ResumptionApproval.objects.get(approval='head of department').id
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+2)
-	if head.is_head_of_dept:
-		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
-					status__status__in=conditions,created_by__department__id=request.user.department.id)
-	elif head.is_head_of_directorate:
-		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+1,
-					status__status__in=conditions,created_by__directorate__id=request.user.directorate.id)
+	for head in heads:
+		if head.is_head_of_dept:
+			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
+						status__status__in=conditions,created_by__department__id=request.user.department.id)
+		elif head.is_head_of_directorate:
+			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+1,
+						status__status__in=conditions,created_by__directorate__id=request.user.directorate.id)
 				
 	context = {"leave_apps":leave_apps}
 	return render(request, 'leave/list_pending_resumption.html', context)
@@ -259,14 +272,13 @@ def recommend_resumption_view(request,id):
 	obj=LeaveResumption.objects.create(
 					leave_application_id=id,recommended_by_id=request.user.id)
 	obj.save()
-	user = User.objects.get(id=request.user.id)
-	for head in user.head_set.all():
-		if head.is_head_of_directorate:
-			LeaveApplication.objects.filter(id=id).update(
-				resumption_approval_id=current_resumption_approval+1)
-		else:
-			LeaveApplication.objects.filter(id=id).update(
-				resumption_approval_id=current_resumption_approval+1)
+	head=get_heads_of_locations(request)
+	if head.is_head_of_directorate:
+		LeaveApplication.objects.filter(id=id).update(
+			resumption_approval_id=current_resumption_approval+1)
+	else:
+		LeaveApplication.objects.filter(id=id).update(
+			resumption_approval_id=current_resumption_approval+1)
 	
 	return redirect('list_resumption')
 
@@ -292,11 +304,18 @@ def leave_history_view(request):
 
 @login_required(login_url='login')
 def leave_details_view(request,id):
+	cont,address=None,None
 	detail = LeaveApplication.objects.get(id=id)
 	user = User.objects.get(id=detail.created_by.id)
 	emply = EmploymentDetails.objects.get(user=user)
-	cont = Contact.objects.get(user=user)
-	address = Address.objects.get(user=user)    
+	try:
+		cont = Contact.objects.get(user=user)
+	except ObjectDoesNotExist:
+		pass
+	try:
+		address = Address.objects.get(user=user)
+	except ObjectDoesNotExist:
+		pass   
 	context= {'user':user, 'emply':emply, 'cont':cont, 'address':address, 'detail':detail}
 	return render(request, 'leave/leave_details.html', context)
 
@@ -342,20 +361,30 @@ def approved_leave_appcation_list(request):
 	context ={'leave_applications':leave_applications} 	
 	return render(request, 'leave/approved_leave_appcation.html',context)  
 
-def render_pdf_view(request,id):	
-    leave_pass = 	LeaveApplication.objects.get(id=id)
-    template_path = 'leave/pass.html'
-    context = {'pass': leave_pass}
-    # Create a Django response object, and specify content_type as pdf
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename="leave.pdf"'
-    # find the template and render it.
-    template = get_template(template_path)
-    html = template.render(context)
-    # create a pdf
-    pisa_status = pisa.CreatePDF(html, dest=response)
-    # if error then show some funy view
-    if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
+def render_pdf_view(request,id):
+	emp_detail=None	
+	leave_pass = 	LeaveApplication.objects.get(id=id)
+	emp_detail = EmploymentDetails.objects.get(user_id=leave_pass.created_by.id)
+	try:
+		head_of_dept = Head.objects.get(is_head_of_dept=True,
+			user_id__department__id=leave_pass.created_by.department.id)
+		head_of_admin = Head.objects.get(is_head_of_directorate=True,
+			user_id__directorate__id=leave_pass.created_by.department.directorate.id)
+	except ObjectDoesNotExist:
+		pass
+	template_path = 'leave/pass.html'
+	context = {'pass': leave_pass,"emp_detail":emp_detail,"head_of_dept":head_of_dept,
+				"head_of_admin":head_of_admin}
+	# Create a Django response object, and specify content_type as pdf
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'filename="leave.pdf"'
+	# find the template and render it.
+	template = get_template(template_path)
+	html = template.render(context)
+	# create a pdf
+	pisa_status = pisa.CreatePDF(html, dest=response)
+	# if error then show some funy view
+	if pisa_status.err:
+	   return HttpResponse('We had some errors <pre>' + html + '</pre>')
+	return response
 #========= ends here =================

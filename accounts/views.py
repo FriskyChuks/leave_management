@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db import models
-import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from django.db.models import Q
 
@@ -24,7 +24,7 @@ def total_leave_applications():
 		total=models.Count('id'),
 		today=models.Count('id', filter=models.Q(date_created__date=now.date())),
 		last_7_day=models.Count('id', filter=models.Q(date_created__date__gt=(
-					now - datetime.timedelta(days=7)).date())),
+					now - timedelta(days=7)).date())),
 	)
 	return total_applications
 
@@ -37,7 +37,7 @@ def pending_leave_pass():
 		# yesterday=models.Count('id', filter=models.Q(status__status__in=_status,
 		# 			date_created__date__gte=(now - datetime.timedelta(hours=24)).date())),
 		last_7_day=models.Count('id', filter=models.Q(approval_status__approval='cmd',
-						last_updated__date__gt=(now - datetime.timedelta(days=7)).date())),
+						last_updated__date__gt=(now - timedelta(days=7)).date())),
 	)
 	return pending_leave_pass
 
@@ -51,7 +51,7 @@ def pending_resumptions():
 		# yesterday=models.Count('id', filter=models.Q(resumption_approval__approval='none',
 		# 			last_updated__date__gte=(now - datetime.timedelta(hours=24)).date())),
 		last_7_day=models.Count('id', filter=models.Q(resumption_approval__approval='none',
-						last_updated__date__gt=(now - datetime.timedelta(days=7)).date())),
+						last_updated__date__gt=(now - timedelta(days=7)).date())),
 	)
 	return pending_resumptions
 
@@ -234,26 +234,20 @@ def search_unit(request):
 
 @login_required(login_url='login')
 def reset_password(request,id):
-	context = {}		
-	if request.method == "POST":
-		user = User.objects.get(id=id)
-		user.set_password("password")
-		user.save()
-		context["msg"] = "Password Reset Successfully"
-		context["col"] = "alert-success "
-		all_users = User.objects.all()
-		context = {"user":all_users}
-		return render(request, 'accounts/user_list.html', context)	
-	else:
-	   	return redirect(user_list)
-
+	user = User.objects.get(id=id)
+	user.set_password("password")
+	user.save()
+	messages.success(request, "Password reset successful!")
+	return redirect('index')
+	
+	 	
 @login_required(login_url='login')
 def auto_run_view(request):
 	pass
-	users=User.objects.filter(password='')
-	for user in users:
-		user.set_password('pass')
-		user.save()
+	# users=User.objects.filter(password='')
+	# for user in users:
+	# 	user.set_password('pass')
+	# 	user.save()
 
 	# users=User.objects.all()
 	# ippis_no=None
@@ -304,8 +298,7 @@ def assign_heads_view(request,id):
 	unit = bool(request.POST.get('unit'))
 	department = bool(request.POST.get('department'))
 	directorate = bool(request.POST.get('directorate'))
-	# group=request.POST.get('group')
-	
+	# group=request.POST.get('group')	
 	group_id = UserGroup.objects.get(group='head').id
 	user_is_head = Head.objects.filter(user_id=id)
 
@@ -328,11 +321,8 @@ def search_user(request):
 		query = request.GET.get('q')
 	except:
 		query = None
-	lookups = ( 	Q(file_number__iexact=query)|
-					Q(first_name__icontains=query)| 
-					Q(last_name__icontains=query) |
-					Q(username__iexact=query)
-				)
+	lookups = ( Q(file_number__iexact=query) | Q(first_name__icontains=query)| 
+				Q(last_name__icontains=query) | Q(username__iexact=query))
 	if query:
 		results = User.objects.filter(lookups).distinct()
 		context = {'query': query,"results":results}
@@ -353,3 +343,13 @@ def update_user_unit(request):
 		return redirect('index')
 	context={"user":user,"units":units}
 	return render(request,'accounts/update_user_unit.html',context)
+
+def update_user_group(request,id):
+	user=User.objects.get(id=id)
+	groups=UserGroup.objects.all()
+	if request.method=='POST':
+		User.objects.filter(id=id).update(user_group_id=request.POST.get('group'))
+		messages.success(request,"Updated Successfully!")
+		return redirect('index')
+	context={"user":user,"groups":groups}
+	return render(request,'accounts/update_user_group.html',context)

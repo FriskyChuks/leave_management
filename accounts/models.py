@@ -63,7 +63,7 @@ class User(AbstractUser):
     other_name = models.CharField(blank=True, max_length=50)
     file_number = models.IntegerField(unique=True, blank=True, null=True)
     username = models.CharField(unique=True, max_length=30)
-    # date_of_birth = models.DateField(blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE)
     # salary_scale = models.ForeignKey(SalaryScale, on_delete=models.CASCADE)
     # grade_level = models.ForeignKey(GradeLevel, on_delete=models.CASCADE)
@@ -76,7 +76,7 @@ class User(AbstractUser):
     
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ('first_name','last_name','other_name','file_number','gender','directorate','department')
+    REQUIRED_FIELDS = ('first_name','last_name','other_name','file_number','date_of_birth','gender','directorate','department')
 
     def __str__(self):
         return str(self.username)
