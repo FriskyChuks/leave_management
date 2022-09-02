@@ -69,7 +69,7 @@ def due_resumptions():
 @login_required(login_url='login')
 def index(request):
 	approval_desk,approval_desk_id=None,None
-	excluded = [1,2,6]
+	excluded = [1,2,6,7]
 	status=['in process','partly in process']
 	leave_app = LeaveApplication.objects.filter(created_by__id=request.user.id, status__status__in=status)
 	for app in leave_app:

@@ -64,9 +64,9 @@ def LeaveApplicationview(request, id):
 	
 	user = request.user
 	this_year = datetime.now()
-	approval_status=Approval.objects.get(approval='none')
+	approval_status=Approval.objects.get(approval='declined')
 	no_of_days_used = LeaveApplication.objects.filter(
-		created_by_id=user,leave_type_id=id,date_from__year=this_year.year).exclude(approval_status=approval_status)
+		created_by_id=user.id,leave_type_id=id,date_from__year=this_year.year).exclude(approval_status=approval_status)
 	duration,total_days_used,days_remaining = 0,0,0
 	for days in no_of_days_used:
 		total_days_used += days.requested_duration
@@ -153,7 +153,7 @@ def list_pending_leave_applications(request):
 	leave_apps=None
 	user = User.objects.get(id=request.user.id) 
 	heads=Head.objects.filter(user_id=user)
-	sub_unit_approval_status = Approval.objects.get(id=6)
+	sub_unit_approval_status = Approval.objects.get(id=6) # for sub-unit
 	id=sub_unit_approval_status.id
 	excluded_status=['done','partly done']
 	# for leave & passage staff
@@ -197,7 +197,7 @@ def recommend_leave_application(request, id):
 def decline_leave_application(request,id):
 	leave_application = LeaveApplication.objects.get(id=id)
 	_status = LeaveApplicationStatus.objects.get(status='declined')
-	approval_status=Approval.objects.get(approval='none')
+	approval_status=Approval.objects.get(approval='declined')
 	if request.method=='POST':
 		comment=request.POST.get('comment')
 		obj=LeaveApplication.objects.filter(id=id).update(
