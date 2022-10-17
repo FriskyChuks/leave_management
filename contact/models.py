@@ -33,7 +33,7 @@ class LocalGovernmentArea(models.Model):
 
 class Contact(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField(max_length=50)
+    email = models.EmailField(max_length=50, null=True, blank=True)
     phone1 = models.CharField(max_length=15)
     phone2 = models.CharField(max_length=15, null=True, blank=True)
     nationality =models.ForeignKey(Country, on_delete=models.CASCADE,null=True,blank=True)

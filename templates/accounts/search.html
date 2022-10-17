@@ -66,9 +66,11 @@
                                                     <td>{{ staff.last_name }}</td>
                                                     <td>{{ staff.department.title }}</td>
                                                     <td>
-                                                        <a href="{% url 'assign_heads' staff.id %}">Assign Head</a> |
-                                                        <a href="{% url 'update_user_group' staff.id %}">Assign Group</a> |
-                                                        <a href="{% url 'reset_password' staff.id %}">Reset Password</a>
+                                                        <a href="{% url 'leave_tracker' staff.id %}">Track Application</a> 
+                                                        {% if request.user.user_group.group == 'support' or request.user.user_group.group == 'developer' %}
+                                                            | <a href="{% url 'update_user_group' staff.id %}">Assign Group</a> |
+                                                            <a href="{% url 'reset_password' staff.id %}">Reset Password</a> 
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endfor %}

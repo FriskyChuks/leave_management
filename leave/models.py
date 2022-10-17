@@ -1,3 +1,4 @@
+from enum import unique
 from django.db import models
 from django.contrib.auth.models import User
 from registry.models import *
@@ -7,7 +8,7 @@ from contact.models import State
 # Create your models here.
 
 class LeaveType(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50,unique=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add =True)
     
@@ -62,7 +63,7 @@ class LeaveApplication(models.Model):
     last_updated = models.DateTimeField(auto_now_add=False,auto_now=True)
 
     def __str__(self):
-        return f"{self.leave_type} || {self.created_by.first_name} {self.created_by.last_name}"
+        return f"{self.leave_type} leave || {self.created_by.first_name} {self.created_by.last_name}"
 
 
 class LeaveRecommendation(models.Model):

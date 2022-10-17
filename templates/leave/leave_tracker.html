@@ -1,0 +1,137 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+<section class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            {% if declined_app.status.status == 'declined' %}
+            <div class="col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4 class="m-t-20">
+                            <span style="color: red;" class="text-c-black">Your application was Declined!</span> 
+                            <a href="{% url 'list_declined_applications' %}"><small> ...view detail</small></a>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if leave_app %}
+            <div class="col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <!-- <i class="fa fa-envelope-open text-c-blue d-block f-40"></i> -->
+                        <h4 class="m-t-20">
+                            <span class="text-c-black">Leave Application Tracker</span> 
+                            <a href="{% url 'leave_status_detail' %}"><small> ...view detail</small></a>
+                        </h4>
+                        <!-- <p class="m-b-20">Your main list is growing</p> -->
+                        
+                        <!-- PROGRESS BAR -->
+                        <div class="progress">
+                            {% for status in approval_status %}
+                                <div 
+                                    {% if status.id <= approval_desk_id %} 
+                                        class="progress-bar bg-danger" 
+                                    {% else %} 
+                                        class="progress-bar bg-success"
+                                    {% endif %}
+                                style="width: {{progress_bar_width}}%">
+                                    {{status.approval}} 
+                                    {% if status.id <= approval_desk_id %}(pending){% else %}
+                                    (treated){% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>  
+                        <!-- END OF PROGRESS BAR -->
+                        <br>
+                        <button class="btn btn-primary btn-sm btn-round">
+                            {% if approval_desk.approval == 'cmd' %} 
+                                Currently at Leave & Passage 
+                            {% else %} 
+                                Currently on the desk of your {{approval_desk.approval|title}} 
+                            {% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}                
+        </div>
+        <!-- [ Main Content ] end -->
+
+        <!-- Detail Here -->
+        {% if not recommendations %}
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
+                                <li></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+            <center><h3>No active leave to track</h3></center>
+        {% else %}
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        
+                        {% for recommendation in recommendations|slice:"0:1" %}
+                            <h5>{{recommendation.leave_application}}</h5><br> 
+                            Applied on: {{recommendation.leave_application.date_created}}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-body table-border-style">
+                    <h6>Leave Recommendation Process</h6>
+                    <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <!-- <th>#</th> -->
+                            <th>DATES</th>
+                            <th>RECOMMENDED/APPROVED BY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recommendation in recommendations %}
+                        <tr>
+                            <td>{{recommendation.date_created}}</td>
+                            <td>
+                                {{recommendation.created_by.first_name}}
+                                {{recommendation.created_by.last_name}}
+                            </td>    
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>    
+            </div>
+        {% endif %}
+</div>
+            </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</section>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <!-- Apex Chart -->
+    <script src="/static/assets/js/plugins/apexcharts.min.js"></script>
+    <!-- custom-chart js -->
+    <script src="/static/assets/js/pages/dashboard-main.js"></script>
+
+{% endblock javascripts %}

@@ -21,6 +21,10 @@ urlpatterns = [
     path('process_leave_pass/<id>/',views.process_leave_pass_view,name='process_leave_pass'),
     path('acknowledge_leave_resumption/<id>/',views.acknowledge_leave_resumption_view,name='acknowledge_leave_resumption'),
     path('list_declined_applications/',views.list_declined_applications_view,name='list_declined_applications'),
+    path('user_approved_application_list/',views.user_approved_application_list,name='user_approved_application_list'),
     path('pdf_view/<id>/',views.render_pdf_view,name='pdf_view'),
-    path('approved_leave/',views.approved_leave_appcation_list,name='approved_leave')
+    path('approved_leave/',views.approved_leave_appcation_list,name='approved_leave'),
+    path('create_department', views.create_department,name='create_department'),
+    path('create_unit',views.create_unit, name='create_unit'),
+    path('leave_tracker/<id>/',views.leave_tracker_view,name='leave_tracker'),
 ]    

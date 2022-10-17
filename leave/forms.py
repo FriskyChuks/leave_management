@@ -6,7 +6,8 @@ from django.forms.widgets import DateInput
 class LeaveTypeForm(ModelForm):
     class Meta:
         model = LeaveType
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['created_by']
 
 class LeaveDurationForm(ModelForm):
     class Meta:

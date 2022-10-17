@@ -7,11 +7,11 @@
 
 {% block content %}	
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900&display=swap" rel="stylesheet">
+<!-- <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900&display=swap" rel="stylesheet"> -->
 <!-- Bootstrap CSS -->
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+<!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'> -->
 <!-- Font Awesome CSS -->
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css'>
+<!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css'> -->
 <style>
  .student-profile .card {
       border-radius: 10px;
@@ -83,39 +83,40 @@
             <h3 class="mb-0"><i class=""></i></h3>
           </div>
           <div class="card-body">
-            <table class="table table-bordered ">
-
-              <tr>
-                <th width="30%">Email </th>
-                <td width="2%">:</td>
-                <td>{{cont.email}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Phone 1</th>
-                <td width="2%">:</td>
-                <td>{{cont.phone1}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Phone 2</th>
-                <td width="2%">:</td>
-                <td>{{cont.phone2}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Nationality</th>
-                <td width="2%">:</td>
-                <td>{{cont.nationality}}</td>
-              </tr>
-              <tr>
-                <th width="30%">State/Origin</th>
-                <td width="2%">:</td>
-                <td>{{cont.state_of_origin}}</td>
-              </tr>
-              <tr>
-                <th width="30%">L.G.</th>
-                <td width="2%">:</td>
-                <td>{{cont.local_government_area}}</td>
-              </tr>  
-            </table>    
+            <div class="table table-responsive">
+              <table class="table table-bordered ">
+                <tr>
+                  <th width="30%">Email </th>
+                  <td width="2%">:</td>
+                  <td>{{cont.email}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Phone 1</th>
+                  <td width="2%">:</td>
+                  <td>{{cont.phone1}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Phone 2</th>
+                  <td width="2%">:</td>
+                  <td>{{cont.phone2}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Nationality</th>
+                  <td width="2%">:</td>
+                  <td>{{cont.nationality}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">State/Origin</th>
+                  <td width="2%">:</td>
+                  <td>{{cont.state_of_origin}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">L.G.</th>
+                  <td width="2%">:</td>
+                  <td>{{cont.local_government_area}}</td>
+                </tr>  
+              </table> 
+            </div>   
           </div>
         </div> 
 
@@ -126,53 +127,55 @@
             <h3 class="mb-0"><i class="far fa-clone pr-1"></i>Staff Biodata</h3>
           </div>
           <div class="card-body pt-0">
-            <table class="table table-bordered">
-              <tr>
-                <th width="30%">Department</th>
-                <td width="2%">:</td>
-                <td>{{user.department}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Unit  </th>
-                <td width="2%">:</td>
-                <td>{{user.unit}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Directorate</th>
-                <td width="2%">:</td>
-                <td>{{user.directorate}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Ministry</th>
-                <td width="2%">:</td>
-                <td>{{emply.ministry}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Designation</th>
-                <td width="2%">:</td>
-                <td>{{emply.designation}}</td>
-              </tr>
-               <tr>
-                <th width="30%">Salary Scale</th>
-                <td width="2%">:</td>
-                <td>{{emply.salary_scale}}</td>
-              </tr>
-               <tr>
-                <th width="30%">Staff Category</th>
-                <td width="2%">:</td>
-                <td>{{emply.staff_category}}</td>
-              </tr>
-               <tr>
-                <th width="30%">Grade</th>
-                <td width="2%">:</td>
-                <td>{{emply.grade}}</td>
-              </tr>
-              <tr>
-                <th width="30%">Step</th>
-                <td width="2%">:</td>
-                <td>{{emply.step}}</td>
-              </tr>
-            </table>
+            <div class="table table-responsive">
+              <table class="table table-bordered">
+                <tr>
+                  <th width="30%">Department</th>
+                  <td width="2%">:</td>
+                  <td>{{user.department}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Unit  </th>
+                  <td width="2%">:</td>
+                  <td>{{user.unit}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Directorate</th>
+                  <td width="2%">:</td>
+                  <td>{{user.directorate}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Ministry</th>
+                  <td width="2%">:</td>
+                  <td>{{emply.ministry}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Designation</th>
+                  <td width="2%">:</td>
+                  <td>{{emply.designation}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Salary Scale</th>
+                  <td width="2%">:</td>
+                  <td>{{emply.salary_scale}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Staff Category</th>
+                  <td width="2%">:</td>
+                  <td>{{emply.staff_category}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Grade</th>
+                  <td width="2%">:</td>
+                  <td>{{emply.grade}}</td>
+                </tr>
+                <tr>
+                  <th width="30%">Step</th>
+                  <td width="2%">:</td>
+                  <td>{{emply.step}}</td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
           <div style="height: 26px"></div>
@@ -181,53 +184,55 @@
             <h3 class="mb-0"><i class="far fa-clone pr-1"></i>Contact Address</h3>
           </div>
           <div class="card-body pt-0">
-            <table class="table table-bordered">
-                <tr>
-                    <th width="30%">State Of Residence</th>
-                    <td width="2%">:</td>
-                    <td>{{address.state_of_residence}}</td>
-                </tr>
-                <tr>
-                    <th width="30%">Local Government Residence</th>
-                    <td width="2%">:</td>
-                    <td>{{address.local_government_area_of_residence}}</td>
-                </tr>
-                <tr>
-                    <th width="30%">Residential Address</th>
-                    <td width="2%">:</td>
-                    <td>{{address.residential_address}}</td>
-                </tr>
-                <tr>
-                    <th width="30%">State Of Permanent Address</th>
-                    <td width="2%">:</td>
-                    <td>{{address.state_of_permanent}}</td>
-                </tr>
-                <tr>
-                    <th width="30%">L.G. Permanent Address</th>
-                    <td width="2%">:</td>
-                    <td>{{address.local_government_area_of_permanent}}</td>
-                </tr>
-                <tr>
-                    <th width="30%">Permanent Home Address</th>
-                    <td width="2%">:</td>
-                    <td>{{address.permanent_home_address}}</td>
-                </tr>
-                <tr>
-                    <th width="30%"> Next Of Kin Full Name</th>
-                    <td width="2%">:</td>
-                    <td>{{cont.next_of_kin}}</td>
-                </tr>
-                <tr>
-                    <th width="30%">Next Of Kin Phone No</th>
-                    <td width="2%">:</td>
-                    <td>{{cont.next_of_kin_phone_no}}</td>
-                </tr>
-                <tr>
-                    <th width="30%">Address Next Of Kin</th>
-                    <td width="2%">:</td>
-                    <td>{{cont.address_of_next_of_kin}}</td>
-                </tr>
-            </table>
+            <div class="table table-responsive">
+              <table class="table table-bordered">
+                  <tr>
+                      <th width="30%">State Of Residence</th>
+                      <td width="2%">:</td>
+                      <td>{{address.state_of_residence}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%">Local Government Residence</th>
+                      <td width="2%">:</td>
+                      <td>{{address.local_government_area_of_residence}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%">Residential Address</th>
+                      <td width="2%">:</td>
+                      <td>{{address.residential_address}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%">State Of Permanent Address</th>
+                      <td width="2%">:</td>
+                      <td>{{address.state_of_permanent}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%">L.G. Permanent Address</th>
+                      <td width="2%">:</td>
+                      <td>{{address.local_government_area_of_permanent}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%">Permanent Home Address</th>
+                      <td width="2%">:</td>
+                      <td>{{address.permanent_home_address}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%"> Next Of Kin Full Name</th>
+                      <td width="2%">:</td>
+                      <td>{{cont.next_of_kin}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%">Next Of Kin Phone No</th>
+                      <td width="2%">:</td>
+                      <td>{{cont.next_of_kin_phone_no}}</td>
+                  </tr>
+                  <tr>
+                      <th width="30%">Address Next Of Kin</th>
+                      <td width="2%">:</td>
+                      <td>{{cont.address_of_next_of_kin}}</td>
+                  </tr>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -237,7 +242,7 @@
           <a style="color: white; text-decoration: none;" href="{% url 'index' %}">Comfirm Registration</a>
         </button>
         <button class="btn btn-success" style="background-color: blue; color:white">
-          <a style="color: white; text-decoration: none;" href="{% url 'update' user.id %}">Edit  Registration</a>
+          <a style="color: white; text-decoration: none;" href="{% url 'contact_address' user.id %}">Edit  Registration</a>
         </button>
         <button class="btn btn-success" style="background-color: blue; color:white">
           <a style="color: white; text-decoration: none;" href="{% url 'update_user_group' user.id %}">Assign User Group</a>

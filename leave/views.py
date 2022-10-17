@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib import messages
 from datetime import datetime
@@ -22,19 +23,21 @@ from contact.models import *
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['support'])
+@allowed_users(alllowed_roles=['support','developer'])
 def leave_type(request):
 	form = LeaveTypeForm()
 	if request.method == 'POST':
 		form = LeaveTypeForm(request.POST)
 		if form.is_valid():
-			form.save()
-			return redirect('index')
+			obj=form.save(commit=False)
+			obj.created_by_id = request.user.id
+			obj.save()
+			return redirect('leave_type')
 	context = {'form':form} 
 	return render(request, 'leave/leavetype.html', context)
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['support'])
+@allowed_users(alllowed_roles=['support','developer'])
 def LeaveDurationView(request):
 	form = LeaveDurationForm()
 	if request.method == 'POST':
@@ -48,13 +51,18 @@ def LeaveDurationView(request):
 
 @login_required(login_url='login')
 def LeaveApplicationview(request, id): 
+	user_groups = ['head of department','head of directorate']
 	try:
 		emp_details=EmploymentDetails.objects.get(user_id=request.user.id)
-		if not emp_details.grade or not emp_details.ippis_no or not emp_details.designation:
+		if not emp_details.grade or not emp_details.designation: #or not emp_details.designation:
 			messages.info(request,"Please update your record before you continue")
 			return redirect('edit_employment_detail',emp_details.id)
 	except ObjectDoesNotExist:
-		return redirect('employment_detail',request.user.id)   
+		return redirect('employment_detail',request.user.id)
+	# CHECK IF USER HAS A UNIT 
+	if request.user.user_group.group not in user_groups and request.user.department.has_unit and not request.user.unit:
+				messages.info(request,"You are not assigned to a Unit, please update that before you continue!")
+				return redirect('update_user_unit')  
 	# check for active leave 
 	if len(check_for_active_leave(request))>=1:
 		messages.error(request, "You are not eligible for a leave now; you have an active leave")
@@ -148,38 +156,36 @@ def leave_application_status(request):
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['leave_and_passage','head','developer'])	
+@allowed_users(alllowed_roles=['leave_and_passage','head of unit','head of department','head of directorate','developer','support'])	
 def list_pending_leave_applications(request):
 	leave_apps=None
 	user = User.objects.get(id=request.user.id) 
-	heads=Head.objects.filter(user_id=user)
-	sub_unit_approval_status = Approval.objects.get(id=6) # for sub-unit
+	groups=['head of unit','head of department','head of directorate']
+	heads = User.objects.filter(id=request.user.id,user_group__group__in=groups)
+	sub_unit_approval_status = Approval.objects.get(approval='head of sub-unit') # for id=6
 	id=sub_unit_approval_status.id
 	excluded_status=['done','partly done']
 	# for leave & passage staff
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-4).exclude(status_id=8)
-	
-	# if head.is_head_of_sub_unit:
-	# 	leave_apps = LeaveApplication.objects.filter(approval_status_id=id,
-	# 				created_by__sub_unit__id=request.user.sub_unit.id).exclude(status_id=8)
-	for head in heads:
-		if head.is_head_of_unit: 
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
-								created_by__unit__id=request.user.unit.id).exclude(status__status=excluded_status) 
-		elif head.is_head_of_dept:
-			leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
-					created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
-		elif head.is_head_of_directorate:    
-				leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
-					created_by__directorate__id=request.user.directorate.id).exclude(status__status=excluded_status)
+	else:
+		for user in heads:
+			if user.user_group.group == 'head of unit': 
+				leave_apps = LeaveApplication.objects.filter(approval_status_id=id-1,
+									created_by__unit__id=request.user.unit.id).exclude(status__status=excluded_status) 
+			elif user.user_group.group == 'head of department':
+				leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
+						created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
+			elif user.user_group.group == 'head of directorate':    
+					leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
+						).exclude(status__status=excluded_status)
 
 	context = {'leave_apps': leave_apps}
 	return render(request, 'leave/list_pending_leave_applications.html', context)    
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['head','support','developer'])
+@allowed_users(alllowed_roles=['head of unit','head of department','head of directorate'])
 def recommend_leave_application(request, id):
 	leave_application = LeaveApplication.objects.get(id=id)
 	current_approval_status = leave_application.approval_status_id
@@ -193,7 +199,7 @@ def recommend_leave_application(request, id):
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['head','support','developer'])
+@allowed_users(alllowed_roles=['head of unit','head of department','head of directorate'])
 def decline_leave_application(request,id):
 	leave_application = LeaveApplication.objects.get(id=id)
 	_status = LeaveApplicationStatus.objects.get(status='declined')
@@ -211,7 +217,7 @@ def decline_leave_application(request,id):
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['leave_and_passage','developer'])
+@allowed_users(alllowed_roles=['leave_and_passage'])
 def process_leave_pass_view(request,id):
 	# Update status=active or partly_active, approval=none and resumption_approval=default
 	instance = LeaveApplication.objects.get(id=id)
@@ -219,7 +225,7 @@ def process_leave_pass_view(request,id):
 	if instance.status.status=='partly in process':
 		var_status=2 # status=partly active
 	LeaveApplication.objects.filter(id=id).update(
-		status_id=var_status,approval_status_id=1,resumption_approval=4 
+		status_id=var_status,approval_status_id=1 
 	 )
 	return redirect('approved_leave')
 
@@ -227,43 +233,51 @@ def process_leave_pass_view(request,id):
 @login_required(login_url='login')  
 def resume_leave_view(request,id):
 	current_status=LeaveApplication.objects.get(id=id).status
-	head=get_heads_of_locations(request)
 	resumption_approval_id=1
-	if head:
-		if head.is_head_of_dept:
-			resumption_approval_id=2
-		elif head.is_head_of_directorate:
-			resumption_approval_id=3
+	groups=['head of unit','head of department','head of directorate']
+	heads = User.objects.filter(id=request.user.id,user_group__group__in=groups)
+	if heads:
+		for user in heads:
+			if user.user_group.group == 'head of department':
+				resumption_approval_id=2
+			elif user.user_group.group == 'head of directorate':
+				resumption_approval_id=3
 	status_id=3
 	if current_status=='partly active':
 		status_id=7
-	LeaveApplication.objects.filter(id=id).update(resumption_approval_id=resumption_approval_id,
-									status_id=status_id)# status='Resuming'
+	LeaveApplication.objects.filter(id=id).update(
+			resumption_approval_id=resumption_approval_id,status_id=status_id)# status='Resuming'
 	return redirect('leave_history')
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['leave_and_passage','head','support','developer'])
+@allowed_users(alllowed_roles=['leave_and_passage','head of unit','head of department','head of directorate','support','developer'])
 def list_resumption_view(request):
 	leave_apps=None
 	conditions=['resuming','partly resuming']
-	heads = Head.objects.filter(user_id=request.user.id)
 	dept_resumption_approval_id = ResumptionApproval.objects.get(approval='head of department').id
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+2)
-	for head in heads:
-		if head.is_head_of_dept:
-			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
-						status__status__in=conditions,created_by__department__id=request.user.department.id)
-		elif head.is_head_of_directorate:
-			leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+1,
-						status__status__in=conditions,created_by__directorate__id=request.user.directorate.id)
-				
+	groups=['head of unit','head of department','head of directorate']
+	heads = User.objects.filter(id=request.user.id,user_group__group__in=groups)
+	if heads:
+		for user in heads:
+			if user.user_group.group == 'head of unit':
+				leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id-1,
+							status__status__in=conditions,created_by__unit__id=request.user.unit.id)
+			if user.user_group.group == 'head of department':
+				leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id,
+							status__status__in=conditions,created_by__department__id=request.user.department.id)
+			elif user.user_group.group == 'head of directorate':
+				leave_apps = LeaveApplication.objects.filter(resumption_approval_id=dept_resumption_approval_id+1,
+							status__status__in=conditions)
+					
 	context = {"leave_apps":leave_apps}
 	return render(request, 'leave/list_pending_resumption.html', context)
 
 
 @login_required(login_url='login')
+@allowed_users(alllowed_roles=['head of unit','head of department','head of directorate'])
 def recommend_resumption_view(request,id):
 	current_resumption_approval=None
 	# for app in leave_application:
@@ -272,30 +286,39 @@ def recommend_resumption_view(request,id):
 	obj=LeaveResumption.objects.create(
 					leave_application_id=id,recommended_by_id=request.user.id)
 	obj.save()
-	head=get_heads_of_locations(request)
-	if head.is_head_of_directorate:
-		LeaveApplication.objects.filter(id=id).update(
-			resumption_approval_id=current_resumption_approval+1)
-	else:
-		LeaveApplication.objects.filter(id=id).update(
-			resumption_approval_id=current_resumption_approval+1)
+	groups=['head of unit','head of department','head of directorate']
+	heads = User.objects.filter(id=request.user.id,user_group__group__in=groups)
+	if heads:
+		for user in heads:
+			if user.user_group.group == 'head of unit':
+				LeaveApplication.objects.filter(id=id).update(
+					resumption_approval_id=current_resumption_approval+1)
+			elif user.user_group.group == 'head of department':
+				LeaveApplication.objects.filter(id=id).update(
+					resumption_approval_id=current_resumption_approval+1)
+			else:
+				LeaveApplication.objects.filter(id=id).update(
+					resumption_approval_id=current_resumption_approval+1)
 	
 	return redirect('list_resumption')
 
 
 @login_required(login_url='login')
 def leave_history_view(request):
-	included=['active','partly active','done','partly done','declined','resuming','partly resuming']
+	app_status=['active','partly active','done','partly done','declined','resuming','partly resuming']
 	leave_applications = LeaveApplication.objects.filter(created_by__id=request.user.id,
-							status__status__in=included).order_by('-id')
-	last_app = leave_applications.last()
+							status__status__in=app_status).order_by('-id')
+	last_app = leave_applications.first() #bcos the leave apps are ordered in desc order
 	current_desk='Leave & Passage'
 	if last_app:
 		if last_app.resumption_approval:
+			if last_app.resumption_approval.approval=='head of unit':
+				current_desk = f'Head of {request.user.unit.title}'
 			if last_app.resumption_approval.approval=='head of department':
-				current_desk='Head of Dept'
+				current_desk = f'Head of {request.user.department.title}'
 			elif last_app.resumption_approval.approval=='directorate':
-				current_desk='Head of Admin'
+				# current_desk = f'{request.user.department.directorate.title}'
+				current_desk = 'Head of Admin'
 	if request.method == 'POST':
 		return redirect('index')
 	context = {"leave_applications":leave_applications,"current_desk":current_desk}
@@ -341,40 +364,73 @@ def acknowledge_leave_resumption_view(request,id):
 	if current_status=='resuming':
 		status_id=8
 	LeaveApplication.objects.filter(id=id).update(status_id=status_id,
-		resumption_approval_id=4 # update to resumption_approval=resumed
+		resumption_approval_id=5 # update to resumption_approval=resumed
 	 )
 	return redirect('list_resumption')	
 
-
+@login_required(login_url='login')
 def list_declined_applications_view(request):
 	declined_apps = DeclineLeaveApplication.objects.filter(
 		leave_application__created_by__id=request.user.id,
 		leave_application__status__status='declined').order_by('-id')
 	return render(request,'leave/declined_apps.html',{"declined_apps":declined_apps})
 
+def create_unit(request):
+	departments = Department.objects.all()
+	if request.method == 'POST':
+		title = request.POST['title']
+		department = request.POST['department']
+		unit = Unit(title=title,department_id=department)
+		unit.save()
+		messages.success(request,"Unit add successfull")
+	return render(request, 'leave/create_unit.html' ,{'departments':departments})
+
+def create_department(request):
+	directorates = Directorate.objects.all()
+	if request.method == 'POST':
+		title = request.POST['title']
+		directorate = request.POST['directorate']
+		has_unit = request.POST['has_unit']
+		department = Department(title=title,directorate_id=directorate,has_unit=has_unit)
+		department.save()
+		messages.success(request,"Department add successfull")
+	return render(request, 'leave/create_department.html',{'directorates':directorates})
+
 
 #======== render pdf view start ==============
-
+@login_required(login_url='login')
 def approved_leave_appcation_list(request):
-	leave_status = LeaveApplicationStatus.objects.get(id=2)	
-	leave_applications = LeaveApplication.objects.filter(status =leave_status)	
+	_status = ['active','partly active']	
+	leave_applications = LeaveApplication.objects.filter(status__status__in=_status).order_by('-id')
 	context ={'leave_applications':leave_applications} 	
 	return render(request, 'leave/approved_leave_appcation.html',context)  
 
+
+@login_required(login_url='login')
+def user_approved_application_list(request):
+	_status = ['active','partly active']	
+	leave_applications = LeaveApplication.objects.filter(
+						status__status__in=_status,created_by_id=request.user.id)
+	context ={'leave_applications':leave_applications} 	
+	return render(request, 'leave/approved_leave_appcation.html',context)
+
+
+@login_required(login_url='login')
 def render_pdf_view(request,id):
 	emp_detail=None	
 	leave_pass = 	LeaveApplication.objects.get(id=id)
 	emp_detail = EmploymentDetails.objects.get(user_id=leave_pass.created_by.id)
 	try:
-		head_of_dept = Head.objects.get(is_head_of_dept=True,
-			user_id__department__id=leave_pass.created_by.department.id)
-		head_of_admin = Head.objects.get(is_head_of_directorate=True,
-			user_id__directorate__id=leave_pass.created_by.department.directorate.id)
+		head_of_dept = User.objects.get(user_group__group='head of department',
+			department_id=leave_pass.created_by.department.id)
+		head_of_admin=User.objects.get(user_group__group='head of directorate',
+					directorate_id=leave_pass.created_by.directorate.id)
 	except ObjectDoesNotExist:
 		pass
 	template_path = 'leave/pass.html'
-	context = {'pass': leave_pass,"emp_detail":emp_detail,"head_of_dept":head_of_dept,
-				"head_of_admin":head_of_admin}
+	context = {'pass': leave_pass,"emp_detail":emp_detail,
+				"head_of_admin":head_of_admin, "head_of_dept":head_of_dept,
+				"logo":f'{settings.HOST_SERVER}{settings.MEDIA_URL}/fmclogo.png'}
 	# Create a Django response object, and specify content_type as pdf
 	response = HttpResponse(content_type='application/pdf')
 	response['Content-Disposition'] = 'filename="leave.pdf"'
@@ -388,3 +444,34 @@ def render_pdf_view(request,id):
 	   return HttpResponse('We had some errors <pre>' + html + '</pre>')
 	return response
 #========= ends here =================
+
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['leave_and_passage'])
+def leave_tracker_view(request,id):
+	status=['in process','partly in process']
+	leave_app=None
+	try:
+		leave_app = LeaveApplication.objects.get(
+					created_by_id=id,status__status__in=status)
+	except ObjectDoesNotExist:
+		pass
+	approval_desk,approval_desk_id=None,None
+	excluded = [1,2,6,7]
+	if leave_app:
+		approval_desk = leave_app.approval_status
+		approval_desk_id = leave_app.approval_status.id
+	approval_status = Approval.objects.all().exclude(id__in=excluded).order_by('-id')
+	progress_bar_width=100/1
+	if int(len(approval_status)) > 0:
+		progress_bar_width=100/int(len(approval_status))
+	declined_app = LeaveApplication.objects.filter(created_by_id=id).last()
+
+	recommendations = LeaveRecommendation.objects.filter(
+									leave_application__status__status__in=status,
+									leave_application__created_by__id=id)
+
+	context={"approval_desk":approval_desk,"approval_desk_id":approval_desk_id,
+			"approval_status":approval_status,"declined_app":declined_app,"leave_app":leave_app,
+			"progress_bar_width":progress_bar_width,"recommendations":recommendations}
+	
+	return render(request,'leave/leave_tracker.html',context)

@@ -12,7 +12,6 @@ urlpatterns = [
     path('reset_password/<int:id>/', views.reset_password, name='reset_password'),
     path('change_password/', views.change_password, name='change_password'),
     path('search_unit/', views.search_unit, name='search_unit'),
-    path('assign_heads/<id>/',views.assign_heads_view,name='assign_heads'),
     path('search/',views.search_user,name='search'),
     path('update_user_unit/',views.update_user_unit, name='update_user_unit'),
     path('update_user_group/<id>/',views.update_user_group,name='update_user_group')

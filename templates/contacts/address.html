@@ -7,7 +7,8 @@
     {% block stylesheets %}{% endblock stylesheets %}
     
     {% block content %}	
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
+    <script src="/static/assets/js/jquery.min.js"></script>
     <style>
     input{
         width: 90%;
@@ -34,16 +35,6 @@
     <!-- [ form-element ] start -->
     <div class="col-sm-12">
         <div class="card">
-      <!--   <div class="card-header">
-        <h3>Employment Form</h3>
-        <span class="mb-0 text-muted">
-            {% for message in messages %}
-            <p ><h2 style="background-color:rgb(8, 151, 46); color: white; width: 100%; text-align: center;">
-            {{message}}</h2></p>
-            {% endfor %} 
-            </span>
-            <hr>
-    </div> -->
     <div class="card-body">                      
         
       <h4 style="color:green;"> {{user.first_name}} {{user.last_name}}  |   {{user.file_number}}</h4>
@@ -102,34 +93,7 @@
         </div>
     </div>
 </div>
-<div class="form-row">
-    <div class="col-md-4 mb-6">
-        <label for="validationCustom01">Next Of Kin Full Name</label><br>
-         {{form.next_of_kin}}
-         <small class="text-danger">{{ form.errors.next_of_kin|striptags }}</small>
-        <div class="valid-feedback">
-            
-        </div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <label for="validationCustom02">Next Of Kin Phone No</label><br>
-         {{form.next_of_kin_phone_no}}
-         <small class="text-danger">{{ form.errors.next_of_kin_phone_no|striptags }}</small>
-        <div class="valid-feedback">
-            
-        </div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <label for="validationCustom02">Address Of Next Of Kin</label><br>
-        {{form.address_of_next_of_kin}}
-        <small class="text-danger">{{ form.errors.address_of_next_of_kin|striptags }}</small>
-        <div class="valid-feedback">
-            
-        </div>
-    </div>
-</div>
 <hr>
-
 <h5>Residential Address</h5>
 <div class="form-row">
     <div class="col-md-4 mb-6">
@@ -185,6 +149,34 @@
         <label for="validationCustom02"> Permanent Home Address</label><br>
         {{address_form.permanent_home_address}}
         <small class="text-danger">{{ address_form.errors.permanent_home_address|striptags }}</small>
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+</div>
+<hr>
+<h5>Next of Kin Details</h5>
+<div class="form-row">
+    <div class="col-md-4 mb-6">
+        <label for="validationCustom01">Next Of Kin Full Name</label><br>
+         {{form.next_of_kin}}
+         <small class="text-danger">{{ form.errors.next_of_kin|striptags }}</small>
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <label for="validationCustom02">Next Of Kin Phone No</label><br>
+         {{form.next_of_kin_phone_no}}
+         <small class="text-danger">{{ form.errors.next_of_kin_phone_no|striptags }}</small>
+        <div class="valid-feedback">
+            
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="validationCustom02">Address Of Next Of Kin</label><br>
+        {{form.address_of_next_of_kin}}
+        <small class="text-danger">{{ form.errors.address_of_next_of_kin|striptags }}</small>
         <div class="valid-feedback">
             
         </div>

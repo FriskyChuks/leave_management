@@ -81,13 +81,13 @@ class User(AbstractUser):
     def __str__(self):
         return str(self.username)
 
-class Head(models.Model):
-    user                 = models.OneToOneField(User, on_delete=models.CASCADE)
-    # is_head_of_sub_unit  = models.BooleanField(default=False)
-    is_head_of_unit      = models.BooleanField(default=False)
-    is_head_of_dept      = models.BooleanField(default=False)
-    is_head_of_directorate = models.BooleanField(default=False)
-    is_cmd = models.BooleanField(default=False)
+# class Head(models.Model):
+#     user                 = models.OneToOneField(User, on_delete=models.CASCADE)
+#     # is_head_of_sub_unit  = models.BooleanField(default=False)
+#     is_head_of_unit      = models.BooleanField(default=False)
+#     is_head_of_dept      = models.BooleanField(default=False)
+#     is_head_of_directorate = models.BooleanField(default=False)
+#     is_cmd = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}" 
+#     def __str__(self):
+#         return f"{self.user.first_name} {self.user.last_name}" 

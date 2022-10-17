@@ -79,6 +79,8 @@
                                     <button class="btn btn-success" style="background-color: green; color:white">
                                         {% if request.user.user_group.group == 'leave_and_passage' %}
                                             <a style="color: white;" href="{% url 'process_leave_pass' leave_app.id %}">Process Leave Pass</a>
+                                        {% elif request.user.file_number == 2 %}
+                                            <a style="color: white;" href="{% url 'recommend_leave_application' leave_app.id %}">Approve</a>
                                         {% else %}
                                             <a style="color: white;" href="{% url 'recommend_leave_application' leave_app.id %}">Recommend</a>
                                         {% endif %}

@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import Unit, User
 
 class MyUserCreationForm(UserCreationForm):
     class Meta:
@@ -107,6 +107,21 @@ class UpdateUserForm(ModelForm):
 
         fields = ['first_name','last_name','other_name','username','file_number',
                     'gender','department','directorate','passport'] 
+        def __init__(self,*args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['unit'].queryset=Unit.objects.none()
+            if 'department' in self.data:
+                try:
+                    dept_id = int(self.data.get('department'))
+                    self.fields['unit'].queryset =Unit.objects.filter(department=dept_id).order_by('title')
+                except (ValueError, TypeError):
+                    pass
+            elif self.instance.pk:
+                self.fields['unit'].queryset= self.instance.department.unit_set.order_by('title')
+
+
+class SearchForm(ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'               
     
-    
-   

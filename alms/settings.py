@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-mn*2#5q&16#yhvxl4=14!b6+5ou=w&2t6=xp8-u_wgsm$h1$dk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['lms.fmckeffi.gov.ng','127.0.0.1']
 
 
 # Application definition
@@ -133,6 +133,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+HOST_SERVER= "lms.fmckeffi.gov.ng"
 STATIC_URL = '/static/'
 MEDIA_URL = '/images/'
 

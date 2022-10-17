@@ -57,11 +57,13 @@ def pending_resumptions():
 
 
 def due_resumptions():
+	_resumption_status = ['head of unit','head of department','directorate','none']
 	now = timezone.now()
 	due_resumptions = LeaveApplication.objects.aggregate(
 		# total=models.Count('id'),
 		today=models.Count('id', filter=models.Q(date_to=now.date())),
-		overdue=models.Count('id', filter=models.Q(date_to__lt=now.date()))
+		overdue=models.Count('id', filter=models.Q(date_to__lt=now.date(),
+						resumption_approval__approval__in=_resumption_status))
 	)
 	return due_resumptions
 
@@ -95,6 +97,7 @@ def index(request):
 
 def loginPage(request):
 	msg,emp_details=None,None
+	user_groups = ['head of department','head of directorate']
 	if request.method == "POST":
 		username_var = request.POST.get('username')
 		password_var = request.POST.get('password')
@@ -113,8 +116,11 @@ def loginPage(request):
 			pass
 		else:     
 			login(request, user)
-			if user.department.has_unit and not user.unit:
-				messages.info(request,"You are not assigned to a Unit, please update that!")
+			# if password_var == 'pass':
+			# 	messages.info(request, "You're using the default 'password', please change it before you proceed")
+			# 	return redirect('change_password')
+			if user.user_group.group not in user_groups and user.department.has_unit and not user.unit:
+				messages.error(request,"You are not assigned to a Unit, please update that!")
 				return redirect('update_user_unit')
 			elif "next" in request.POST:
 				return redirect(request.POST.get('next'))
@@ -126,7 +132,8 @@ def loginPage(request):
 						return redirect('edit_employment_detail',emp_details.id)
 				except ObjectDoesNotExist:
 					return redirect('employment_detail',user.id)
-				if Head.objects.filter(user_id=request.user.id).exists():
+				groups=['head of unit','head of department','head of directorate']
+				if user.user_group.group in groups:
 					return HttpResponseRedirect("list_pending_leave_applications")
 				else:
 					return redirect("index")
@@ -141,7 +148,7 @@ def logoutUser(request):
 
 #registerUser views
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['registry','developer'])
+@allowed_users(alllowed_roles=['registry','developer','support'])
 def registerUser(request):
 	gender = Gender.objects.all()
 	units = Unit.objects.all()
@@ -233,9 +240,10 @@ def search_unit(request):
 
 
 @login_required(login_url='login')
+@allowed_users(alllowed_roles=['support','developer' ])
 def reset_password(request,id):
 	user = User.objects.get(id=id)
-	user.set_password("password")
+	user.set_password("pass")
 	user.save()
 	messages.success(request, "Password reset successful!")
 	return redirect('index')
@@ -244,24 +252,6 @@ def reset_password(request,id):
 @login_required(login_url='login')
 def auto_run_view(request):
 	pass
-	# users=User.objects.filter(password='')
-	# for user in users:
-	# 	user.set_password('pass')
-	# 	user.save()
-
-	# users=User.objects.all()
-	# ippis_no=None
-	# for user in users:
-	# 	if user.ippis_no:
-	# 		ippis_no=user.ippis_no
-	# 	emp_detail=EmploymentDetails.objects.get_or_create(
-	# 		user_id=user.id,
-	# 		ministry='Health',
-	# 		salary_scale_id=user.salary_scale.id,
-	# 		grade_id=user.grade_level.id,
-	# 		ippis_no=ippis_no
-	# 	)
-
 	return redirect('index')	
 	
 
@@ -290,32 +280,8 @@ def change_password(request):
 	return render(request, 'accounts/change_password.html',context)
 
 
-def assign_heads_view(request,id):
-	groups = UserGroup.objects.all()
-	user=User.objects.get(id=id)
-	
-	sub_unit =bool(request.POST.get('sub_unit'))
-	unit = bool(request.POST.get('unit'))
-	department = bool(request.POST.get('department'))
-	directorate = bool(request.POST.get('directorate'))
-	# group=request.POST.get('group')	
-	group_id = UserGroup.objects.get(group='head').id
-	user_is_head = Head.objects.filter(user_id=id)
-
-	if request.method=="POST":
-		if user_is_head:
-			Head.objects.filter(user_id=id).update(user_id=id,is_head_of_unit=unit,
-			is_head_of_dept=department,is_head_of_directorate=directorate)
-		else:
-			Head.objects.create(user_id=id,is_head_of_unit=unit,
-			is_head_of_dept=department,is_head_of_directorate=directorate)
-		User.objects.filter(id=id).update(user_group_id=group_id)
-		messages.success(request,"Successfully assigned!")
-		return redirect('index')
-	context={"groups":groups,"user":user}
-	return render(request,'accounts/assign_heads.html',context)
-
-
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['support','developer' ,'head','leave_and_passage'])
 def search_user(request):
 	try:
 		query = request.GET.get('q')
@@ -333,7 +299,7 @@ def search_user(request):
 		context = {'query1': a}
 	return render(request, template, context)
 
-
+@login_required(login_url='login')
 def update_user_unit(request):
 	user=User.objects.get(id=request.user.id)
 	units=Unit.objects.filter(department_id=user.department.id).order_by('title')
@@ -344,6 +310,9 @@ def update_user_unit(request):
 	context={"user":user,"units":units}
 	return render(request,'accounts/update_user_unit.html',context)
 
+
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['support','developer' ])
 def update_user_group(request,id):
 	user=User.objects.get(id=id)
 	groups=UserGroup.objects.all()

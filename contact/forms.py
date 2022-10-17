@@ -1,20 +1,57 @@
 from django.forms import ModelForm
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 from .models import *
 
-class ContactForm(ModelForm):
+
+class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
-        # fields = '__all__'
         exclude = ['user'] 
+    
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['local_government_area'].queryset=LocalGovernmentArea.objects.none()
+
+        if 'state_of_origin' in self.data:
+            try:
+                state_id = int(self.data.get('state_of_origin'))
+                self.fields['local_government_area'].queryset =LocalGovernmentArea.objects.filter(state_id=state_id).order_by('title')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['local_government_area'].queryset= self.instance.state_of_origin.local_government_area_set.order_by('title')
 
 
-class AddressForm(ModelForm):
+class AddressForm(forms.ModelForm):  
     class Meta:
         model = Address
         # fields = '__all__' 
-        exclude = ['user']   
+        exclude = ['user'] 
+
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['local_government_area_of_residence'].queryset=LocalGovernmentArea.objects.none()
+        self.fields['local_government_area_of_permanent'].queryset=LocalGovernmentArea.objects.none()
+
+        if 'state_of_residence' in self.data:
+            try:
+                state_id = int(self.data.get('state_of_residence'))
+                self.fields['local_government_area_of_residence'].queryset =LocalGovernmentArea.objects.filter(state_id=state_id).order_by('title')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['local_government_area_of_residence'].queryset= self.instance.residential_address.local_government_area_of_residence_set.order_by('title') 
+
+        if 'state_of_permanent' in self.data:
+            try:
+                state_id = int(self.data.get('state_of_permanent'))
+                self.fields['local_government_area_of_permanent'].queryset =LocalGovernmentArea.objects.filter(state_id=state_id).order_by('title')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['local_government_area_of_permanent'].queryset= self.instance.state_of_permanent.local_government_area_of_permanent_set.order_by('title') 
 
 
 class UpdateContactForm(ModelForm):
@@ -103,14 +140,13 @@ class UpdateAddressForm(ModelForm):
         self.fields['state_of_residence'].widget.attrs.update({
             ' required':'',
             'name':'state_of_residence',
-            'id':'usernameValidate',
+            
             'type':'text',
             'class':"form-control", 
     })
         self.fields['local_government_area_of_residence'].widget.attrs.update({
             ' required':'',
             'name':'local_government_area_of_residence',
-            'id':'usernameValidate',
             'type':'text',
             'class':"form-control", 
     })
@@ -136,4 +172,4 @@ class UpdateAddressForm(ModelForm):
      
     class Meta:
         model = Address
-        exclude = ['user']     
+        exclude = ['user'] 

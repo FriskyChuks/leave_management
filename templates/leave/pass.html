@@ -1,55 +1,103 @@
-{% load static %}
-<!DOCTYPE html>
+
 <html>
 <head>
-<title>Leave Pass</title>
-<style>
-@page {
-    size: a4 portrait;
-    @frame header_frame {           /* Static Frame */
-        -pdf-frame-content: header_content;
-        left: 150pt; width: 512pt; top: 50pt; height: 40pt;font-size: 70px;
-       
-}
-        @frame content_frame {          /* Content Frame */
-            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
-        }
-        @frame footer_frame {           /* Another static Frame */
-            -pdf-frame-content: footer_content;
-            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
-        }
+  <style>
+    .logo{
+        height: 90px;
+        width: 85px;
+    }
+    h2{
+        margin-left: 130px;
+        font-size: 20px;
+        color: green;
+    }
+    h3{
+       margin-left: 300px;
+       font-size: 10px; 
+    }
+    h1{
+        font-size: 20px;
+    }
+    .container{
+        background-color: aqua;
+    }
+    .tag{
+        font-size: 20px;
+        font-weight: 100;
+    }
+    .data{
+        margin-left: 10px;
+        font-size: 18px;
+        font-family: 'Times New Roman';
+    }
+    .head{
+        font-size: 15px;
+        font-weight: 200;   
+    }
+    .green{
+        color: green;
     }
     
-</style>
+   
+  </style> 
 </head>
-
-    <body>
-        <img src="" alt="images">
-        <!-- Content for Static Frame 'header_frame' -->
-        <div id="header_content">
-            <h1>FEDERAL MEDICAL CENTER, KEFFI, NASARAWA STATE</h1>
-        </div>
-         <center><h1>{{pass.leave_type}} LEAVE PASS</h1></center>
-    
-        <!-- Content for Static Frame 'footer_frame' -->
-        <div id="footer_content">(c) - page <pdf:pagenumber>
-            of <pdf:pagecount>
-        </div>
-    
-        <!-- HTML Content -->
-        <div>
-            <h1>Full Name:  {{pass.created_by.first_name}} {{pass.created_by.last_name}}</h1><hr>
-            <h1>Rank {{emp_detail.designation}}</h1></li><hr>
-            <h1>Leave Entitlement: {{pass.leave_duration}}</h1> <hr>
-            <h1>Commencement Date: {{pass.date_from}}</h1><hr>
-            <h1>Resumption Date: {{pass.date_to}}</h1><hr>
-            <br>
-            <span style="float: left;">
-                Head of Admin:{{head_of_admin}}
-            </span>
-            <span style="float: right;">
-                Head of Dept/Unit: {{head_of_dept.user.first_name}} {{head_of_dept.user.last_name}}
-            </span>
-        </div>
-    </body>
-    </html>
+<body>
+<table>
+    <tr>
+        <td>
+            <div>
+                <img class="logo" src="{{ logo }}" alt="logo"/>
+            </div>
+        </td>
+        <td colspan="5">
+            <div>
+                 <h1>FEDERAL MEDICAL CENTER, KEFFI, NASARAWA STATE</h1>
+                 <h2>{{pass.leave_type}} LEAVE PASS</h2>
+            </div>
+        </td>
+    </tr>
+</table>
+<hr>
+<br> <br>
+<table>
+    <tr>
+        <td class="tag">File Number: </td>    
+        <td class="data" >{{pass.created_by.file_number}}</td>    
+    </tr>
+    <tr>
+        <td class="tag">Full Name: </td>    
+        <td class="data" >{{pass.created_by.first_name}}    {{pass.created_by.last_name}}</td>    
+    </tr>
+    <tr>
+        <td class="tag">Rank:</td>    
+        <td class="data">{{emp_detail.designation}}</td>    
+    </tr>
+    <tr>
+        <td class="tag">Leave Duration:</td>    
+        <td class="data">{{pass.requested_duration}} Days</td>    
+    </tr>
+    <tr>
+        <td class="tag">Commencement Date:</td>    
+        <td class="data">{{pass.date_from}}</td>    
+    </tr>
+    <tr>
+        <td class="tag">Resumption Date:</td>    
+        <td class="data">{{pass.date_to}}</td>    
+    </tr>
+</table>
+<br><br>
+<hr>
+<h3>Approved by:</h3>
+<table>
+    <tr> 
+        <td class="head">
+            <span class="green"> Head of Admin:</span>  
+            {{head_of_admin.first_name}} {{head_of_admin.last_name}} 
+        </td>
+        <td class="head"><span class="green">  Head of Dept/Unit:</span> 
+            {{head_of_dept.first_name}} {{head_of_dept.last_name}}
+        </td>
+    </tr>
+</table>
+</body>
+</html>

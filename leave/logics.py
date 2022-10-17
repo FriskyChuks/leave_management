@@ -3,13 +3,6 @@ from dateutil.relativedelta import relativedelta
 
 from leave.models import *
 
-def get_heads_of_locations(request):
-	head=None
-	heads=Head.objects.filter(user_id=request.user.id)
-	for i in heads:
-		head=i
-	return head
-
 def check_leave_eligibility(request,leave_type_id):
 	month_difference=12
 	previous_leaves=LeaveApplication.objects.filter(
@@ -37,16 +30,17 @@ def check_for_active_leave(request):
 	return active_leave
 
 def check_if_user_is_head(request):
-	approval_status=5
-	heads = Head.objects.filter(user_id=request.user.id)
-	if heads.exists():
-		for head in heads:
-			if head.is_head_of_directorate:
-				approval_status=2
-			elif head.is_head_of_dept:
-				approval_status=3
-			elif head.is_head_of_unit:
-				approval_status=4
+	approval_status= Approval.objects.get(approval='head of unit').id # id=4
+	groups=['head of unit','head of department','head of directorate']
+	heads = User.objects.filter(id=request.user.id,user_group__group__in=groups)
+	if heads:
+		for user in heads:
+			if user.user_group.group == 'head of directorate':
+				approval_status=Approval.objects.get(approval='head of directorate').id # id=2
+			elif user.user_group.group == 'head of department':
+				approval_status=Approval.objects.get(approval='head of department').id # id=3
+			# elif user.user_group.group == 'head of unit':
+			# 	approval_status=Approval.objects.get(approval='head of unit').id # id=4
 	return approval_status
 
 

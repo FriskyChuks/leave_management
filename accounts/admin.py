@@ -11,7 +11,6 @@ class ViewAdmin(ImportExportModelAdmin):
 
 # admin.site.register(User)
 admin.site.register(Gender)
-admin.site.register(Head)
 admin.site.register(SubUnit)
 admin.site.register(Unit)
 admin.site.register(Department)
