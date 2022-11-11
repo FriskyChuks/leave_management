@@ -1,6 +1,6 @@
 
     {% extends "layouts/base.html" %}
-    {% load static %}
+    
     {% block title %} Form Elements {% endblock %} 
     
     <!-- Specific CSS goes HERE -->
@@ -37,7 +37,7 @@
         <div class="card">
     <div class="card-body">                      
         
-      <h4 style="color:green;"> {{user.first_name}} {{user.last_name}}  |   {{user.file_number}}</h4>
+      <h5 style="color:green;"> {{user.first_name}} {{user.last_name}}  |   {{user.file_number}}</h5>
       <hr>
     <form method="POST" id="contact-form" class="needs-validation" lgas-url="{% url 'load_state' %}" novalidate>
         {% csrf_token %}
@@ -183,8 +183,7 @@
     </div>
 </div>
 <br>
-
-       <button class="btn  btn-primary" type="submit">Submit form</button>
+      <button class="btn  btn-primary" type="submit">Submit form</button>
 </form>
 
             </div>
@@ -195,47 +194,7 @@
 </div>
 </section>
         <!-- [ Main Content ] end -->
-    <script>
-        $('#id_state_of_origin').change(function(){
-            let url = $('#contact-form').attr('lgas-url');
-            let state = $(this).val()
-            $.ajax({
-                url:url,
-                data:{'state_id':state},
-                success:(data)=>{
-                    $('#id_local_government_area').html(data)
-                    console.log(data)
-                }
-
-            })
-        })
-        $('#id_state_of_residence').change(function(){
-            let url = $('#contact-form').attr('lgas-url');
-            let state = $(this).val()
-            $.ajax({
-                url:url,
-                data:{'state_id':state},
-                success:(data)=>{
-                    $('#id_local_government_area_of_residence').html(data)
-                    console.log(data)
-                }
-
-            })
-        })
-        $('#id_state_of_permanent').change(function(){
-            let url = $('#contact-form').attr('lgas-url');
-            let state = $(this).val()
-            $.ajax({
-                url:url,
-                data:{'state_id':state},
-                success:(data)=>{
-                    $('#id_local_government_area_of_permanent').html(data)
-                    console.log(data)
-                }
-
-            })
-        })
-    </script>
+    
     {% endblock content %}
     
     <!-- Specific Page JS goes HERE  -->

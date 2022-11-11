@@ -52,10 +52,9 @@ def edit_employment_detail_view(request,id):
             form.grade_id = employmentdetail.grade
             form.save()
             try:
-                Contact.objects.get(user_id=id)
+                Contact.objects.get(user_id=user.id)
                 return redirect('edit_contact_address',id=user.id)
             except ObjectDoesNotExist:
-                print("New Contact")
                 return redirect('contact_address',id=user.id)
     context =  {'form': form, 'user':user,'employmentdetail':employmentdetail}
     return render(request, 'registry/edit_employment_detail.html',context)  

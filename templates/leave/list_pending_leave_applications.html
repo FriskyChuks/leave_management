@@ -17,9 +17,9 @@
                         <div class="col-md-12">
                             <div class="page-header-title">
                                 {% if rquest.user.unit %}
-                                    <h5 class="m-b-10">{{ request.user.unit}} Unit</h5>
+                                    <h5 class="m-b-10">{{ request.user.unit}}</h5>
                                 {% elif request.user.department %}
-                                    <h5 class="m-b-10">{{ request.user.department}} Department</h5>
+                                    <h5 class="m-b-10">{{ request.user.department}}</h5>
                                 {% else %}
                                     <h5 class="m-b-10">{{ request.user.directorate}}</h5>
                                 {% endif %}
@@ -79,7 +79,7 @@
                                     <button class="btn btn-success" style="background-color: green; color:white">
                                         {% if request.user.user_group.group == 'leave_and_passage' %}
                                             <a style="color: white;" href="{% url 'process_leave_pass' leave_app.id %}">Process Leave Pass</a>
-                                        {% elif request.user.file_number == 2 %}
+                                        {% elif request.user.user_group.group == 'head of directorate' %}
                                             <a style="color: white;" href="{% url 'recommend_leave_application' leave_app.id %}">Approve</a>
                                         {% else %}
                                             <a style="color: white;" href="{% url 'recommend_leave_application' leave_app.id %}">Recommend</a>

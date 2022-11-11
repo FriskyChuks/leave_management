@@ -1,13 +1,41 @@
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
-from .models import Unit, User
+from .models import Department, Unit, User
+
+# class MyUserCreationForm(UserCreationForm):
+#     class Meta:
+#         model = User
+#         fields = ['first_name','last_name','other_name','username','file_number',
+#             'gender','passport','password1','password2'] #,'nationality'
+
 
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['first_name','last_name','other_name','username','file_number',
-            'gender','passport','password1','password2'] #,'nationality'
-    
+            'gender','directorate','department','unit','password1','password2'] #,'nationality'
+        def __init__(self,*args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['unit'].queryset=Unit.objects.none()
+            self.fields['department'].queryset=Unit.objects.none()
+
+            if 'directorate' in self.data:
+                try:
+                    direct_id = int(self.data.get('directorate'))
+                    self.fields['department'].queryset =Department.objects.filter(directorate=direct_id).order_by('title')
+                except (ValueError, TypeError):
+                    pass
+            elif self.instance.pk:
+                self.fields['department'].queryset= self.instance.directorate.unit_set.order_by('title')   
+
+            if 'department' in self.data:
+                try:
+                    dept_id = int(self.data.get('department'))
+                    self.fields['unit'].queryset =Unit.objects.filter(department=dept_id).order_by('title')
+                except (ValueError, TypeError):
+                    pass
+            elif self.instance.pk:
+                self.fields['unit'].queryset= self.instance.department.unit_set.order_by('title')   
 
 class UpdateUserForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -96,17 +124,17 @@ class UpdateUserForm(ModelForm):
             'class':"form-control", 
     })     
   
-        self.fields['passport'].widget.attrs.update({
-            'name':'passport',
-            'id':'usernameValidate',
-            'type':'file',
-            'class':"form-control", 
-    })    
+    #     self.fields['passport'].widget.attrs.update({
+    #         'name':'passport',
+    #         'id':'usernameValidate',
+    #         'type':'file',
+    #         'class':"form-control", 
+    # })    
     class Meta:
         model = User
 
         fields = ['first_name','last_name','other_name','username','file_number',
-                    'gender','department','directorate','passport'] 
+                    'gender','department','directorate'] 
         def __init__(self,*args, **kwargs):
             super().__init__(*args, **kwargs)
             self.fields['unit'].queryset=Unit.objects.none()

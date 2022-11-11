@@ -6,21 +6,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %} 
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-<script>
-    $(document).ready(function(){
-        var directorate = $("#directorate");
-        var department = $("#department");
-        var $options = department.find('option');
-        directorate.on('change',function(){
-        department.html($options.filter('[value="'+ this.value  +'"]'));
-        }).trigger('change'); 
-    }); 
-</script> -->
-    
 <!-- [ Main Content ] start -->
 <section class="pcoded-main-container">
     <div class="pcoded-content">
@@ -31,7 +17,7 @@
                     <div class="card-body">
                         <center> <h5 class="mt-5">Staff Registration</h5></center>
                         <hr>
-                        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <form method="POST" enctype="multipart/form-data" id="department" unit_urls="{% url 'get_unit' %}" departments="{% url 'get_departs' %}">{% csrf_token %}
                             <div class="form-row">
                                 <div class="col-md-4 mb-3">
                                     <label for="validationTooltip01">First name</label>
@@ -70,7 +56,7 @@
                             <div class="form-row">
                                 <div class="col-md-4 mb-3">
                                     <label for="validationTooltip02">Directorate</label>
-                                    <select id="directorate" class="form-control" name="directorate">
+                                    <select id="directorate_id" class="form-control" name="directorate">
                                         <option selected disabled="true" value="">Select Directorate---</option>
                                         {% for i in directorates %}
                                         <option value="{{i.id}}">{{i.title}}</option>
@@ -79,40 +65,36 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="validationTooltip02">Department</label>
-                                    <select id="department" class="form-control" name="department">
+                                    <select id="department_id" class="form-control" name="department">
                                         <option selected disabled="true" value="">Select Department---</option>
-                                        {% for dept in depts %}
-                                        <option value="{{dept.id}}">{{dept.title}}</option>
-                                        {% endfor %}
+                                        >
                                     </select>
                                 </div> 
                                 <div class="col-md-4 mb-6">
                                     <label for="validationTooltip02">Unit</label>
-                                    <select id="unit" class="form-control" name="unit">
+                                    <select id="unit_id" class="form-control" name="unit">
                                         <option selected disabled="true" value="">Select Unit---</option>
-                                        <!-- {% for unit in units %}
-                                        <option value="{{unit.id}}">{{unit.title}}</option>
-                                        {% endfor %} -->
+                                        
                                     </select>
                                 </div> 
-                                <div class="col-md-4 mb-3">
+                                <!-- <div class="col-md-4 mb-3">
                                     <label for="validationTooltip01">Username</label>
                                     <input id="username" class="form-control" name="username" id="validationTooltip01" placeholder="Username" value="" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
+                                </div> -->
+                                <!-- <div class="col-md-4 mb-3">
                                     <label for="validationTooltip02">Password</label>
                                     <input type="password" class="form-control" id="password1"   name="password1" id="validationTooltip02" placeholder="Password" value="" required>
                                     </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="validationTooltip02">Confirm Password</label>
                                     <input type="password" class="form-control" id="password2"  name="password2" id="validationTooltip02" placeholder="Confirm Password" value="" required>
-                                    </div>   
-                                <div class="col-md-4 mb-3">
+                                    </div>    -->
+                                <!-- <div class="col-md-4 mb-3">
                                     <label for="validationTooltip02">Profile Image</label>
                                     <input type="file" class="form-control" id="passport2"  name="passport" id="validationTooltip02" value="">
-                                </div>
+                                </div> -->
                             </div>
-                            <button style="margin-left: 700px; width: 200px; font-size: 20px; " class="btn  btn-primary" type="submit">Next</button>
+                            <button class="btn btn-primary" type="submit">Next</button>
                         </form>    
                     </div>
                 </div>    

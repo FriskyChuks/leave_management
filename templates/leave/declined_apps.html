@@ -59,7 +59,7 @@
                                     {{leave_app.leave_application.date_to}}
                                 </td>
                                 <td>{{leave_app.comment}}</td>
-                                <td>{{leave_app.created_by}}</td>
+                                <td>{{leave_app.created_by.first_name}} {{leave_app.created_by.last_name}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

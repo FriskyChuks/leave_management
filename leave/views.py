@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 # for pdf print
 from io import BytesIO
 from django.template.loader import get_template
-from django.views import View
 from xhtml2pdf import pisa
 
 from accounts.decorators import allowed_users
@@ -54,7 +53,7 @@ def LeaveApplicationview(request, id):
 	user_groups = ['head of department','head of directorate']
 	try:
 		emp_details=EmploymentDetails.objects.get(user_id=request.user.id)
-		if not emp_details.grade or not emp_details.designation: #or not emp_details.designation:
+		if not emp_details.grade or not emp_details.designation or not emp_details.step:
 			messages.info(request,"Please update your record before you continue")
 			return redirect('edit_employment_detail',emp_details.id)
 	except ObjectDoesNotExist:
@@ -219,14 +218,14 @@ def decline_leave_application(request,id):
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['leave_and_passage'])
 def process_leave_pass_view(request,id):
-	# Update status=active or partly_active, approval=none and resumption_approval=default
 	instance = LeaveApplication.objects.get(id=id)
 	var_status=6 # status=active
 	if instance.status.status=='partly in process':
 		var_status=2 # status=partly active
 	LeaveApplication.objects.filter(id=id).update(
-		status_id=var_status,approval_status_id=1 
-	 )
+									status_id=var_status,approval_status_id=1)
+	LeaveRecommendation.objects.create(leave_application_id=instance.id,
+										created_by_id=request.user.id)
 	return redirect('approved_leave')
 
 
@@ -238,10 +237,12 @@ def resume_leave_view(request,id):
 	heads = User.objects.filter(id=request.user.id,user_group__group__in=groups)
 	if heads:
 		for user in heads:
-			if user.user_group.group == 'head of department':
+			if user.user_group.group == 'head of unit':
 				resumption_approval_id=2
-			elif user.user_group.group == 'head of directorate':
+			if user.user_group.group == 'head of department':
 				resumption_approval_id=3
+			elif user.user_group.group == 'head of directorate':
+				resumption_approval_id=4
 	status_id=3
 	if current_status=='partly active':
 		status_id=7
@@ -375,6 +376,8 @@ def list_declined_applications_view(request):
 		leave_application__status__status='declined').order_by('-id')
 	return render(request,'leave/declined_apps.html',{"declined_apps":declined_apps})
 
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['developer','support'])
 def create_unit(request):
 	departments = Department.objects.all()
 	if request.method == 'POST':
@@ -385,14 +388,20 @@ def create_unit(request):
 		messages.success(request,"Unit add successfull")
 	return render(request, 'leave/create_unit.html' ,{'departments':departments})
 
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['developer','support'])
 def create_department(request):
 	directorates = Directorate.objects.all()
 	if request.method == 'POST':
 		title = request.POST['title']
 		directorate = request.POST['directorate']
-		has_unit = request.POST['has_unit']
-		department = Department(title=title,directorate_id=directorate,has_unit=has_unit)
-		department.save()
+		has_unit = request.POST.get('has_unit')
+		if has_unit:
+			department = Department(title=title,directorate_id=directorate)
+			department.save()
+		else:
+			department = Department(title=title,directorate_id=directorate,has_unit=False)
+			department.save()
 		messages.success(request,"Department add successfull")
 	return render(request, 'leave/create_department.html',{'directorates':directorates})
 
@@ -418,17 +427,17 @@ def user_approved_application_list(request):
 @login_required(login_url='login')
 def render_pdf_view(request,id):
 	emp_detail=None	
-	leave_pass = 	LeaveApplication.objects.get(id=id)
+	leave_pass = LeaveApplication.objects.get(id=id)
 	emp_detail = EmploymentDetails.objects.get(user_id=leave_pass.created_by.id)
 	try:
-		head_of_dept = User.objects.get(user_group__group='head of department',
-			department_id=leave_pass.created_by.department.id)
-		head_of_admin=User.objects.get(user_group__group='head of directorate',
-					directorate_id=leave_pass.created_by.directorate.id)
+		head_of_dept = User.objects.filter(user_group__group='head of department',
+			department_id=leave_pass.created_by.department.id).last()
+		head_of_admin=User.objects.get(file_number=2)
+		processed_by=LeaveRecommendation.objects.filter(leave_application_id=leave_pass.id).last()
 	except ObjectDoesNotExist:
 		pass
 	template_path = 'leave/pass.html'
-	context = {'pass': leave_pass,"emp_detail":emp_detail,
+	context = {'pass': leave_pass,"emp_detail":emp_detail,'processed_by':processed_by,
 				"head_of_admin":head_of_admin, "head_of_dept":head_of_dept,
 				"logo":f'{settings.HOST_SERVER}{settings.MEDIA_URL}/fmclogo.png'}
 	# Create a Django response object, and specify content_type as pdf
@@ -446,7 +455,7 @@ def render_pdf_view(request,id):
 #========= ends here =================
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['leave_and_passage'])
+@allowed_users(alllowed_roles=['leave_and_passage','developer','support'])
 def leave_tracker_view(request,id):
 	status=['in process','partly in process']
 	leave_app=None

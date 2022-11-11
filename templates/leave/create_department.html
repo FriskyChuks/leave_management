@@ -27,10 +27,17 @@
                                             <option value="{{directorate.id}}">{{directorate.title}}</option>
                                         {% endfor %}
                                     </select>
-                                </div>
+                                </div> <br>
                                 <div class="col-md-6 mb-6">
                                     <label for="validationTooltip01">Title</label>
                                     <input id="title" class="form-control"  name="title"  placeholder="Title" required>   
+                                </div><br>
+                                <div class="form-check">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input name="has_unit" class="form-check-input" type="checkbox" value="1" checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                      Has unit
+                                    </label>
                                 </div><br>
                                 <div class="col-md-6 mb-6">
                                     <button class="btn btn-primary" type="submit">Save</button>  

@@ -1,3 +1,5 @@
+from email import message
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
@@ -6,9 +8,13 @@ from .forms import *
 
 def contact_address_views(request,id):
 	user = User.objects.get(id=id)
+	check_contact = Contact.objects.filter(user_id=user.id)
 	contact_form = ContactForm()
 	address_form =AddressForm()
 	if request.method == 'POST':
+		if check_contact:
+			messages.error(request,'Your Contact information had previously been captured')
+			return redirect('staff_biodata',id=id)
 		contact_form = ContactForm(request.POST, request.FILES)
 		address_form = AddressForm(request.POST,request.FILES)
 		if contact_form.is_valid() and address_form.is_valid():

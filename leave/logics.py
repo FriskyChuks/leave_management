@@ -36,11 +36,14 @@ def check_if_user_is_head(request):
 	if heads:
 		for user in heads:
 			if user.user_group.group == 'head of directorate':
-				approval_status=Approval.objects.get(approval='head of directorate').id # id=2
+				approval_status=int(approval_status)-3
 			elif user.user_group.group == 'head of department':
-				approval_status=Approval.objects.get(approval='head of department').id # id=3
-			# elif user.user_group.group == 'head of unit':
-			# 	approval_status=Approval.objects.get(approval='head of unit').id # id=4
+				approval_status=int(approval_status)-2
+			elif user.user_group.group == 'head of unit':
+				approval_status=int(approval_status)-1
+	else:
+		if not request.user.department.has_unit:
+			approval_status=int(approval_status)-1
 	return approval_status
 
 

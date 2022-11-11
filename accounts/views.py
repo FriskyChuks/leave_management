@@ -1,73 +1,24 @@
 from multiprocessing import context
 from django.shortcuts import render, redirect, HttpResponseRedirect
-from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db import models
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from django.utils import timezone
 from django.db.models import Q
 
 from contact.models import *
 from registry.models import *
 from leave.models import *
+from reports.views import total_leave_applications,pending_resumptions,due_resumptions,pending_leave_pass
 
 from .models import User,Gender
 from .forms import *
 from .decorators import allowed_users
 
-def total_leave_applications():
-	now = timezone.now()
-	total_applications = LeaveApplication.objects.aggregate(
-		total=models.Count('id'),
-		today=models.Count('id', filter=models.Q(date_created__date=now.date())),
-		last_7_day=models.Count('id', filter=models.Q(date_created__date__gt=(
-					now - timedelta(days=7)).date())),
-	)
-	return total_applications
 
-def pending_leave_pass():
-	now = timezone.now()
-	pending_leave_pass = LeaveApplication.objects.aggregate(
-		total=models.Count('id'),
-		today=models.Count('id', filter=models.Q(approval_status__approval='cmd',
-										last_updated__date__gte=now.date())),
-		# yesterday=models.Count('id', filter=models.Q(status__status__in=_status,
-		# 			date_created__date__gte=(now - datetime.timedelta(hours=24)).date())),
-		last_7_day=models.Count('id', filter=models.Q(approval_status__approval='cmd',
-						last_updated__date__gt=(now - timedelta(days=7)).date())),
-	)
-	return pending_leave_pass
-
-def pending_resumptions():
-	now = timezone.now()
-	_status=['in process', 'partly in process']
-	pending_resumptions = LeaveApplication.objects.aggregate(
-		total=models.Count('id'),
-		today=models.Count('id', filter=models.Q(resumption_approval__approval='none',
-										last_updated__date=now.date())),
-		# yesterday=models.Count('id', filter=models.Q(resumption_approval__approval='none',
-		# 			last_updated__date__gte=(now - datetime.timedelta(hours=24)).date())),
-		last_7_day=models.Count('id', filter=models.Q(resumption_approval__approval='none',
-						last_updated__date__gt=(now - timedelta(days=7)).date())),
-	)
-	return pending_resumptions
-
-
-def due_resumptions():
-	_resumption_status = ['head of unit','head of department','directorate','none']
-	now = timezone.now()
-	due_resumptions = LeaveApplication.objects.aggregate(
-		# total=models.Count('id'),
-		today=models.Count('id', filter=models.Q(date_to=now.date())),
-		overdue=models.Count('id', filter=models.Q(date_to__lt=now.date(),
-						resumption_approval__approval__in=_resumption_status))
-	)
-	return due_resumptions
-
-# Create your views here.
 @login_required(login_url='login')
 def index(request):
 	approval_desk,approval_desk_id=None,None
@@ -116,9 +67,9 @@ def loginPage(request):
 			pass
 		else:     
 			login(request, user)
-			# if password_var == 'pass':
-			# 	messages.info(request, "You're using the default 'password', please change it before you proceed")
-			# 	return redirect('change_password')
+			if password_var == 'pass':
+				messages.info(request, "You're using the default 'password', please change it before you proceed")
+				return redirect('change_password')
 			if user.user_group.group not in user_groups and user.department.has_unit and not user.unit:
 				messages.error(request,"You are not assigned to a Unit, please update that!")
 				return redirect('update_user_unit')
@@ -134,7 +85,7 @@ def loginPage(request):
 					return redirect('employment_detail',user.id)
 				groups=['head of unit','head of department','head of directorate']
 				if user.user_group.group in groups:
-					return HttpResponseRedirect("list_pending_leave_applications")
+					return redirect("list_pending_leave_applications")
 				else:
 					return redirect("index")
 
@@ -148,7 +99,7 @@ def logoutUser(request):
 
 #registerUser views
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['registry','developer','support'])
+@allowed_users(alllowed_roles=['registry','developer','support','leave_and_passage'])
 def registerUser(request):
 	gender = Gender.objects.all()
 	units = Unit.objects.all()
@@ -159,34 +110,24 @@ def registerUser(request):
 		last_name = request.POST['last_name']
 		other_name = request.POST['other_name']
 		file_number = request.POST['file_number']
-		username = request.POST['username']
 		date_of_birth = request.POST['date_of_birth']
 		gender = request.POST['gender']
 		directorate = request.POST['directorate']
 		department = request.POST['department']
 		# unit=request.POST['unit']
-		passport = request.FILES['passport']
-		password1 = request.POST['password1']
-		password2 = request.POST['password2']
-	
-		if password1 == password2:
-			if User.objects.filter(username=username).exists():
-				messages.info(request, 'Username Already Exists')
-				return HttpResponseRedirect('register')
-
-			elif User.objects.filter(file_number=file_number).exists():
-				messages.info(request, 'File Number Already Exists  ') 
-				return redirect('register')  
-			else:
-				user = User.objects.create_user(
-					first_name=first_name,last_name=last_name,other_name=other_name,file_number=file_number,
-					username=username,date_of_birth=date_of_birth,passport=passport,password=password1,
-					gender_id=gender,directorate_id=directorate,department_id=department)
-				user.save();
-				return redirect('employment_detail',id=user.id)
+		# passport = request.FILES['passport']
+		if User.objects.filter(file_number=file_number).exists():
+			messages.info(request, 'File Number Already Exists  ') 
+			return redirect('register')  
 		else:
-			messages.info(request, "Password Not Matching")
-			return redirect('register')
+			user = User.objects.create_user(
+				first_name=first_name,last_name=last_name,other_name=other_name,file_number=file_number,
+				username=file_number,date_of_birth=date_of_birth,
+				gender_id=gender,directorate_id=directorate,department_id=department)
+			user.set_password("pass")
+			user.save();
+			return redirect('employment_detail',id=user.id)
+			
 	context = {'gender':gender,'units':units,'depts':depts,'directorates':directorates}                 
 	return render(request, 'accounts/register.html', context)
 
@@ -218,16 +159,22 @@ def staff_biodata_summary(request,id):# id = id
 @login_required(login_url='login')
 def update_view(request ,id):
 	user = User.objects.get(id=id)
-	form = UpdateUserForm(instance=user)
+	gender = Gender.objects.all()
 	employee_detail = EmploymentDetails.objects.get(user=user)
+	
 	if request.method == 'POST':
-		form = UpdateUserForm(request.POST,request.FILES, instance=user)
-		if form.is_valid():
-			form.save(commit=False)
-			form.user_id = id
-			form.save()
-			return redirect('edit_employment_detail',id=employee_detail.id)
-	context =  {'form': form, 'user':user}
+		first_name = request.POST.get('first_name')
+		last_name = request.POST.get('last_name')
+		othernames = request.POST.get('othernames')
+		file_number = request.POST.get('file_number')
+		sex = request.POST.get('gender')
+		date_of_birth = request.POST.get('date_of_birth')
+		
+		User.objects.filter(id=id).update(first_name=first_name,last_name=last_name,gender_id=sex,
+					other_name=othernames,file_number=file_number,date_of_birth=date_of_birth)
+		return redirect('edit_employment_detail',id=employee_detail.id)
+
+	context =  {'user':user,'gender':gender}
 	return render(request, 'accounts/edit_registration.html',context)
 
 def error_handling_view(request):
@@ -302,20 +249,33 @@ def search_user(request):
 @login_required(login_url='login')
 def update_user_unit(request):
 	user=User.objects.get(id=request.user.id)
+	directorate = Directorate.objects.all().order_by('title')
 	units=Unit.objects.filter(department_id=user.department.id).order_by('title')
+	departments=Department.objects.filter(directorate_id=user.directorate.id).order_by('title')
 	if request.method=='POST':
 		User.objects.filter(id=request.user.id).update(unit_id=request.POST.get('unit'))
-		messages.success(request,"Thanks for being positive today!")
+		User.objects.filter(id=request.user.id).update(department_id=request.POST.get('department'))
+		User.objects.filter(id=request.user.id).update(directorate_id=request.POST.get('directorate'))
+		messages.success(request,"Thanks, your day is blessed!")
 		return redirect('index')
-	context={"user":user,"units":units}
+	context={"user":user,"units":units,'departments':departments, 'directorates':directorate}
 	return render(request,'accounts/update_user_unit.html',context)
 
+def get_departs(request):
+		direct = request.GET.get('direct_id')
+		departs = Department.objects.filter(directorate=direct).order_by('title')
+		return render(request,'accounts/departs.html',{"departs":departs})
+
+def get_unit(request):
+		dept_id = request.GET.get('dept_id')
+		units = Unit.objects.filter(department=dept_id).order_by('title')
+		return render(request,'accounts/unit.html',{"units":units})
 
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['support','developer' ])
 def update_user_group(request,id):
 	user=User.objects.get(id=id)
-	groups=UserGroup.objects.all()
+	groups=UserGroup.objects.all().order_by('group')
 	if request.method=='POST':
 		User.objects.filter(id=id).update(user_group_id=request.POST.get('group'))
 		messages.success(request,"Updated Successfully!")

@@ -14,7 +14,9 @@ urlpatterns = [
     path('search_unit/', views.search_unit, name='search_unit'),
     path('search/',views.search_user,name='search'),
     path('update_user_unit/',views.update_user_unit, name='update_user_unit'),
-    path('update_user_group/<id>/',views.update_user_group,name='update_user_group')
+    path('update_user_group/<id>/',views.update_user_group,name='update_user_group'),
+    path('get_unit/',views.get_unit,name='get_unit'),
+    path('get_departs/',views.get_departs,name='get_departs'),
     # path('auto_run/',views.auto_run_view,name='auto_run'),
 ]
 

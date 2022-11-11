@@ -16,27 +16,31 @@
                     <div class="card-body">
                         <center> <h5 class="mt-5">Create Unit</h5></center>
                         <hr>
-                        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
-                            <div class="">
-                                
-                                <div class="col-md-6 mb-6">
-                                    <label for="validationTooltip02">Department</label>
-                                    <select class="form-control" name="department" required>
-                                        <option selected disabled value="">Select Department ...</option>
-                                        {% for department in departments %}
-                                        <option value="{{department.id}}">{{department.title}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-6">
-                                    <label for="validationTooltip01">Title</label>
-                                    <input id="title" class="form-control"  name="title"  placeholder="Title" required>   
-                                </div><br>
-                                <div class="col-md-6 mb-6">
-                                    <button class="btn btn-primary" type="submit">Save</button>  
-                                </div>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                                    <div class="">
+                                        <div class="col-md-10 mb-6">
+                                            <label for="validationTooltip02">Department</label>
+                                            <select class="form-control" name="department" required>
+                                                <option selected disabled value="">Select Department ...</option>
+                                                {% for department in departments %}
+                                                <option value="{{department.id}}">{{department.title}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div> <br>
+                                        <div class="col-md-10 mb-6">
+                                            <label for="validationTooltip01">Title</label>
+                                            <input id="title" class="form-control"  name="title"  placeholder="Title" required>   
+                                        </div><br>
+                                        <div class="col-md-6 mb-6">
+                                            <button class="btn btn-primary" type="submit">Save</button>  
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>    
+                            <div class="col-md-6"></div>
+                        </div>    
                     </div>
                 </div>    
             </div>

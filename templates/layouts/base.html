@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,6 +58,6 @@
 
     <!-- Specific Page JS goes HERE  -->
     {% block javascripts %}{% endblock javascripts %}
-
+<script type="text/javascript" src="{% static 'assets/js/myjs.js' %}"></script>
 </body>
 </html>

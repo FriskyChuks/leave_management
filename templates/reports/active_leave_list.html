@@ -1,0 +1,100 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Tables {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">
+                                    {% if request.user.user_group.group == 'head of unit' %}
+									    {{ request.user.unit }}
+                                    {% elif request.user.user_group.group == 'head of department' %}
+									    {{ request.user.department }}
+                                    {% elif request.user.user_group.group == 'head of directorate' %}
+									    {{ request.user.directorate }}
+                                    {% endif %}
+								</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="feather icon-home"></i></a></li>
+                                <li></li>
+                                <!-- <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
+                                <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+            <!-- [ Main Content ] start -->
+            <div class="row">
+                <!-- [ dark-table ] end -->
+                <!-- [ stiped-table ] start -->
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Active Leave List</h4>
+                            {% if not active_apps %}
+                                <span style="text-align: center; color:rgb(8, 125, 164)" class="d-block m-t-5">No active leave for this Unit/Dept at the moment! </span>
+                            {% endif %}
+                </div>
+<div class="card-body table-border-style">
+    <div class="table-responsive">
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <!-- <th>#</th> -->
+            <th>STAFF</th>
+            <th>LEAVE-TYPE</th>
+            <th>DATES</th>
+            <th>DURATION</th>
+			<th>DESTINATION</th>
+			<!-- <th>ACTIONS</th> -->
+        </tr>
+    </thead>
+    <tbody>
+		{% for leave_app in active_apps %}
+        <tr>
+            <td>{{leave_app.created_by.first_name}} {{leave_app.created_by.last_name}} ||
+                ({{leave_app.created_by.file_number}})
+            </td>
+            <td>
+				{{leave_app.leave_type.title}} Leave
+			</td>
+            <td>
+				Start date: <b>{{leave_app.date_from}}</b><br>
+				End date: <b>{{leave_app.date_to}}</b>
+			</td>
+            <td>{{leave_app.requested_duration}} days</td>
+			<td>{{leave_app.destination}}</td>
+        </tr>
+		{% endfor %}
+    </tbody>
+</table>
+    </div>
+    </div>
+</div>
+</div>
+
+        <!-- [ Background-Utilities ] end -->
+    </div>
+    <!-- [ Main Content ] end -->
+</div>
+</section>
+<!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

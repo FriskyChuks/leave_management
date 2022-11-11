@@ -86,16 +86,29 @@
     </tr>
 </table>
 <br><br>
-<hr>
+<hr> <br>
 <h3>Approved by:</h3>
 <table>
     <tr> 
-        <td class="head">
-            <span class="green"> Head of Admin:</span>  
-            {{head_of_admin.first_name}} {{head_of_admin.last_name}} 
+        <td class="head"> 
+            {{head_of_admin.first_name}} {{head_of_admin.last_name}} <br>
+            <span class="green">(Head of Admin)</span>
         </td>
-        <td class="head"><span class="green">  Head of Dept/Unit:</span> 
-            {{head_of_dept.first_name}} {{head_of_dept.last_name}}
+        <td class="head">
+        </td>
+        <td class="head">
+            {{head_of_dept.first_name}} {{head_of_dept.last_name}} <br>
+            <span class="green">(Head of Dept/Unit)</span>
+        </td>
+    </tr>
+</table>
+<hr> <br>
+<h3>Processed by:</h3>
+<table>
+    <tr> 
+        <td class="head">
+            {{processed_by}} <br>
+            <span class="green">(For Leave & Passage Unit)</span>
         </td>
     </tr>
 </table>

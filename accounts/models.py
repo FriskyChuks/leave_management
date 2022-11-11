@@ -60,7 +60,7 @@ class SubUnit(models.Model):
 class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    other_name = models.CharField(blank=True, max_length=50)
+    other_name = models.CharField(blank=True, null=True, max_length=50)
     file_number = models.IntegerField(unique=True, blank=True, null=True)
     username = models.CharField(unique=True, max_length=30)
     date_of_birth = models.DateField(blank=True, null=True)
@@ -80,6 +80,14 @@ class User(AbstractUser):
 
     def __str__(self):
         return str(self.username)
+
+    @property
+    def imageURL(self):
+        try:
+            url = self.passport.url
+        except:
+            url = ''
+        return url            
 
 # class Head(models.Model):
 #     user                 = models.OneToOneField(User, on_delete=models.CASCADE)
