@@ -30,7 +30,7 @@
 				{% if request.user.user_group.group == 'leave_and_passage' %}
 				<li><a href="{% url 'approved_leave' %}">Print Leave Pass</a></li>
 				{% endif %}
-				{% if request.user.user_group.group == 'head of unit' or request.user.user_group.group == 'head of department' or request.user.user_group.group == 'head of directorate' or request.user.user_group.group == 'leave_and_passage' %}
+				{% if request.user.user_group.group == 'head of unit' or request.user.user_group.group == 'head of department' or request.user.user_group.group == 'head of directorate' or request.user.user_group.group == 'leave_and_passage' or request.user.user_group.group == 'cmd' %}
 					<li><a href="{% url 'list_pending_leave_applications' %}">Pending Applications</a></li>
 					<li><a href="{% url 'list_resumption' %}">Pending Resumptions</a></li>
 				{% endif %}
@@ -44,12 +44,15 @@
 				<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-settings"></i></span><span class="pcoded-mtext"><b>Settings</b></span></a>
 				<ul class="pcoded-submenu">
 						<li><a href="{% url 'leave_type' %}">Create Leave Types</a></li>
-						<li><a href="{% url 'create_unit' %}">Create Unit</a></li>
-						<li><a href="{% url 'create_department' %}">Create Department</a></li>
+						<li><a href="{% url 'department_list' %}">Department List</a></li>
+						{% if request.user.user_group.group == 'developer' %}
+							<li><a href="{% url 'create_unit' %}">Create Unit</a></li>
+							<li><a href="{% url 'create_department' %}">Create Department</a></li>
+						{% endif %}
 				</ul>
 			</li>
 		{% endif %}
-		{% if request.user.user_group.group == 'registry' or request.user.user_group.group == 'developer' or request.user.user_group.group == 'leave_and_passage' %}
+		{% if request.user.user_group.group == 'registry' or request.user.user_group.group == 'developer' or request.user.user_group.group == 'leave_and_passage' or request.user.user_group.group == 'support' %}
 			<li class="nav-item pcoded-hasmenu">
 				<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-lock"></i></span><span class="pcoded-mtext"><b>Registration</b></span></a>
 				<ul class="pcoded-submenu">

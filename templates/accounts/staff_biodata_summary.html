@@ -238,15 +238,15 @@
       </div>
       <br><br>
       {% if request.user.user_group.group == 'registry' or request.user.user_group.group == 'developer' %}
-        <button onclick="confirmRegistration()" class="btn btn-primary" style="background-color: green; color:white">
+        <!-- <button onclick="confirmRegistration()" class="btn btn-primary" style="background-color: green; color:white">
           <a style="color: white; text-decoration: none;" href="{% url 'index' %}">Comfirm Registration</a>
-        </button>
+        </button> -->
         <button class="btn btn-success" style="background-color: blue; color:white">
-          <a style="color: white; text-decoration: none;" href="{% url 'contact_address' user.id %}">Edit  Registration</a>
+          <a style="color: white; text-decoration: none;" href="{% url 'update' request.user.id %}">Update Profile</a>
         </button>
-        <button class="btn btn-success" style="background-color: blue; color:white">
+        <!-- <button class="btn btn-success" style="background-color: blue; color:white">
           <a style="color: white; text-decoration: none;" href="{% url 'update_user_group' user.id %}">Assign User Group</a>
-        </button>
+        </button> -->
       {% endif %}
       </div>
   </div>

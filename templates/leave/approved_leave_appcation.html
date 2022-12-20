@@ -21,44 +21,48 @@
         
           <div class="card-body">
             <div class="card-body pt-0">
-              <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <!-- <th>#</th> -->
-                            <th>ID</th>
-                            <th>STAFF</th>
-                            <th>LEAVE TYPE</th>
-                            <th>DATES</th>
-                            <th>DURATION</th>
-                            <th>DESTINATION</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for leave_app in leave_applications %}
-                        <tr>
-                            <td>{{leave_app.id}}</td>
-                            <td>
-                              {{leave_app.created_by.first_name}}
-                              {{leave_app.created_by.last_name}}
-                            </td>
-                            <td>
-                                {{leave_app.leave_type.title}} Leave
-                            </td>
-                            <td>
-                                Start date: <b>{{leave_app.date_from}}</b><br>
-                                End date: <b>{{leave_app.date_to}}</b>
-                            </td>
-                            <td>{{leave_app.requested_duration}} days</td>
-                            <td>{{leave_app.destination}}</td>
-                           <td><button><a href="{% url 'pdf_view' leave_app.id %}" target="_blank">Print</a></button></td>
-                            
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-              </div>
+              {% if not leave_applications %}
+                <h5>No Pass generated yet!</h5>
+              {% else %}
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                      <thead>
+                          <tr>
+                              <!-- <th>#</th> -->
+                              <th>ID</th>
+                              <th>STAFF</th>
+                              <th>LEAVE TYPE</th>
+                              <th>DATES</th>
+                              <th>DURATION</th>
+                              <th>DESTINATION</th>
+                              <th>ACTIONS</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for leave_app in leave_applications %}
+                          <tr>
+                              <td>{{leave_app.id}}</td>
+                              <td>
+                                {{leave_app.created_by.first_name}}
+                                {{leave_app.created_by.last_name}}
+                              </td>
+                              <td>
+                                  {{leave_app.leave_type.title}} Leave
+                              </td>
+                              <td>
+                                  Start date: <b>{{leave_app.date_from}}</b><br>
+                                  End date: <b>{{leave_app.date_to}}</b>
+                              </td>
+                              <td>{{leave_app.requested_duration}} days</td>
+                              <td>{{leave_app.destination}}</td>
+                            <td><button><a href="{% url 'pdf_view' leave_app.id %}" target="_blank">Print</a></button></td>
+                              
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
+                </div>
+              {% endif %}
             </div>
           </div>
         </div>

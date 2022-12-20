@@ -48,7 +48,7 @@ def index(request):
 
 def loginPage(request):
 	msg,emp_details=None,None
-	user_groups = ['head of department','head of directorate']
+	user_groups = ['head of department','head of directorate','cmd']
 	if request.method == "POST":
 		username_var = request.POST.get('username')
 		password_var = request.POST.get('password')
@@ -83,7 +83,7 @@ def loginPage(request):
 						return redirect('edit_employment_detail',emp_details.id)
 				except ObjectDoesNotExist:
 					return redirect('employment_detail',user.id)
-				groups=['head of unit','head of department','head of directorate']
+				groups=['head of unit','head of department','head of directorate','cmd']
 				if user.user_group.group in groups:
 					return redirect("list_pending_leave_applications")
 				else:
@@ -122,7 +122,7 @@ def registerUser(request):
 		else:
 			user = User.objects.create_user(
 				first_name=first_name,last_name=last_name,other_name=other_name,file_number=file_number,
-				username=file_number,date_of_birth=date_of_birth,
+				username=file_number,date_of_birth=date_of_birth,user_group_id=5,
 				gender_id=gender,directorate_id=directorate,department_id=department)
 			user.set_password("pass")
 			user.save();
@@ -171,7 +171,7 @@ def update_view(request ,id):
 		date_of_birth = request.POST.get('date_of_birth')
 		
 		User.objects.filter(id=id).update(first_name=first_name,last_name=last_name,gender_id=sex,
-					other_name=othernames,file_number=file_number,date_of_birth=date_of_birth)
+					username=file_number,other_name=othernames,file_number=file_number,date_of_birth=date_of_birth)
 		return redirect('edit_employment_detail',id=employee_detail.id)
 
 	context =  {'user':user,'gender':gender}
@@ -220,7 +220,8 @@ def change_password(request):
 				user.set_password(new_password)
 				user.save()
 				context["msg"] = "Password Change Successfully"
-				context["col"] = "alert-success "	
+				context["col"] = "alert-success "
+				return redirect('logout')	
 		else:
 			context["msg"] = " Current Password is Incorrect "
 			context["col"] = "alert-danger"	
@@ -282,3 +283,27 @@ def update_user_group(request,id):
 		return redirect('index')
 	context={"user":user,"groups":groups}
 	return render(request,'accounts/update_user_group.html',context)
+
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['support','developer' ])
+def department_list_view(request):
+	departments = Department.objects.all().order_by('title')
+	return render(request,'accounts/department_list.html',{'departments':departments})
+
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['support','developer' ])
+def update_department_view(request,id):
+	department = Department.objects.get(id=id)
+	print(department)
+	directorates = Directorate.objects.all()
+	if request.method == 'POST':
+		title = request.POST.get('title')
+		directorate = request.POST.get('directorate')
+		has_unit = request.POST.get('has_unit')
+		if has_unit:
+			Department.objects.filter(id=id).update(title=title,directorate_id=directorate,has_unit=True)
+		else:
+			Department.objects.filter(id=id).update(title=title,directorate_id=directorate,has_unit=False)
+		messages.success(request,"Updated successfully")
+		return redirect('department_list')
+	return render(request,'accounts/update_department.html',{'department':department,'directorates':directorates})

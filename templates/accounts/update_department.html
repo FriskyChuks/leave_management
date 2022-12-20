@@ -1,0 +1,55 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %} 
+
+<section class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <!-- [ form-element ] start -->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <center> <h5 class="mt-5">{{ department.title }}</h5></center>
+                        <hr>
+                        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                            <div class="">
+                                
+                                <div class="col-md-6 mb-6">
+                                    <label for="validationTooltip02">Directorate</label>
+                                    <select class="form-control" name="directorate" required>
+                                        <option selected value="{{department.directorate.id}}">{{department.directorate.title}}</option>
+                                        {% for directorate in directorates %}
+                                            <option value="{{directorate.id}}">{{directorate.title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div> <br>
+                                <div class="col-md-6 mb-6">
+                                    <label for="validationTooltip01">Title</label>
+                                    <input id="title" class="form-control" value="{{ department }}"  name="title" required>   
+                                </div><br>
+                                <div class="form-check">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input name="has_unit" class="form-check-input" type="checkbox" value="1" 
+                                    {% if department.has_unit %} checked {% endif %}>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                      Has unit
+                                    </label>
+                                </div><br>
+                                <div class="col-md-6 mb-6">
+                                    <button class="btn btn-primary" type="submit">Save</button>  
+                                </div>
+                            </div>
+                        </form>    
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %} 

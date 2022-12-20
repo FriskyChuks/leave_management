@@ -16,7 +16,9 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                {% if rquest.user.unit %}
+                                {% if rquest.user.user_group.group == 'cmd' %}
+                                    <h5 class="m-b-10">Office of CMD</h5>
+                                {% elif rquest.user.unit %}
                                     <h5 class="m-b-10">{{ request.user.unit}}</h5>
                                 {% elif request.user.department %}
                                     <h5 class="m-b-10">{{ request.user.department}}</h5>

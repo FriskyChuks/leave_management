@@ -1,13 +1,13 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from datetime import date
-# import numpy as np
+import numpy as np
 
 from leave.models import *
 
-# def get_working_days(d1,d2):
-# 	days = np.busday_count( d1, d2 )
-# 	return int(days)
+def get_working_days(d1,d2):
+	days = np.busday_count( d1, d2 )
+	return int(days)
 
 def check_leave_eligibility(request,leave_type_id):
 	month_difference=12

@@ -57,6 +57,7 @@ class LeaveApplication(models.Model):
     date_to = models.DateField( null=True, auto_now_add = False, auto_now=False)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.ForeignKey(LeaveApplicationStatus, on_delete=models.DO_NOTHING)
+    auto = models.BooleanField(default=True)
     approval_status = models.ForeignKey(Approval, on_delete=models.DO_NOTHING)
     resumption_approval=models.ForeignKey(ResumptionApproval,null=True,blank=True,on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add =True,auto_now=False)

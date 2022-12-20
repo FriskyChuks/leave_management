@@ -27,4 +27,5 @@ urlpatterns = [
     path('create_department', views.create_department,name='create_department'),
     path('create_unit',views.create_unit, name='create_unit'),
     path('leave_tracker/<id>/',views.leave_tracker_view,name='leave_tracker'),
+    path('update_leave_application/<id>/',views.update_leave_application,name='update_leave_application'),
 ]    

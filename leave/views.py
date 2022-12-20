@@ -49,8 +49,11 @@ def LeaveDurationView(request):
 
 
 @login_required(login_url='login')
-def LeaveApplicationview(request, id): 
+def LeaveApplicationview(request, id):
+	auto_flow = True	 
 	user_groups = ['head of department','head of directorate']
+	if request.user.user_group.group in user_groups:
+		auto_flow=False
 	try:
 		emp_details=EmploymentDetails.objects.get(user_id=request.user.id)
 		if not emp_details.grade or not emp_details.designation or not emp_details.step:
@@ -101,7 +104,8 @@ def LeaveApplicationview(request, id):
 		date_from = request.POST.get('date_from')
 		date_to = request.POST.get('date_to') 
 
-		requesting_duration = request.POST.get('requested_duration')
+		# requesting_duration = get_working_days(date_from,date_to)
+		requesting_duration = int(request.POST.get('requested_duration'))
 		# CHECK MATERNITY LEAVE FOR USED ANNUAL LEAVE
 		if leave_type.title.lower() == "maternity" and has_annual_leave(request.user.id):
 			requesting_duration=int(requesting_duration)-int(has_annual_leave(request.user.id))
@@ -111,7 +115,7 @@ def LeaveApplicationview(request, id):
 			messages.info(request, f"The days used for Annual leave has been deducted upfront \
 				You now have {requesting_duration}days left for your Maternity leave; Thanks!")
 			# ENDS HERE
-		if days_remaining < int(requesting_duration):
+		if days_remaining < requesting_duration:
 			messages.error(request, f"{leave_type.title} leave duration cannot exceed {duration.duration} days!")
 			return redirect('leave_application',id=leave_type.id)
 		elif days_remaining <= 0:
@@ -119,16 +123,16 @@ def LeaveApplicationview(request, id):
 			leave_type_id = int(leave_type.id)
 			return redirect('leave_application', id=leave_type_id)
 
-		elif int(request.POST.get("requested_duration"))<days_remaining:
+		elif requesting_duration<days_remaining:
 			LeaveApplication.objects.create(leave_duration_id=duration.id,created_by_id=user.id,
 			leave_type_id = leave_type.id,status_id=1,approval_status_id=approval_status,
 			requested_duration=requesting_duration,destination_id=request.POST.get('destination'),
-			date_from=date_from, date_to=date_to)    
+			date_from=date_from, date_to=date_to,auto=auto_flow)    
 		else:
 			LeaveApplication.objects.create(leave_duration_id=duration.id,created_by_id=user.id,
 			leave_type_id = leave_type.id,status_id=5,approval_status_id=approval_status,
 			requested_duration=requesting_duration,destination_id=request.POST.get('destination'),
-			date_from=date_from, date_to=date_to)
+			date_from=date_from, date_to=date_to,auto=auto_flow)
 		return redirect('index')
 
 	context = {"duration":duration,"total_days_used":total_days_used,"states":states,
@@ -155,7 +159,7 @@ def leave_application_status(request):
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['leave_and_passage','head of unit','head of department','head of directorate','developer','support'])	
+@allowed_users(alllowed_roles=['leave_and_passage','head of unit','head of department','head of directorate','developer','support','cmd'])	
 def list_pending_leave_applications(request):
 	leave_apps=None
 	user = User.objects.get(id=request.user.id) 
@@ -167,6 +171,9 @@ def list_pending_leave_applications(request):
 	# for leave & passage staff
 	if request.user.user_group.group=='leave_and_passage':
 		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-4).exclude(status_id=8)
+	elif request.user.user_group.group=='cmd':
+		leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,auto=False,
+						created_by__directorate__title__icontains='Admin').exclude(status__status=excluded_status)
 	else:
 		for user in heads:
 			if user.user_group.group == 'head of unit': 
@@ -175,21 +182,31 @@ def list_pending_leave_applications(request):
 			elif user.user_group.group == 'head of department':
 				leave_apps = LeaveApplication.objects.filter(approval_status_id=id-2,
 						created_by__department__id=request.user.department.id).exclude(status__status=excluded_status)
-			elif user.user_group.group == 'head of directorate':    
-					leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,
-						).exclude(status__status=excluded_status)
+			elif user.user_group.group == 'head of directorate' and 'admin' in user.directorate.title.lower():    
+					leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,auto=True
+																	).exclude(status__status=excluded_status)
+			elif user.user_group.group == 'head of directorate' and 'clinical' in user.directorate.title.lower():    
+					leave_apps = LeaveApplication.objects.filter(approval_status_id=id-3,auto=False,
+						created_by__directorate__id=request.user.directorate.id).exclude(status__status=excluded_status)
 
 	context = {'leave_apps': leave_apps}
 	return render(request, 'leave/list_pending_leave_applications.html', context)    
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['head of unit','head of department','head of directorate'])
+@allowed_users(alllowed_roles=['head of unit','head of department','head of directorate','cmd'])
 def recommend_leave_application(request, id):
 	leave_application = LeaveApplication.objects.get(id=id)
 	current_approval_status = leave_application.approval_status_id
 	# UPDATE approval_status LeaveApplications table
-	obj = LeaveApplication.objects.filter(id=id).update(approval_status_id=int(current_approval_status)-1)
+	if request.user.user_group.group == 'cmd':
+		LeaveApplication.objects.filter(id=id).update(auto=True)
+	elif request.user.user_group.group == 'head of directorate' and 'clinical' in request.user.directorate.title.lower():
+		LeaveApplication.objects.filter(id=id).update(auto=True)
+	elif leave_application.created_by.department.title.lower()=='admin' and int(current_approval_status)==5:
+		LeaveApplication.objects.filter(id=id).update(approval_status_id=int(current_approval_status)-2)
+	else:
+		LeaveApplication.objects.filter(id=id).update(approval_status_id=int(current_approval_status)-1)
 	# Insert in to Leave_Recommendation
 	obj = LeaveRecommendation.objects.create(leave_application_id=leave_application.id,
 											created_by_id=request.user.id)
@@ -198,7 +215,7 @@ def recommend_leave_application(request, id):
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['head of unit','head of department','head of directorate'])
+@allowed_users(alllowed_roles=['head of unit','head of department','head of directorate','cmd'])
 def decline_leave_application(request,id):
 	leave_application = LeaveApplication.objects.get(id=id)
 	_status = LeaveApplicationStatus.objects.get(status='declined')
@@ -346,13 +363,20 @@ def leave_details_view(request,id):
 
 @login_required(login_url='login')
 def leave_status_detail(request):
+	active_status=['in process','partly in process']
+	leave_app=None
+	try:
+		leave_app = LeaveApplication.objects.get(created_by__id=request.user.id,
+											status__status__in=active_status)
+	except ObjectDoesNotExist:
+		pass
 	user=request.user.id
 	_status=['in process','partly in process']
 	recommendations = LeaveRecommendation.objects.filter(
 									leave_application__status__status__in=_status,
 									leave_application__created_by__id=user)
 	
-	context={"recommendations":recommendations}
+	context={"recommendations":recommendations,"leave_app":leave_app}
 	return render(request,'leave/leave_status_detail.html',context)
 
 
@@ -431,7 +455,7 @@ def render_pdf_view(request,id):
 	emp_detail = EmploymentDetails.objects.get(user_id=leave_pass.created_by.id)
 	try:
 		head_of_dept = User.objects.filter(user_group__group='head of department',
-			department_id=leave_pass.created_by.department.id).last()
+			department_id=leave_pass.created_by.department.id).order_by('file_number').first()
 		head_of_admin=User.objects.get(file_number=2)
 		processed_by=LeaveRecommendation.objects.filter(leave_application_id=leave_pass.id).last()
 	except ObjectDoesNotExist:
@@ -453,6 +477,7 @@ def render_pdf_view(request,id):
 	   return HttpResponse('We had some errors <pre>' + html + '</pre>')
 	return response
 #========= ends here =================
+
 
 @login_required(login_url='login')
 @allowed_users(alllowed_roles=['leave_and_passage','developer','support'])
@@ -484,3 +509,28 @@ def leave_tracker_view(request,id):
 			"progress_bar_width":progress_bar_width,"recommendations":recommendations}
 	
 	return render(request,'leave/leave_tracker.html',context)
+
+
+def update_leave_application(request,id):
+	states = State.objects.all()
+	leave_app = LeaveApplication.objects.get(id=id)
+	if request.method=='POST':
+		date_from = request.POST.get('date_from')
+		date_to = request.POST.get('date_to')
+		if check_current_year(request,leave_app.leave_type.id):
+			messages.error(request,f"You cannot take {leave_app.leave_type.title} leave twice\
+								 in same year; You may re-apply next year, thanks")
+			return redirect('index')
+		# Check if last leave is atleast 6 months ago
+		last_leave = check_leave_eligibility(request,leave_app.leave_type.id)
+		if last_leave < 6:
+			messages.error(request,f"Your last Annual leave is only {last_leave} months ago;\
+						You may re-apply in {6-last_leave} months, thanks")
+			return redirect('index')
+		LeaveApplication.objects.filter(id=id).update(
+							date_from=date_from, date_to=date_to)
+		return redirect('index')
+	context={'leave_app':leave_app,'states':states}
+	return render(request,'leave/update_leave_application.html',context)
+
+
