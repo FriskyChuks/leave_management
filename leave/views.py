@@ -260,6 +260,8 @@ def resume_leave_view(request,id):
 				resumption_approval_id=3
 			elif user.user_group.group == 'head of directorate':
 				resumption_approval_id=4
+	elif not request.user.unit:
+		resumption_approval_id=2
 	status_id=3
 	if current_status=='partly active':
 		status_id=7
