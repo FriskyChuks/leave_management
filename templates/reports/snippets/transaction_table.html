@@ -1,0 +1,67 @@
+{% now "Y-m-d" as todays_date %}
+
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <!-- <th scope="col">FILE NO</th> -->
+        <th scope="col">NAME</th>
+        <th scope="col">DEPT</th>
+        <th scope="col">LEAVE-TYPE</th>
+        <th scope="col">START DATE</th>
+        <th scope="col">END DATE</th>
+        <th scope="col">RESUMED DATE</th>
+        <th scope="col">DESTINATION</th>
+        <th scope="col">STATUS</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for leave_app in leave_apps %}
+        <tr>
+            <td>{{ leave_app.created_by.first_name }} {{ leave_app.created_by.last_name }}
+                (<a href="">{{ leave_app.created_by.file_number }}</a>)
+            </td>
+            <td>{{ leave_app.created_by.department }}</td>
+            <td>{{ leave_app.leave_type }}</td>
+            <td>{{ leave_app.date_from }}</td>
+            <td>{{ leave_app.date_to }}</td>
+            {% if leave_app.resumption_approval.approval == 'resumed' %}
+                <td>{{ leave_app.last_updated|date }}</td>
+            {% else %}
+                <td>-----</td>
+            {% endif %}
+            <td>{{ leave_app.destination }} State</td>
+            {% if leave_app.status.status == 'active' or leave_app.status.status == 'partly active' %}
+                {% if todays_date > leave_app.date_to|date:"Y-m-d" %}
+                    <td style="color: red;"><b>Overdue</b></td>
+                {% else %}
+                    <td style="color: purple;"><b>Active</b></td>
+                {% endif %}
+            {% elif leave_app.status.status == 'done' or leave_app.status.status == 'partly done'  %}
+                <td style="color: green;"><b>Resumed</b></td>
+            {% elif leave_app.status.status == 'resuming' or leave_app.status.status == 'partly resuming'  %}
+                <td style="color: rgba(0, 47, 255, 0.818);"><b>Resuming</b></td>
+            {% else %}
+                <td style="color: blue;"><b>Pending</b></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <span class="step-links">
+        {% if payments.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ payments.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ payments.number }} of {{ payments.paginator.num_pages }}.
+        </span>
+        &nbsp; &nbsp;
+        {% if payments.has_next %}
+            <a href="?page={{ payments.next_page_number }}">next</a>&nbsp; &nbsp;
+            <a href="?page={{ payments.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>

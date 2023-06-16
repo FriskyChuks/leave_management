@@ -75,7 +75,7 @@
                                                     {{leave_app.date_to}}
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-success" style="background-color: green; color:white">
+                                                    <button onclick="hideBtn(this)" class="btn btn-success" style="background-color: green; color:white">
                                                         {% if request.user.user_group.group == 'leave_and_passage' %}
                                                             <a style="color: white;" href="{% url 'acknowledge_leave_resumption' leave_app.id %}">Acknowledge Resumption</a>
                                                         {% else %}
@@ -97,6 +97,11 @@
         </div>
     </section>
 <!-- [ Main Content ] end -->
+<script>
+    function hideBtn(x){
+        x.style.display = none;
+    }
+</script>
 
 {% endblock content %}
 

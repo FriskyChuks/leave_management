@@ -78,7 +78,7 @@
                                 </td>
                                 <!-- <td>Yes ({{has_annual_leave_check}}) <br>No (exhausted)</td> -->
                                 <td>
-                                    <button class="btn btn-success" style="background-color: green; color:white">
+                                    <button onclick="hideBtn(this)" class="btn btn-success" style="background-color: green; color:white">
                                         {% if request.user.user_group.group == 'leave_and_passage' %}
                                             <a style="color: white;" href="{% url 'process_leave_pass' leave_app.id %}">Process Leave Pass</a>
                                         {% elif request.user.user_group.group == 'head of directorate' %}
@@ -87,11 +87,11 @@
                                             <a style="color: white;" href="{% url 'recommend_leave_application' leave_app.id %}">Recommend</a>
                                         {% endif %}
                                     </button>
-                                    <button class="btn btn-primary" style="background-color: blue; color:white">
+                                    <button onclick="hideBtn(this)" class="btn btn-primary" style="background-color: blue; color:white">
                                         <a style="color: white;" href="{% url 'leave_details' leave_app.id %}">Details</a>
                                     </button>
                                     {% if not request.user.user_group.group == 'leave_and_passage' %}
-                                        <button class="btn btn-success" style="background-color: red; color:white">
+                                        <button onclick="hideBtn(this)" class="btn btn-success" style="background-color: red; color:white">
                                             <a style="color: white;" href="{% url 'decline_leave_application' leave_app.id %}">Decline</a>
                                         </button>
                                     {% endif %}
@@ -112,6 +112,12 @@
 </div>
 </section>
 <!-- [ Main Content ] end -->
+
+<script>
+    function hideBtn(x){
+        x.style.display = none;
+    }
+</script>
 
 {% endblock content %}
 

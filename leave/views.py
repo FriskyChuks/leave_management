@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib import messages
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from datetime import datetime, timedelta
+from datetime import datetime as dt, timedelta
+from django.utils import timezone
 
 # for pdf print
 from io import BytesIO
@@ -50,6 +50,7 @@ def LeaveDurationView(request):
 
 @login_required(login_url='login')
 def LeaveApplicationview(request, id):
+	Holidays = holidays()
 	auto_flow = True	 
 	user_groups = ['head of department','head of directorate']
 	if request.user.user_group.group in user_groups:
@@ -73,7 +74,7 @@ def LeaveApplicationview(request, id):
 	leave_type = LeaveType.objects.get(id=id)
 	
 	user = request.user
-	this_year = datetime.now()
+	this_year = dt.now()
 	approval_status=Approval.objects.get(approval='declined')
 	no_of_days_used = LeaveApplication.objects.filter(
 		created_by_id=user.id,leave_type_id=id,date_from__year=this_year.year).exclude(approval_status=approval_status)
@@ -101,16 +102,17 @@ def LeaveApplicationview(request, id):
 			messages.error(request,f"Your last Annual leave is only {last_leave} months ago;\
 						You may re-apply in {6-last_leave} months, thanks")
 			return redirect('index')
-		date_from = request.POST.get('date_from')
-		date_to = request.POST.get('date_to') 
-
-		# requesting_duration = get_working_days(date_from,date_to)
+		
 		requesting_duration = int(request.POST.get('requested_duration'))
+		date_from = request.POST.get('date_from')
+		# get date_to
+		date_to = date_by_adding_business_days(date_from, requesting_duration,Holidays)
+		
 		# CHECK MATERNITY LEAVE FOR USED ANNUAL LEAVE
 		if leave_type.title.lower() == "maternity" and has_annual_leave(request.user.id):
-			requesting_duration=int(requesting_duration)-int(has_annual_leave(request.user.id))
-			date_to=datetime.strptime(date_to, '%Y-%m-%d')
-			date_to -= timedelta(days=int(has_annual_leave(request.user.id)))
+			requesting_duration=int(requesting_duration)-has_annual_leave(request.user.id)
+			# date_to=datetime.datetime.strptime(date_to, '%Y-%m-%d')
+			date_to = date_by_adding_business_days(date_from, requesting_duration,Holidays)
 			date_to=date_to.date()
 			messages.info(request, f"The days used for Annual leave has been deducted upfront \
 				You now have {requesting_duration}days left for your Maternity leave; Thanks!")
@@ -243,7 +245,7 @@ def process_leave_pass_view(request,id):
 									status_id=var_status,approval_status_id=1)
 	LeaveRecommendation.objects.create(leave_application_id=instance.id,
 										created_by_id=request.user.id)
-	return redirect('approved_leave')
+	return redirect('list_pending_leave_applications')
 
 
 @login_required(login_url='login')  
@@ -265,8 +267,8 @@ def resume_leave_view(request,id):
 	status_id=3
 	if current_status=='partly active':
 		status_id=7
-	LeaveApplication.objects.filter(id=id).update(
-			resumption_approval_id=resumption_approval_id,status_id=status_id)# status='Resuming'
+		# resumption_initiated=timezone.now(),
+	LeaveApplication.objects.filter(id=id).update(resumption_approval_id=resumption_approval_id,status_id=status_id)# status='Resuming'
 	return redirect('leave_history')
 
 
@@ -364,11 +366,11 @@ def leave_details_view(request,id):
 
 
 @login_required(login_url='login')
-def leave_status_detail(request):
+def leave_status_detail(request,id):
 	active_status=['in process','partly in process']
 	leave_app=None
 	try:
-		leave_app = LeaveApplication.objects.get(created_by__id=request.user.id,
+		leave_app = LeaveApplication.objects.get(created_by__id=id,
 											status__status__in=active_status)
 	except ObjectDoesNotExist:
 		pass
@@ -376,7 +378,7 @@ def leave_status_detail(request):
 	_status=['in process','partly in process']
 	recommendations = LeaveRecommendation.objects.filter(
 									leave_application__status__status__in=_status,
-									leave_application__created_by__id=user)
+									leave_application__created_by__id=id)
 	
 	context={"recommendations":recommendations,"leave_app":leave_app}
 	return render(request,'leave/leave_status_detail.html',context)
@@ -514,11 +516,14 @@ def leave_tracker_view(request,id):
 
 
 def update_leave_application(request,id):
+	Holidays = holidays()
 	states = State.objects.all()
 	leave_app = LeaveApplication.objects.get(id=id)
 	if request.method=='POST':
+		requesting_duration = int(request.POST.get('requested_duration'))
+		destination = request.POST.get('destination')
 		date_from = request.POST.get('date_from')
-		date_to = request.POST.get('date_to')
+		date_to = date_by_adding_business_days(date_from, requesting_duration,Holidays)
 		if check_current_year(request,leave_app.leave_type.id):
 			messages.error(request,f"You cannot take {leave_app.leave_type.title} leave twice\
 								 in same year; You may re-apply next year, thanks")
@@ -529,8 +534,8 @@ def update_leave_application(request,id):
 			messages.error(request,f"Your last Annual leave is only {last_leave} months ago;\
 						You may re-apply in {6-last_leave} months, thanks")
 			return redirect('index')
-		LeaveApplication.objects.filter(id=id).update(
-							date_from=date_from, date_to=date_to)
+		LeaveApplication.objects.filter(id=id).update(destination=destination,
+							date_from=date_from, date_to=date_to,requested_duration=requesting_duration)
 		return redirect('index')
 	context={'leave_app':leave_app,'states':states}
 	return render(request,'leave/update_leave_application.html',context)

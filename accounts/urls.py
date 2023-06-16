@@ -19,5 +19,6 @@ urlpatterns = [
     path('get_departs/',views.get_departs,name='get_departs'),
     path('department_list/',views.department_list_view,name='department_list'),
     path('update_department/<id>/',views.update_department_view,name='update_department'),
+    path('update_db_by_excel_file/', views.update_db_by_excel_file, name='update_db_by_excel_file'),
 ]
 

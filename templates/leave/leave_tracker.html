@@ -29,7 +29,7 @@
                         <!-- <i class="fa fa-envelope-open text-c-blue d-block f-40"></i> -->
                         <h4 class="m-t-20">
                             <span class="text-c-black">Leave Application Tracker</span> 
-                            <a href="{% url 'leave_status_detail' %}"><small> ...view detail</small></a>
+                            <a href="{% url 'leave_status_detail' id=leave_app.created_by.id %}"><small> ...view detail</small></a>
                         </h4>
                         <!-- <p class="m-b-20">Your main list is growing</p> -->
                         

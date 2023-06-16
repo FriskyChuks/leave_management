@@ -17,8 +17,8 @@
                         <div class="col-md-12">
                             <div class="page-header-title">
                                 <h4 class="m-b-10">
-                                    {{request.user.first_name}}
-                                    {{request.user.last_name}}
+                                    {{leave_app.created_by.first_name}}
+                                    {{leave_app.created_by.last_name}}
                                 </h4>
                             </div>
                             <ul class="breadcrumb">
@@ -31,22 +31,33 @@
                 </div>
             </div>
             {% if not recommendations %}
-                <center>
-                    <h5>No comments yet</h5>
-                    {% if leave_app %}
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>{{leave_app.leave_type.title}} Leave</tr> | 
-                                    <tr>({{leave_app.requested_duration}}) Days</tr> |
-                                    <tr>{{leave_app.date_from}}</tr> -> {{leave_app.date_to}} |
-                                    <tr>{{leave_app.destination}}</tr> 
-                                </thead>
-                            </table>
-                        </div>
-                        <!-- <a class="btn btn-primary" href="{% url 'update_leave_application' leave_app.id %}">Update My Leave Application</a> -->
-                    {% endif %}
-                </center>
+                {% if leave_app %}
+                    Click <a href="{% url 'update_leave_application' leave_app.id %}">here to <strong>Update</strong></a> this application while no recommendation has been done
+                    <div class="table-responsive container">
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <td>Type:</td>
+                                    <td>{{leave_app.leave_type.title}} Leave | ({{leave_app.requested_duration}}) Working days</td>
+                                </tr> 
+                                <tr>
+                                    <td>Commences:</td>
+                                    <td>{{leave_app.date_from}}</td>
+                                </tr> 
+                                <tr>
+                                    <td>Resumes on: </td>
+                                    <td>{{leave_app.date_to}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Destination</td>
+                                    <td>{{leave_app.destination}}</td>
+                                </tr> 
+                            </thead>
+                        </table>
+                    </div>
+                    <!-- <a class="btn btn-primary" href="{% url 'update_leave_application' leave_app.id %}">Update My Leave Application</a> -->
+                {% endif %}
+                <h4 style="text-align: center;">No recommendations yet</h4>
             {% else %}
                 <div class="row">
                     <!-- [ dark-table ] end -->
@@ -56,9 +67,9 @@
                             <div class="card-header">
                                 
                                 {% for recommendation in recommendations|slice:"0:1" %}
-                                    <h5>{{recommendation.leave_application}} Leave</h5><br> 
+                                    <h5>{{recommendation.leave_application}}</h5><br> 
                                     Applied on: {{recommendation.leave_application.date_created}} <br>
-                                    {{leave_app.leave_type.title}} | {{leave_app.requested_duration}}days | 
+                                    {{leave_app.leave_type.title}} leave || {{leave_app.requested_duration}} working days || 
                                     {{leave_app.date_from}} --> {{leave_app.date_to}}
                                 {% endfor %}
                                 

@@ -57,13 +57,13 @@
     <div class="col-md-8">
         <form method="POST" class="needs-validation" novalidate>{% csrf_token %}
             <div class="form-row">
-                <!-- <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-3">
                     <label for="validationTooltip01">Leave Duraion (<i>in days</i>)</label>
-                    <input type="number" min="0" max="{{days_remaining}}" class="form-control" id="duration" name="requested_duration" value="{{leave_app.requested_duration}}" required onchange="updateDateTo()" readonly>
+                    <input type="number" min="0" max="{{days_remaining}}" class="form-control" id="duration" name="requested_duration" value="{{leave_app.requested_duration}}" required>
                     <div class="valid-tooltip">
                         Looks good!
                     </div>
-                </div> -->
+                </div>
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip02">Leave Destination</label>
                     <!-- <input type="text" class="form-control" id="validationTooltip02" placeholder="Last name" value="Otto" required> -->
@@ -81,18 +81,18 @@
             <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip03">Date from</label>
-                    <input type="date" class="form-control" id="date_from" name="date_from" placeholder="dd-mm-yyyy" required onchange="updateDateTo()">
+                    <input type="date" class="form-control" id="date_from" name="date_from" value="{{leave_app.date_from}}" required>
                     <div class="invalid-tooltip">
                         Please provide a valid date.
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
+                <!-- <div class="col-md-6 mb-3">
                     <label for="validationTooltip04">Resumption Date</label>
                     <input type="date" class="form-control" id="date_to" value="{{leave_app.date_to|date:'d/m/Y'}}" placeholder="yyyy-dd-mm" name="date_to" required>
                     <div class="invalid-tooltip">
                         Please provide a valid date.
                     </div>
-                </div>
+                </div> -->
             </div>
             <button class="btn  btn-primary" type="submit">Apply Now</button>
         </form>

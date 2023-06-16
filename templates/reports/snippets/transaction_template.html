@@ -1,0 +1,116 @@
+
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+<link rel="stylesheet" href="/static/assets/css/bootstrap2.min.css">
+<script src="/static/assets/js/jquery.min.js"></script>
+<span>
+  <h3>Reports <br> <i style="font-size: large">You can filter the report by any or combination of the parameters below</i></h3>
+</span>
+<hr>
+<br>
+<form action="." method="GET">
+    <div class="form-row">          
+      <div class="form-group col-1">
+          <label for="">File No</label>
+            <input type="number" class="form-control" aria-label="Search" aria-describedby="topbar-addon"
+            name="file_no" placeholder="Staff File Number...">
+      </div> 
+      <div class="form-group col-2">
+          <label for="publishDateMin">Leave Start-date</label>
+          <input type="date" class="form-control" id="publishDateMin" name="date_from">
+      </div>
+      <div class="form-group col-2">
+          <label for="publishDateMin">Leave End-date</label>
+          <input type="date" class="form-control" id="publishDateMin" name="date_to">
+      </div>
+      <div class="form-group col-3">
+        <div>
+          <label for="publishDateMin">Leave Type</label>
+            <select id="transaction_type" class="form-control" name="leave_type">
+              <option selected disabled value="">Select Leave type...</option>
+              {% for leave_type in leave_types %}
+                <option value="{{leave_type.id}}">{{leave_type.title}}</option>
+              {% endfor %}
+            </select>
+        </div>
+      </div>  
+      <div class="form-group col-2">
+        <label for="publishDateMin">Custom Search from</label>
+        <input type="date" class="form-control" id="publishDateMin" name="custom_search_from">
+      </div>
+      <div class="form-group col-2">
+          <label for="publishDateMin">Custom Search to</label>
+          <input type="date" class="form-control" id="publishDateMin" name="custom_search_to">
+      </div>   
+    </div>
+   
+    <div class="form-row">
+         <!-- <div class="form-group col-md-2 col-lg-2">
+          <label for="viewCountMin">Salary Scale</label>
+          <select id="cashier" class="form-control" name="salary_scale">
+              <option selected disabled value="">Select ...</option>
+              {% for salary_scale in salary_scales %}
+                <option value="{{salary_scale.id}}">{{ salary_scale.title }}</option>
+              {% endfor %}
+          </select>
+        </div> -->
+        <div class="form-group col-md-2 col-lg-2">
+          <label for="viewCountMin">Status</label>
+          <select id="leave_status" class="form-control" name="leave_status">
+              <option selected disabled value="">Select ...</option>
+              {% for status in leave_status %}
+                <option value="{{status.status}}">{{ status }}</option>
+              {% endfor %}
+          </select>
+        </div>
+    <!--<div class="form-group col-md-2 col-lg-1">
+          <label for="viewCountMax">Level</label>
+          <select id="grade" class="form-control" name="grade">
+              <option selected disabled value="">Select ...</option>
+              {% for grade in grades %}
+                <option value="{{grade.id}}">{{ grade.level }}</option>
+              {% endfor %}
+          </select>
+        </div> -->
+        <div class="form-group col-md-3">
+          <label for="cashier">Directorate</label>
+          <select id="directortate" class="form-control" name="directorate">
+              <option selected disabled value="">Select Directorate...</option>
+              {% for directorate in directorates %}
+                <option value="{{directorate.id}}">{{ directorate.title }}</option>
+              {% endfor %}
+          </select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="cashier">Department</label>
+          <select id="department" class="form-control" name="department">
+              <option selected disabled value="">--------------</option>
+              {% for department in departments %}
+                <option value="{{department.id}}">{{ department.title }}</option>
+              {% endfor %}
+          </select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="unit">Unit</label>
+          <select id="unit" class="form-control" name="unit">
+              <option selected disabled value="">--------------</option>
+              {% for unit in units %}
+                <option value="{{unit.id}}">{{ unit.title }}</option>
+              {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>    
+</form>
+<br>
+
+<script>
+  $(document).ready(function(){
+    var directortate = $("#directorate");
+    var department = $("#department");
+    var options = department.find('option');
+    directortate.on('change',function(){
+      department.html($options.filter('[value="'+ this.value +'"'));
+    }).trigger('change')
+  })
+</script>
+

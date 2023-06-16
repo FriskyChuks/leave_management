@@ -1,20 +1,36 @@
-from datetime import datetime
+from datetime import datetime,date,timedelta
 from dateutil.relativedelta import relativedelta
-from datetime import date
-# import numpy as np
+# import datetime
 
 from leave.models import *
 
-# def get_working_days(d1,d2):
-# 	days = np.busday_count( d1, d2 )
-# 	return int(days)
+# def get_working_days(d1,d2,n):
+# 	if int(n) == int(np.busday_count( d1, d2 )):
+# 		print(n)
+# 	else: 
+# 		print("Not equal")
+# 	return int(n)
+
+def date_by_adding_business_days(from_date, add_days,holidays):
+	business_days_to_add = add_days
+	current_date = datetime.strptime(from_date,"%Y-%m-%d")
+	while business_days_to_add > 0:
+		current_date += timedelta(days=1)
+		weekday = current_date.weekday()
+		if weekday >= 5: # sunday = 6
+			continue
+		if current_date in holidays:
+			continue
+		business_days_to_add -= 1
+	print(current_date)
+	return current_date
 
 def check_leave_eligibility(request,leave_type_id):
 	month_difference=12
 	previous_leaves=LeaveApplication.objects.filter(
 		created_by_id=request.user.id,leave_type_id=leave_type_id,status__status='done')
 	if previous_leaves:
-		last_leave_date=previous_leaves.last().date_to
+		last_leave_date=previous_leaves.last().date_from
 		delta = relativedelta(datetime.today(), last_leave_date)
 		month_difference =  delta.months + (delta.years * 12)
 	return month_difference
@@ -63,4 +79,12 @@ def has_annual_leave(id):
 	for annual_leave in annual_leaves:
 		duration=annual_leave.requested_duration
 		total_duration += duration	
-	return total_duration
+	return int(total_duration)
+
+	
+def holidays():
+	dt = datetime
+	Holidays = [dt(2023,1,1),dt(2023,4,7),dt(2023,4,10),dt(2023,4,24),dt(2023,5,1),dt(2023,6,12),dt(2023,6,29),dt(2023,6,30),
+			dt(2023,9,27),dt(2023,10,2),dt(2023,12,25),dt(2023,12,21),dt(2024,1,1)]
+	
+	return Holidays

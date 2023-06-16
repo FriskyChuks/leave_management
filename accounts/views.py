@@ -8,6 +8,9 @@ from django.db import models
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from django.db.models import Q
+import pandas as pd
+import os
+from django.core.files.storage import FileSystemStorage
 
 from contact.models import *
 from registry.models import *
@@ -307,3 +310,24 @@ def update_department_view(request,id):
 		messages.success(request,"Updated successfully")
 		return redirect('department_list')
 	return render(request,'accounts/update_department.html',{'department':department,'directorates':directorates})
+
+
+
+def update_db_by_excel_file(request):
+	if request.method == 'POST' and request.FILES['file']:
+		file = request.FILES['file']
+		if file.name.endswith('.xlsx'):
+			print('File read')
+			df = pd.read_excel(file)
+			print(df)
+			# # Perform the necessary data processing and update the database
+			# # Example: Assuming you have a model called 'YourModel' with columns 'name' and 'email'
+			# for _, row in df.iterrows():
+			# 	name = row['Name']
+			# 	email = row['Email']
+			# 	YourModel.objects.update_or_create(name=name, defaults={'email': email})
+			# return render(request, 'accounts/import_excel.html', {'message': 'Excel file imported successfully'})
+		else:
+			return render(request, 'accounts/import_excel.html', {'message': 'Invalid file format. Please upload an Excel file (.xlsx).'})
+			
+	return render(request, 'accounts/import_excel.html',{'message': 'File uploaded successfully'})

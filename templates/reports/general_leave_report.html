@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% block title %} Form Elements {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <form action="" method="GET">
+                <div class="table-responsive">
+                    {% include 'reports/snippets/transaction_template.html' %}
+                    <br>
+                    {% if not date_from or not date_to %}
+                        <h6>Search result for <strong>today</strong></h6>
+                    {% elif date_from and date_to %}
+                        <h6>Search from start of <strong>{{date_from}}</strong> to end of <strong>{{date_to}}</strong></h6>
+                    {% endif %}
+                    <h4>Total {{ leave_apps|length }}</h4>
+                
+                    {% include 'reports/snippets/transaction_table.html' %}
+                </div>
+            </form>
+            
+            <!-- [ Main Content ] end -->
+
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
