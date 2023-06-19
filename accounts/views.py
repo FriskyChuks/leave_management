@@ -314,19 +314,27 @@ def update_department_view(request,id):
 
 
 def update_db_by_excel_file(request):
+	user_dic = {}
 	if request.method == 'POST' and request.FILES['file']:
 		file = request.FILES['file']
 		if file.name.endswith('.xlsx'):
 			print('File read')
 			df = pd.read_excel(file)
-			print(df)
+			user_dic = {}
+			# print(df)
 			# # Perform the necessary data processing and update the database
 			# # Example: Assuming you have a model called 'YourModel' with columns 'name' and 'email'
-			# for _, row in df.iterrows():
-			# 	name = row['Name']
-			# 	email = row['Email']
-			# 	YourModel.objects.update_or_create(name=name, defaults={'email': email})
-			# return render(request, 'accounts/import_excel.html', {'message': 'Excel file imported successfully'})
+			for _, row in df.iterrows():
+				if type(row['FILE NO.'])==float:
+					user_dic[int(row['FILE NO.'])]={'email':row['E-MAIL'],'rank':row['PRESENT RANK']}
+				# print(user_dic)
+
+				# file_number = row['FILE NO.']
+				# email = row['E-MAIL']
+				# if row.count(file_number)==1:
+				# 	User.objects.update_or_create(email=email, defaults={'file_number': file_number})
+			print(user_dic)
+			return render(request, 'accounts/import_excel.html', {'message': 'Updated successfully'})
 		else:
 			return render(request, 'accounts/import_excel.html', {'message': 'Invalid file format. Please upload an Excel file (.xlsx).'})
 			
