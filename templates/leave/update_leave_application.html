@@ -55,11 +55,25 @@
 <!-- <hr> -->
 <div class="row">
     <div class="col-md-8">
-        <form method="POST" class="needs-validation" novalidate>{% csrf_token %}
+        <form method="POST" class="needs-validation" novalidate>
+            {% csrf_token %}
             <div class="form-row">
+                <!-- <div class="col-md-6 mb-3">
+                    <label for="validationTooltip01">Leave Type</label>
+                    <input type="number" min="0" max="{{days_remaining}}" class="form-control" id="duration" name="requested_duration" value="{{leave_app.requested_duration}}" required>
+                    <select name="" id="" class="form-control">
+                        <option value="{{ leave_app.leave_type }}">{{leave_app.leave_type}}</option>
+                        {% for leave_type in leave_types %}
+                            <option value="{{ leave_type.id }}">{{leave_type}}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="valid-tooltip">
+                        Looks good!
+                    </div>
+                </div> -->
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip01">Leave Duraion (<i>in days</i>)</label>
-                    <input type="number" min="0" max="{{days_remaining}}" class="form-control" id="duration" name="requested_duration" value="{{leave_app.requested_duration}}" required>
+                    <input type="number" min="0" max="{{leave_app.leave_duration.duration}}" class="form-control" id="duration" name="requested_duration" value="{{leave_app.requested_duration}}" required>
                     <div class="valid-tooltip">
                         Looks good!
                     </div>
@@ -77,8 +91,6 @@
                         Looks good!
                     </div>
                 </div>   
-            </div>
-            <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip03">Date from</label>
                     <input type="date" class="form-control" id="date_from" name="date_from" value="{{leave_app.date_from}}" required>
@@ -86,6 +98,8 @@
                         Please provide a valid date.
                     </div>
                 </div>
+            </div>
+            <div class="form-row">
                 <!-- <div class="col-md-6 mb-3">
                     <label for="validationTooltip04">Resumption Date</label>
                     <input type="date" class="form-control" id="date_to" value="{{leave_app.date_to|date:'d/m/Y'}}" placeholder="yyyy-dd-mm" name="date_to" required>

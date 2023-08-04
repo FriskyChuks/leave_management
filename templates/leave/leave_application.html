@@ -55,7 +55,7 @@
 <hr>
 <div class="row">
     <div class="col-md-8">
-        <form method="POST" class="needs-validation" novalidate>{% csrf_token %}
+        <form method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>{% csrf_token %}
             <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label for="validationTooltip01">Leave Duration (<i>in days</i>)</label>
@@ -86,13 +86,15 @@
                         Please provide a valid date.
                     </div>
                 </div>
-                <!-- <div class="col-md-6 mb-3">
-                    <label for="validationTooltip04">Resumption Date</label>
-                    <input type="date" class="form-control" id="date_to" name="date_to" readonly>
-                    <div class="invalid-tooltip">
-                        Please provide a valid date.
-                    </div>
-                </div> -->
+                <div class="col-md-6 mb-3">
+                    {% if leave_type.title|lower == "maternity" %}
+                    <label for="validationTooltip04">Upload Your Edd Form</label>
+                    <input type="file" class="form-control" id="edd_form" name="edd_form" required>
+                    {% else %}
+                    <input type="file" class="form-control" id="edd_form" name="edd_form" style="display: none;">
+                    {% endif %}
+                   
+                </div>
             </div>
             <button class="btn  btn-primary" type="submit">Apply Now</button>
         </form>

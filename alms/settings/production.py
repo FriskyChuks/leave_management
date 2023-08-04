@@ -2,11 +2,10 @@ from django.contrib.messages import constants as messages
 from pathlib import Path
 import os
 
+from .juzmin import JUZMIN_SETTINGS
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-mn*2#5q&16#yhvxl4=14!b6+5ou=w&2t6=xp8-u_wgsm$h1$dk'
@@ -14,7 +13,7 @@ SECRET_KEY = 'django-insecure-mn*2#5q&16#yhvxl4=14!b6+5ou=w&2t6=xp8-u_wgsm$h1$dk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['lms.fmckeffi.gov.ng','127.0.0.1']
+ALLOWED_HOSTS = ['lms.fmckeffi.gov.ng', '127.0.0.1']
 
 
 # Application definition
@@ -135,7 +134,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-HOST_SERVER= "lms.fmckeffi.gov.ng"
+HOST_SERVER = "lms.fmckeffi.gov.ng"
 STATIC_URL = '/static/'
 MEDIA_URL = '/images/'
 

@@ -40,6 +40,14 @@
                                       Has unit
                                     </label>
                                 </div><br>
+                                <div class="form-check">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input name="reports_to_cmd" class="form-check-input" type="checkbox" value="1" 
+                                    {% if department.reports_to_cmd %} checked {% endif %}>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                      Reports to CMD
+                                    </label>
+                                </div><br>
                                 <div class="col-md-6 mb-6">
                                     <button class="btn btn-primary" type="submit">Save</button>  
                                 </div>

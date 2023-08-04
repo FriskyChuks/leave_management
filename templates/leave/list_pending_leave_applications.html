@@ -56,6 +56,7 @@
                             <tr>
                                 <!-- <th>#</th> -->
                                 <th>FILE NO</th>
+                                <th>EDD FORM</th>
                                 <th>STAFF</th>
                                 <th>LEAVE INFORMATION</th>
                                 <!-- <th>HAS ANNUAL LEAVE</th> -->
@@ -65,7 +66,15 @@
                         <tbody>
                             {% for leave_app in leave_apps %}
                             <tr>
+                                
                                 <td>{{leave_app.created_by.file_number}}</td>
+                                <td>
+                                    <a href="{% url 'edd_form_details' leave_app.id %}" target="_blank">
+                                    {% if leave_app.edd_form %}
+                                        <img src="{{ leave_app.edd_form.url }}" width="60px" height="50px" >
+                                    {% endif %}
+                                </a>
+                                </td>
                                 <td>
                                     {{leave_app.created_by.first_name}}
                                     {{leave_app.created_by.last_name}}
@@ -78,20 +87,20 @@
                                 </td>
                                 <!-- <td>Yes ({{has_annual_leave_check}}) <br>No (exhausted)</td> -->
                                 <td>
-                                    <button onclick="hideBtn(this)" class="btn btn-success" style="background-color: green; color:white">
+                                    <button id="recommend" class="btn btn-success" style="background-color: green; color:white">
                                         {% if request.user.user_group.group == 'leave_and_passage' %}
                                             <a style="color: white;" href="{% url 'process_leave_pass' leave_app.id %}">Process Leave Pass</a>
-                                        {% elif request.user.user_group.group == 'head of directorate' %}
+                                        {% elif request.user.user_group.group == 'head of directorate' or request.user.user_group.group == 'cmd' %}
                                             <a style="color: white;" href="{% url 'recommend_leave_application' leave_app.id %}">Approve</a>
                                         {% else %}
                                             <a style="color: white;" href="{% url 'recommend_leave_application' leave_app.id %}">Recommend</a>
                                         {% endif %}
                                     </button>
-                                    <button onclick="hideBtn(this)" class="btn btn-primary" style="background-color: blue; color:white">
+                                    <button class="btn btn-primary" style="background-color: blue; color:white">
                                         <a style="color: white;" href="{% url 'leave_details' leave_app.id %}">Details</a>
                                     </button>
                                     {% if not request.user.user_group.group == 'leave_and_passage' %}
-                                        <button onclick="hideBtn(this)" class="btn btn-success" style="background-color: red; color:white">
+                                        <button id="decline" class="btn btn-success" style="background-color: red; color:white">
                                             <a style="color: white;" href="{% url 'decline_leave_application' leave_app.id %}">Decline</a>
                                         </button>
                                     {% endif %}
@@ -114,9 +123,15 @@
 <!-- [ Main Content ] end -->
 
 <script>
-    function hideBtn(x){
-        x.style.display = none;
-    }
+    const btnRecommend = document.getElementById('recommend');
+    const btnDecline = document.getElementById('decline');
+
+    btnRecommend.addEventListener('click', () => {
+        btnRecommend.disabled = true;
+    });
+    btnDecline.addEventListener('click', () => {
+        btnDecline.disabled = true;
+    });
 </script>
 
 {% endblock content %}

@@ -23,6 +23,20 @@
                     </div>
                 </div>
                 {% endif %}
+
+                {% if active_app %}
+                <div class="col-md-12 col-lg-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h4 class="m-t-20">
+                                <span style="color: green;" class="text-c-black">ON LEAVE</span> 
+                                <a href="{% url 'leave_history' %}"><small> ...view detail</small></a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
                 {% if approval_desk %}
                 <div class="col-md-12 col-lg-12">
                     <div class="card">
@@ -53,11 +67,25 @@
                             <!-- END OF PROGRESS BAR -->
                             <br>
                             <button class="btn btn-primary btn-sm btn-round">
-                                {% if approval_desk.approval == 'cmd' %} 
-                                    Currently at Leave & Passage 
-                                {% else %} 
-                                    Currently on the desk of your {{approval_desk.approval|title}} 
-                                {% endif %}
+                                {% for app in leave_app %} 
+                                    {% if not app.auto %}
+                                        {% if request.user.user_group.group == 'cmd' %}
+                                            Currently at Leave & Passage 
+                                        {% else %}
+                                            Current on CMD's desk
+                                        {% endif %}
+                                    {% elif app.requires_hcs_approval %}
+                                        Currently on HCS's Desk
+                                    {% elif not app.requires_hcs_approval and approval_desk.approval == 'head of directorate' %}
+                                        Currently on HEAD of ADMIN's desk  
+                                    {% else %}
+                                        {% if approval_desk.approval != 'cmd' %}
+                                            Currently on the desk of your {{approval_desk.approval|title}}
+                                        {% else %}
+                                            Currently at Leave & Passage 
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
                             </button>
                         </div>
                     </div>
