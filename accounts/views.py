@@ -1,12 +1,10 @@
 from multiprocessing import context
-from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db import models
-from datetime import date, datetime, timedelta
-from django.utils import timezone
 from django.db.models import Q
 
 from contact.models import *
@@ -21,14 +19,15 @@ from .decorators import allowed_users
 
 @login_required(login_url='login')
 def index(request):
-    approval_desk, approval_desk_id = None, None
+    approval_desk, approval_desk_id, active_app = None, None, None
     excluded = [1, 2, 6, 7]
     status = ['in process', 'partly in process']
     # if request.user.user_group.group == 'head of directorate':
     #     excluded = [1, 6, 7]
     try:
         active_app = LeaveApplication.objects.get(models.Q(
-            status__status='active') | models.Q(status__status='partly active'))
+            status__status='active',created_by=request.user) | models.Q(
+                status__status='partly active',created_by=request.user))
     except:
         pass
     leave_app = LeaveApplication.objects.filter(
@@ -42,9 +41,10 @@ def index(request):
         progress_bar_width = 100/int(len(approval_status))
     declined_app = LeaveApplication.objects.filter(
         created_by_id=request.user.id).last()
+    show_search = request.user.user_group.group in ['support', 'developer', 'leave_and_passage']
     context = {"approval_desk": approval_desk, "approval_desk_id": approval_desk_id,
                "approval_status": approval_status, "progress_bar_width": progress_bar_width,
-               "declined_app": declined_app, 'active_app': active_app,
+               "declined_app": declined_app, 'active_app': active_app,'show_search':show_search,
                # calling quick statistics functions
                "total_leave_applications": total_leave_applications,
                "pending_resumptions": pending_resumptions,
@@ -209,7 +209,7 @@ def search_unit(request):
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['support', 'developer'])
+@allowed_users(alllowed_roles=['leave_and_passage','support', 'developer'])
 def reset_password(request, id):
     user = User.objects.get(id=id)
     user.set_password("pass")

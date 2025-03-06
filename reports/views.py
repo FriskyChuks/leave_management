@@ -104,7 +104,7 @@ def general_leave_report(request):
     filters = {'created_by__file_number': file_no, 'date_from': date_from, 'date_to': date_to,
                'created_by__department__id': department, 'created_by__directorate__id': directorate,
                'leave_type__id': leave_type, 'status__status__icontains': status, 'created_by__unit__id': unit,
-               'date_from__gte': custom_search_from, 'date_to__lte': custom_search_to
+               'date_from__gte': custom_search_from, 'date_from__lte': custom_search_to
                }
     # date_filter = {'date_created__date':timezone.now()}
     filters = {k: v for k, v in filters.items() if v}

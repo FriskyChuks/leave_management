@@ -34,12 +34,12 @@
 			<li class="nav-item pcoded-hasmenu">
 				<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-settings"></i></span><span class="pcoded-mtext"><b>Settings</b></span></a>
 				<ul class="pcoded-submenu">
-						<li><a href="{% url 'leave_type' %}">Create Leave Types</a></li>
-						<li><a href="{% url 'department_list' %}">Department List</a></li>
-						{% if request.user.user_group.group == 'developer' %}
-							<li><a href="{% url 'create_unit' %}">Create Unit</a></li>
-							<li><a href="{% url 'create_department' %}">Create Department</a></li>
-						{% endif %}
+					<li><a href="{% url 'department_list' %}">Department List</a></li>
+					<li><a href="{% url 'search_leaveapp' %}">Update Leave App</a></li>
+		{% elif request.user.user_group.group == 'developer' %}
+					<li><a href="{% url 'leave_type' %}">Create Leave Types</a></li>
+					<li><a href="{% url 'create_unit' %}">Create Unit</a></li>
+					<li><a href="{% url 'create_department' %}">Create Department</a></li>
 				</ul>
 			</li>
 		{% endif %}

@@ -1,0 +1,162 @@
+
+    {% extends "layouts/base.html" %}
+    {% load static %}
+    {% block title %} Form Elements {% endblock %} 
+    
+    <!-- Specific CSS goes HERE -->
+    {% block stylesheets %}{% endblock stylesheets %}
+    
+    {% block content %}	
+        <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">    
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#!">Form Components</a></li>
+                                <li class="breadcrumb-item"><a href="#!">Form Elements</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            <div class="col-sm-12">
+               <div class="card">
+                   <div class="card-body">
+                    <div class="form-row col-12">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                        <div class="col-md-4 mb-3">
+                        <label for="leave_type">Leave Type:</label>
+                        <select class="form-control" name="leave_type" id="leave_type">
+                          {% for leave_type in leave_types %}
+                            <option value="{{ leave_type.id }}" {% if leave_type.id == leave_application.leave_type_id %}selected{% endif %}>
+                              {{ leave_type.title }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="leave_duration">Leave Duration:</label>
+                        <select class="form-control" name="leave_duration" id="leave_duration">
+                          {% for duration in durations %}
+                            <option value="{{ duration.id }}" {% if duration.id == leave_application.leave_duration_id %}selected{% endif %}>
+                              {{ duration.duration }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="requested_duration">Requested Duration:</label>
+                        <input type="text" class="form-control" name="requested_duration" id="requested_duration" value="{{ leave_application.requested_duration }}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                        <label for="destination">Destination:</label>
+                        <select class="form-control" name="destination" id="destination">
+                          {% for state in states %}
+                            <option value="{{ state.id }}" {% if state.id == leave_application.destination_id %}selected{% endif %}>
+                              {{ state.title }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="date_from">Date From:</label>
+                        <input type="date" class="form-control" name="date_from" id="date_from" value="{{ leave_application.date_from|date:'Y-m-d' }}" readonly>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="date_to">Date To:</label>
+                        <input type="date" class="form-control" name="date_to" id="date_to" value="{{ leave_application.date_to|date:'Y-m-d' }}" readonly>
+                        </div>
+                        </div>
+                        <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                        <label for="created_by">Created By:</label>
+                        <select class="form-control" name="created_by" id="created_by">
+                          {% for user in created_bys %}
+                            <option value="{{ user.id }}" {% if user.id == leave_application.created_by_id %}selected{% endif %}>
+                              {{ user.first_name }} {{ user.last_name }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="status">Status:</label>
+                        <select class="form-control" name="status" id="status">
+                          {% for status in statuses %}
+                            <option value="{{ status.id }}" {% if status.id == leave_application.status_id %}selected{% endif %}>
+                              {{ status.status }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="approval_status">Approval Status:</label>
+                        <select class="form-control" name="approval_status" id="approval_status">
+                          {% for approval_status in approval_statuses %}
+                            <option value="{{ approval_status.id }}" {% if approval_status.id == leave_application.approval_status_id %}selected{% endif %}>
+                              {{ approval_status.approval }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        </div>
+                        <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                        <label for="resumption_approval">Resumption Approval:</label>
+                        <select class="form-control" name="resumption_approval" id="resumption_approval">
+                          {% for resumption_approval in resumption_approvals %}
+                            <option value="{{ resumption_approval.id }}" {% if resumption_approval.id == leave_application.resumption_approval_id %}selected{% endif %}>
+                              {{ resumption_approval.approval }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        </div>
+                        <!-- <div class="col-md-4 mb-3">
+                        <label for="date_created">Date Created:</label>
+                        <input type="datetime-local" class="form-control" name="date_created" id="date_created" value="{{ leave_application.date_created|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="last_updated">Last Updated:</label>
+                        <input type="datetime-local" class="form-control" name="last_updated" id="last_updated" value="{{ leave_application.last_updated|date:'Y-m-d' }}">
+                        </div> -->
+                        </div>
+                        <div class="form-row">
+                        <!-- <div class="col-md-6 mb-4">
+                        <label for="resumption_initiated">Resumption Initiated:</label>
+                        <input type="datetime-local" class="form-control" name="resumption_initiated" id="resumption_initiated" value="{{ leave_application.resumption_initiated|date:'Y-m-d' }}"> -->
+                        </div>
+                        <div class="col-md-6 mb-4">
+                        <label for="edd_form">EDD Form:</label>
+                        <input type="file" class="form-control" name="edd_form" id="edd_form">
+                        </div>
+                        </div>
+                        
+                            <button class="btn btn-success" type="submit">submit</button>
+                           
+                      </form>
+                    </div>
+                   </div>
+               </div>
+   
+
+    
+       </div>
+       </div>
+        </section>
+        <!-- [ Main Content ] end -->
+    
+    {% endblock content %}
+    
+    <!-- Specific Page JS goes HERE  -->
+    {% block javascripts %}{% endblock javascripts %}
+    
+    

@@ -8,8 +8,8 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime as dt, timedelta
 from django.utils import timezone
 
-# for pdf print
-from io import BytesIO
+# # for pdf print
+# from io import BytesIO
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
@@ -162,7 +162,7 @@ def LeaveApplicationview(request, id):
 
 
 def leave_types_list(request):
-    leave_types = LeaveType.objects.all()
+    leave_types = LeaveType.objects.all().order_by('title')
     context = {'leave_types': leave_types}
     return render(request, 'leave/leave_types_list.html', context)
 
@@ -184,7 +184,7 @@ def leave_application_status(request):
 def list_pending_leave_applications(request):
     leave_apps = None
     user = User.objects.get(id=request.user.id)
-    groups = ['head of unit', 'head of department', 'head of directorate']
+    groups = ['head of unit', 'head of department', 'head of directorate','cmd']
     heads = User.objects.filter(
         id=request.user.id, user_group__group__in=groups)
     sub_unit_approval_status = Approval.objects.get(
@@ -218,6 +218,12 @@ def list_pending_leave_applications(request):
                     approval_status_id=id-3, requires_hcs_approval=True, auto=True,
                     created_by__directorate__id=request.user.directorate.id
                 ).exclude(status__status=excluded_status)
+
+            # elif head.user_group.group == 'cmd':
+            #     leave_apps = LeaveApplication.objects.filter(
+            #         approval_status_id=id-4, auto=True,
+            #         created_by__directorate__id=request.user.directorate.id
+            #     ).exclude(status__status=excluded_status)
 
     context = {'leave_apps': leave_apps}
     return render(request, 'leave/list_pending_leave_applications.html', context)
@@ -296,6 +302,8 @@ def resume_leave_view(request, id):
             elif user.user_group.group == 'head of directorate' or user.user_group.group == 'cmd':
                 resumption_approval_id = 4
     elif not request.user.unit or request.user.department.title.lower() == 'admin':
+        resumption_approval_id = 3
+    elif request.user.department.has_unit == False:
         resumption_approval_id = 2
     status_id = 3
     if current_status == 'partly active':
@@ -306,7 +314,7 @@ def resume_leave_view(request, id):
 
 
 @login_required(login_url='login')
-@allowed_users(alllowed_roles=['leave_and_passage', 'head of unit', 'head of department', 'head of directorate', 'support', 'developer'])
+@allowed_users(alllowed_roles=['leave_and_passage', 'head of unit', 'head of department', 'head of directorate', 'support', 'developer','cmd'])
 def list_resumption_view(request):
     leave_apps = None
     conditions = ['resuming', 'partly resuming']
@@ -507,7 +515,7 @@ def render_pdf_view(request, id):
     try:
         head_of_dept = User.objects.filter(user_group__group='head of department',
                                            department_id=leave_pass.created_by.department.id).order_by('file_number').first()
-        head_of_admin = User.objects.get(file_number=2)
+        head_of_admin = User.objects.get(file_number=189)
         processed_by = LeaveRecommendation.objects.filter(
             leave_application_id=leave_pass.id).last()
     except ObjectDoesNotExist:
@@ -563,6 +571,7 @@ def leave_tracker_view(request, id):
     return render(request, 'leave/leave_tracker.html', context)
 
 
+
 def update_leave_application(request, id):
     Holidays = holidays()
     leave_types = LeaveType.objects.all()
@@ -592,7 +601,75 @@ def update_leave_application(request, id):
     return render(request, 'leave/update_leave_application.html', context)
 
 
+
 def edd_form_details(request, id):
     edd_form_img = LeaveApplication.objects.get(id=id)
     context = {'edd_form_img': edd_form_img}
     return render(request, 'leave/edd_form_details.html', context)
+
+
+@allowed_users(alllowed_roles=['developer', 'support'])
+def search_leaveapp(request):
+    leaveObj = LeaveApplication.objects.all()
+    status = LeaveApplicationStatus.objects.get(status='done')  # [8]
+    if request.method == 'POST':
+        searched = request.POST['searched']
+        leave = LeaveApplication.objects.filter(
+            created_by__file_number__icontains=searched).order_by('-last_updated')
+        return render(request, 'leave/search_leaveapp.html',
+                      {'searched': searched, 'leave': leave, 'leaveObj': leaveObj, 'status': status})
+    else:
+        context = {}
+        return render(request, 'leave/search_leaveapp.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(alllowed_roles=['developer', 'support'])
+def edit_leave_app(request, id):
+    leave_types = LeaveType.objects.all()
+    durations = LeaveDuration.objects.all()
+    statuses = LeaveApplicationStatus.objects.all()
+    approval_statuses = Approval.objects.all()
+    states = State.objects.all()
+    resumption_approvals = ResumptionApproval.objects.all()
+    created_bys = User.objects.all()
+
+    leave_application = LeaveApplication.objects.get(id=id)
+
+    if request.method == 'POST':
+        leave_type = request.POST.get('leave_type')
+        leave_duration = request.POST.get('leave_duration')
+        requested_duration = request.POST.get('requested_duration')
+        destination = request.POST.get('destination')
+        date_from = request.POST.get('date_from')
+        date_to = request.POST.get('date_to')
+        created_by_id = request.POST.get('created_by')
+        status = request.POST.get('status')
+        approval_status = request.POST.get('approval_status')
+        resumption_approval = request.POST.get('resumption_approval')
+        resumption_initiated = request.POST.get('resumption_initiated')
+        edd_form = request.FILES.get('edd_form')
+
+        LeaveApplication.objects.filter(id=id).update(leave_type_id = leave_type,
+                    leave_duration_id = leave_duration,requested_duration = requested_duration,
+                    destination_id = destination,date_from = date_from,date_to = date_to,
+                    created_by_id = created_by_id,status_id = status,approval_status_id = approval_status,
+                    resumption_approval_id = resumption_approval,resumption_initiated = resumption_initiated,
+                    edd_form = edd_form)
+
+
+        messages.success(request, "Leave application updated successfully")
+        return redirect('search_leaveapp')
+
+    context = {
+        'leave_types': leave_types,
+        'durations': durations,
+        'statuses': statuses,
+        'approval_statuses': approval_statuses,
+        'states': states,
+        'resumption_approvals': resumption_approvals,
+        'created_bys': created_bys,
+        'leave_application': leave_application
+    }
+
+    return render(request, 'leave/edit_leave_app.html', context)

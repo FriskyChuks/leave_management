@@ -1,0 +1,85 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %} Search Leave Applications {% endblock %}
+
+{% block content %}
+<section class="pcoded-main-container">
+    <div class="pcoded-content">
+
+        <div class="card ">
+            <div class="card-body justify-content-center ">
+                
+                <form action="{% url 'search_leaveapp' %}" method="POST" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="col-md-10 mb-3">
+                        <input type="search" list="leavelist" class="form-control mt-5" name="searched"placeholder="Search by File Number">
+                        <button type="submit" class="btn btn-primary mt-3">Search</button>
+                    </div>
+                        <datalist id="leavelist">
+                        {% for leave in leaveObj %}
+                        <option value="{{ leave.created_by.file_number }}">
+                            {% endfor %}
+                    </datalist>
+                </form>
+
+                {% if searched %}
+                <!-- <h3>Your search for "{{ searched }}" returned the following results:</h3> -->
+                <div class="table-responsive">
+                <table class="table   mt-3">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Leave Type</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Other Name</th>
+                            <th>File Number</th>
+                            <th>Data Created</th>
+                            <th>Requested Duration</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        {% for leave in leave %}
+                        <tr>
+                        <td>{{leave.id}}</td>
+                        <td>{{leave.leave_type}}</td>
+                        <td>{{ leave.created_by.first_name }}</td>
+                        <td> {{ leave.created_by.last_name }} </td>
+                        <td> {{ leave.created_by.other_name }} </td>
+                        <td> {{ leave.created_by.file_number }}</td>
+                        <td> {{ leave.date_created }}</td>
+                        <td> {{ leave.requested_duration }}</td>
+                        <td> {{ leave.status }}</td>
+                        <td>
+                           {% if leave.status.status == 'done' or leave.status.status == 'partly done' %}
+                            <h6 style="color: rgb(10, 125, 23);"><i class="fa fa-check"></i>Completed</h6>
+                            {% elif leave.status.status == 'resuming' or leave.status.status == 'partly resuming' %}
+                                <b><i style="color: blue;">Resumption in process</i></b>
+                                <a class="btn btn-warning" href="{% url 'edit_leave_app' leave.id %}">
+                            <i class="fa fa-pen"></i> Edit</a>
+                            {% elif leave.status.status == 'declined' %}
+                                <h6 style="color: red;">Declined</h6>
+                            {% else %}
+                            <a class="btn btn-warning" href="{% url 'edit_leave_app' leave.id %}">
+                            <i class="fa fa-pen"></i> Edit</a>
+                            {% endif %}
+                        </td>
+                        </tr>
+                        {% endfor %}
+                    
+                    </tbody>
+                    {% else %}
+                    <h3 class="text-center">No search results yet.</h3>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+        </div>
+
+    </div>
+</section>
+{% endblock content %}

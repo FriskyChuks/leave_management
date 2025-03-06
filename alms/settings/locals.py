@@ -91,9 +91,9 @@ WSGI_APPLICATION = 'alms.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "lma",
+        'NAME': "fmck_apps",
         'USER': "root",
-        'PASSWORD': "",
+        'PASSWORD': "Light@6085",
         'HOST': "localhost",
         'PORT': "3306",
     }

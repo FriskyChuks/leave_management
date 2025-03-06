@@ -45,4 +45,7 @@ urlpatterns = [
 
     path('edd_form_details/<str:id>/',
          views.edd_form_details, name='edd_form_details'),
+
+    path('search_leaveapp/', views.search_leaveapp, name='search_leaveapp'),
+    path('edit_leave_app/<id>/', views.edit_leave_app, name='edit_leave_app'),
 ]

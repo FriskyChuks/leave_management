@@ -73,7 +73,14 @@
 			<td>{{leave_app.destination}}</td>
             <td>
 				{% if leave_app.status.status == 'done' or leave_app.status.status == 'partly done' %}
-                <h6 style="color: skyblue;">Completed</h6>
+                <h6 style="color: skyblue;">
+                    Completed || 
+                    <a href="{% url 'pdf_view' leave_app.id %}">
+                        <span style="color: black;" class="hovertext" data-hover="Print Pass">
+                            <i class="fa-solid fa-print fa-xl"></i>
+                        </span>
+                    </a>
+                </h6>
                 {% elif leave_app.status.status == 'resuming' or leave_app.status.status == 'partly resuming' %}
                     <b><i style="color: blue;">Resumption in process</i></b> | ({{current_desk}})
                 {% elif leave_app.status.status == 'declined' %}
